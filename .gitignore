@@ -1,0 +1,55 @@
+##########################################
+##	.gitignore file for Vivado	##                                   
+##########################################
+#########
+#Exclude all
+#########
+*
+!*/
+!.gitignore
+###########################################################################
+##	VIVADO
+###########################################################################
+!._.DS_STORE
+
+#########
+#Source files:
+#########
+#Do NOT ignore Verilog or VHDL files
+!*.vhd
+!*.v
+!*.sv
+
+#Constraint files
+#########
+#Do NOT ignore *.xdc files
+!*.xdc
+
+#C-files
+#########
+!*.c
+!*.h
+!*.elf
+
+########
+#Docs files
+!*.tex
+!*.pdf
+!*.svg
+!*.txt
+!*.mem
+!*.hex
+!*.f
+!*.flist
+
+########
+#Obsidian files
+!*.md
+!*.png
+!*.jpg
+!*.json
+
+########
+#Python files
+!*.py
+!*.ipynb
