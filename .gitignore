@@ -19,6 +19,7 @@
 !*.vhd
 !*.v
 !*.sv
+!*.svh
 
 #Constraint files
 #########
@@ -48,6 +49,27 @@
 !*.png
 !*.jpg
 !*.json
+
+########
+# Project configuration and automation sources
+!*.toml
+!*.yaml
+!*.yml
+!*.tcl
+!*.sdc
+!*.do
+!*.sh
+!Makefile
+!.gitkeep
+
+# Generated LaTeX files
+/reports/latex/build/
+/docs/informe/build/
+/docs/informe/tmp/
+/docs/papers
+
+# Local analysis and rendering intermediates
+/tmp/
 
 ########
 #Python files
