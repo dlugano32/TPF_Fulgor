@@ -10,7 +10,7 @@ sys.path.insert(0, str(REPOSITORY_ROOT))
 
 from model.python.src.bch_decoder import N, calculate_syndromes, decode
 from model.python.src.bch_design import cosets_for_t, generator_polynomial
-from model.python.src.bch_encoder import K, encode_systematic
+from model.python.src.bch_encoder import K, encode
 from model.python.tools.GF2m import GF2m
 
 
@@ -26,7 +26,7 @@ def test_random_messages(generator, field) -> None:
 
     for _ in range(RANDOM_MESSAGES):
         message = random_generator.getrandbits(K)
-        codeword = encode_systematic(message, generator).to_int()
+        codeword = encode(message, generator).to_int()
 
         syndrome_1, syndrome_3 = calculate_syndromes(codeword, field)
         corrected, error_positions = decode(codeword, field)
@@ -70,7 +70,7 @@ def main() -> None:
 
     random_generator = random.Random(RANDOM_SEED)
     message = random_generator.getrandbits(K)
-    codeword = encode_systematic(message, generator).to_int()
+    codeword = encode(message, generator).to_int()
 
     test_single_errors(codeword, field)
     print("[PASS] 127 errores simples")

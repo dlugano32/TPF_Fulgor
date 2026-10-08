@@ -13,7 +13,7 @@ from model.python.src.bch_encoder import (
     K,
     PARITY_BITS,
     build_parity_matrix,
-    encode_systematic,
+    encode,
     encode_with_matrix,
 )
 from model.python.tools.GF2m import GF2m
@@ -34,7 +34,7 @@ def check_message(
 ) -> None:
     """Compara la división, P y las máscaras transpuestas para RTL."""
 
-    codeword_polynomial = encode_systematic(message, generator)
+    codeword_polynomial = encode(message, generator)
     codeword_matrix = encode_with_matrix(message, generator, parity_matrix)
     _, remainder = codeword_matrix.divide(generator)
 

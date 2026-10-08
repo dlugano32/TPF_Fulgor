@@ -1,9 +1,9 @@
 from pathlib import Path
 
+from model.python.src.bch_design import cosets_for_t, generator_polynomial
 from model.python.tools.GF2m import GF2m
 from model.python.tools.GF2m_matrix import transpose_matrix, vector_matrix_product
 from model.python.tools.GFPoly import GFPoly
-from model.python.src.bch_design import cosets_for_t, generator_polynomial
 
 
 N = 127
@@ -11,47 +11,40 @@ K = 113
 PARITY_BITS = N - K
 
 
-def int_to_vector(value: int, width: int, field: GF2m) -> list:
-    """Convierte un entero al vector [bit_0, bit_1, ..., bit_n]."""
-
-    if value < 0 or value >= 1 << width:
-        raise ValueError(f"El valor debe tener hasta {width} bits")
-
-    return [field.element((value >> bit_index) & 1) for bit_index in range(width)]
-
-
-def encode_systematic(message: int, generator: GFPoly, message_bits: int = K) -> GFPoly:
+def encode(message: int, generator: GFPoly) -> GFPoly:
     """Calcula c(x) = x^r m(x) + r(x) mediante division polinomica."""
 
-    if message < 0 or message >= 1 << message_bits:
-        raise ValueError(f"El mensaje debe tener hasta {message_bits} bits")
+    if message < 0 or message >= 1 << K:
+        raise ValueError(f"El mensaje debe tener hasta {K} bits")
 
     field = generator.field
     zero = field.element(0)
     parity_bits = len(generator.coefficients) - 1
-    message_coefficients = int_to_vector(message, message_bits, field)
+    message_coefficients = [
+        field.element((message >> bit_index) & 1)
+        for bit_index in range(K)
+    ]
 
     shifted_message = GFPoly(field, [zero] * parity_bits + message_coefficients)
-
     _, parity = shifted_message.divide(generator)
-    codeword = shifted_message + parity
 
-    return codeword
+    return shifted_message + parity
 
 
-def build_parity_matrix(generator: GFPoly, field: GF2m, message_bits: int = K) -> list[list]:
+def build_parity_matrix(generator: GFPoly, field: GF2m) -> list[list]:
     """
-        Construye la matriz de paridad P de 113 filas por 14 columnas, para r = m P.
+    Construye la matriz de paridad P de 113 filas por 14 columnas.
 
-        La fila j contiene la paridad generada por el mensaje base m(x) = x^j.
+    La fila j contiene la paridad del mensaje base m(x) = x^j, de modo que
+    la paridad de cualquier mensaje se obtiene como r = m P.
     """
 
     parity_bits = len(generator.coefficients) - 1
     matrix = []
 
     # La fila j se obtiene codificando el mensaje base m(x) = x^j.
-    for message_bit in range(message_bits):
-        codeword = encode_systematic(1 << message_bit, generator, message_bits)
+    for message_bit in range(K):
+        codeword = encode(1 << message_bit, generator)
         row = []
 
         for parity_bit in range(parity_bits):
@@ -64,7 +57,7 @@ def build_parity_matrix(generator: GFPoly, field: GF2m, message_bits: int = K) -
 
 
 def encode_with_matrix(message: int, generator: GFPoly, matrix: list[list]) -> GFPoly:
-    """Codifica sistematicamente mediante la matriz de Paridad."""
+    """Calcula la paridad como r = m P y construye la palabra sistematica."""
 
     message_bits = len(matrix)
     parity_bits = len(matrix[0])
@@ -76,17 +69,23 @@ def encode_with_matrix(message: int, generator: GFPoly, matrix: list[list]) -> G
         raise ValueError("La cantidad de columnas no coincide con el grado de g(x)")
 
     matrix_field = matrix[0][0].field
-    message_vector = int_to_vector(message, message_bits, matrix_field)
+    message_vector = [
+        matrix_field.element((message >> bit_index) & 1)
+        for bit_index in range(message_bits)
+    ]
     parity_vector = vector_matrix_product(message_vector, matrix)
 
-    polynomial_field = generator.field
+    field = generator.field
     parity_coefficients = [
-        polynomial_field.element(int(element))
+        field.element(int(element))
         for element in parity_vector
     ]
-    message_coefficients = int_to_vector(message, message_bits, polynomial_field)
+    message_coefficients = [
+        field.element((message >> bit_index) & 1)
+        for bit_index in range(message_bits)
+    ]
 
-    return GFPoly(polynomial_field, parity_coefficients + message_coefficients)
+    return GFPoly(field, parity_coefficients + message_coefficients)
 
 
 def parity_matrix_to_systemverilog(matrix: list[list], name: str = "P_T") -> str:
@@ -142,7 +141,7 @@ def main() -> None:
     # Mensaje de ejemplo de 113 bits.
     message = 0x123456789ABCDEF0123456789ABC
 
-    codeword_polynomial = encode_systematic(message, generator)
+    codeword_polynomial = encode(message, generator)
     codeword_matrix = encode_with_matrix(message, generator, parity_matrix)
     _, remainder = codeword_matrix.divide(generator)
 
@@ -152,7 +151,10 @@ def main() -> None:
     codeword_value = codeword_matrix.to_int()
     parity_mask = (1 << PARITY_BITS) - 1
 
-    output_file = ( Path(__file__).resolve().parents[3]/ "rtl/tx/bch_parity_matrix.txt")
+    output_file = (
+        Path(__file__).resolve().parents[3]
+        / "rtl/tx/bch_parity_matrix.txt"
+    )
     write_parity_matrix_systemverilog(parity_matrix, output_file)
 
     print("BCH(127,113)")
