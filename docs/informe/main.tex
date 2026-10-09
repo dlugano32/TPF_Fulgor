@@ -878,7 +878,7 @@ continúa con el bit $j+1$:
     \label{fig:permutacion-lanes}
 \end{figure}
 
-Como se observa en la Figura~\ref{fig:permutacion-lanes}, una ráfaga de cuatro
+Como se observa en la Fig.~\ref{fig:permutacion-lanes}, una ráfaga de cuatro
 bits consecutivos afecta a cuatro codewords distintas, con un error en cada una.
 Cada decodificador recibe así un único error, muy por debajo de su capacidad
 $t=2$. En general, si $p$ representa una posición dentro del frame, la codeword
@@ -1661,8 +1661,9 @@ que coincide con el polinomio derivado durante el dimensionamiento del código.
 El grado 14 de $g(x)$ determina los 14 bits de redundancia del
 BCH(127,113).
 
-Para obtener una implementación puramente combinacional y paralela del
-codificador se determinó la matriz de paridad
+La codificación sistemática define una transformación lineal entre los 113
+coeficientes del mensaje y los 14 coeficientes del resto. Esta transformación
+se representó mediante la matriz de paridad
 
 \begin{equation}
     P\in\mathrm{GF}(2)^{113\times14},
@@ -1695,7 +1696,7 @@ y se calculó su resto mediante
 
 Los 14 coeficientes de $r^{(j)}(x)$ forman la fila $j$ de $P$. Por
 linealidad, la paridad de un mensaje arbitrario se obtiene como la combinación
-XOR de las filas correspondientes a sus bits activos:
+XOR de las filas correspondientes a sus bits activos
 
 \begin{equation}
     r_i
@@ -1705,41 +1706,354 @@ XOR de las filas correspondientes a sus bits activos:
     \label{eq:ecuacion-paridad-paralela}
 \end{equation}
 
-En RTL, esta formulación permite obtener los 14 bits de paridad mediante una
-red XOR puramente combinacional, evitando implementar la división polinómica
-de forma secuencial. En una realización serie, el codificador debería procesar
-los 113 bits del mensaje uno por ciclo, por lo que serían necesarios 113 ciclos
-para obtener el vector completo de paridad.
-
-Para simplificar la descripción RTL de la multiplicación de matrices, la 
-constante utilizada por el codificador se genera como la matriz transpuesta
+La misma transformación puede expresarse mediante la matriz transpuesta
 
 \begin{equation}
     P_{\mathrm{T}}=P^{\mathrm{T}}
     \in\mathrm{GF}(2)^{14\times113}.
 \end{equation}
 
-Cada fila \texttt{P\_T[i]} es una máscara de 113 bits que contiene todos los
-coeficientes que contribuyen a $r_i$. De esta manera, cada bit de paridad se
-obtiene directamente mediante
+La fila $i$ de $P_{\mathrm{T}}$ contiene los 113 coeficientes del mensaje que
+contribuyen al coeficiente de paridad $r_i$. La matriz transpuesta completa se
+presenta en la Tabla~\ref{tab:matriz-paridad-bch} del
+Anexo~\ref{anexo:matriz-paridad-bch}.
+
+El modelo matricial se comparó contra la codificación sistemática por división 
+polinómica utilizando el mensaje nulo, el mensaje con todos sus bits en uno, 
+los 113 vectores de la base canónica y 1000 mensajes aleatorios. En todos los 
+casos se obtuvo la misma palabra codificada mediante ambos métodos y resto nulo 
+al dividir el resultado por $g(x)$.
+
+\subsubsection{Codificación y decodificación BCH}
+
+\paragraph{Codificador.}
+La codificación sistemática se realiza mediante la matriz de paridad obtenida
+en la sección anterior. Para el mensaje
+$\mathbf{m}=[m_0,m_1,\ldots,m_{112}]$, los 14 coeficientes de paridad se
+calculan como
 
 \begin{equation}
-    \mathtt{parity[i]}
-    =
-    {}^{\wedge}\bigl(\mathtt{message}\ \&\ \mathtt{P\_T[i]}\bigr),
+    \mathbf{r}=\mathbf{m}P,
+    \qquad
+    \mathbf{r}=[r_0,r_1,\ldots,r_{13}].
+    \label{eq:paridad-matricial-codificador}
 \end{equation}
 
-La matriz transpuesta utilizada en RTL se presenta en la
-Tabla~\ref{tab:matriz-paridad-bch} del
-Anexo~\ref{anexo:matriz-paridad-bch}. El modelo matricial se comparó contra la
-codificación sistemática por división polinómica utilizando el mensaje nulo,
-el mensaje con todos sus bits en uno, los 113 vectores de la base canónica y
-1000 mensajes aleatorios. En todos los casos se obtuvo la misma palabra
-codificada mediante ambos métodos y resto nulo al dividir el resultado por
-$g(x)$.
+El vector $\mathbf{r}$ representa los coeficientes del resto $r(x)$ definido
+en la Ecuación~\eqref{eq:convencion-resto-bch}. La palabra codificada se forma
+desplazando el mensaje 14 posiciones e insertando la paridad en los términos
+de menor grado:
 
-\subsubsection{Codificador y decodificador BCH}
-\pendiente{Documentar los modelos bit-exactos en Python y C y sus pruebas diferenciales.}
+\begin{equation}
+    c(x)=x^{14}m(x)+r(x).
+    \label{eq:codeword}
+\end{equation}
+
+Con el orden creciente de grado adoptado, el vector de coeficientes de la
+palabra codificada es
+
+\begin{equation}
+    \mathbf{c}
+    =
+    [c_0,c_1,\ldots,c_{126}]
+    =
+    [r_0,r_1,\ldots,r_{13},m_0,m_1,\ldots,m_{112}].
+    \label{eq:formacion-codeword}
+\end{equation}
+
+Así, $c_i=r_i$ para $0\leq i<14$ y $c_i=m_{i-14}$ para
+$14\leq i<127$. Por lo tanto, la codificación queda completamente definida por
+la transformación lineal $\mathbf{r}=\mathbf{m}P$ y por la inserción de sus 14
+coeficientes en los términos de menor grado de $c(x)$.
+
+\paragraph{Decodificador.}
+La decodificación del código BCH, con capacidad de corrección $t=2$, se
+realiza mediante el algoritmo \textit{search-less} propuesto por Yoo y
+Park~\cite{yoo2014}. A diferencia de una búsqueda de Chien, en la que las
+raíces del polinomio localizador se determinan evaluándolo sobre las posibles
+posiciones de la palabra de código, este método aprovecha que para $t=2$ el
+polinomio localizador es cuadrático y puede resolverse algebraicamente.
+
+Sea la palabra recibida
+
+\begin{equation}
+    y(x)=c(x)+e(x),
+\end{equation}
+
+donde $c(x)$ es una palabra de código válida y $e(x)$ representa el patrón de
+errores. Los síndromes se obtienen evaluando la palabra recibida en las raíces
+del código BCH:
+
+\begin{equation}
+    S_i=y(\alpha^i)
+    =
+    y_0+y_1\alpha^i+\cdots+y_{n-1}\alpha^{(n-1)i},
+\end{equation}
+
+donde $\alpha$ es un elemento primitivo de $\mathrm{GF}(2^m)$. Como
+$c(\alpha^i)=0$ para las raíces utilizadas en la construcción del código,
+
+\begin{equation}
+    S_i=e(\alpha^i).
+\end{equation}
+
+Para un BCH binario con $t=2$ es suficiente trabajar con los síndromes impares
+$S_1$ y $S_3$, ya que los síndromes pares pueden obtenerse a partir de ellos
+mediante la característica de Frobenius.
+
+El algoritmo distingue los casos de cero, uno y dos errores antes de
+resolver el polinomio localizador:
+
+\begin{itemize}
+    \item Si $S_1=0$, entonces, bajo la hipótesis de hasta dos errores,
+    $S_3=0$ y la palabra se considera libre de errores.
+
+    \item Si $S_1\neq0$ y $S_1^3=S_3$, existe un único error. En este caso
+    $\sigma(x)=1+S_1x$, su raíz es $x_1=S_1^{-1}$ y la posición del error es
+    $j_1=-\log_{\alpha}(x_1)\bmod127$.
+
+    \item En caso contrario, se considera que existen dos errores y se aplica
+    la solución cuadrática \textit{search-less}.
+\end{itemize}
+
+La Fig.~\ref{fig:searchless-flow} resume esta secuencia de decisión y las
+operaciones efectuadas en cada caso.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.34\linewidth]{search-less.png}
+    \caption{Flujo del algoritmo de decodificación \textit{search-less} para
+    un BCH con $t=2$, adaptado de~\cite{yoo2014}.}
+    \label{fig:searchless-flow}
+\end{figure}
+
+Para el caso de dos errores, el polinomio localizador puede expresarse como
+
+\begin{equation}
+    \sigma(x)=1+\sigma_1x+\sigma_2x^2,
+    \label{eq:bch-locator-t2}
+\end{equation}
+
+con
+
+\begin{equation}
+    \sigma_1=S_1,
+    \qquad
+    \sigma_2=\frac{S_1^3+S_3}{S_1}.
+    \label{eq:sigma}
+\end{equation}
+
+El algoritmo \textit{search-less} transforma la búsqueda de las raíces
+de~\eqref{eq:bch-locator-t2} en la resolución de una ecuación cuadrática
+estándar. Para ello se definen
+
+\begin{equation}
+    \omega
+    =
+    \frac{S_1^3+S_3}{S_1^2}x,
+    \qquad
+    \mu
+    =
+    \frac{S_1^3+S_3}{S_1^3}.
+    \label{eq:bch-omega-mu}
+\end{equation}
+
+Sustituyendo estas expresiones en \eqref{eq:bch-locator-t2}, se obtiene
+
+\begin{equation}
+    1+\frac{\omega}{\mu}
+      +\frac{\omega^2}{\mu}=0,
+\end{equation}
+
+y, multiplicando por $\mu$,
+
+\begin{equation}
+    \omega^2+\omega=\mu.
+    \label{eq:bch-quadratic}
+\end{equation}
+
+De esta manera, la determinación de las dos raíces del polinomio localizador
+se reduce a resolver una única ecuación sobre $\mathrm{GF}(2^7)$.
+
+La resolución de \eqref{eq:bch-quadratic} se basa en la traza absoluta de
+$\mathrm{GF}(2^m)$ sobre $\mathrm{GF}(2)$, definida como
+
+\begin{equation}
+    \operatorname{Tr}(a)
+    =
+    \sum_{k=0}^{m-1}a^{2^k}.
+\end{equation}
+
+La ecuación $\omega^2+\omega=\mu$ posee soluciones en
+$\mathrm{GF}(2^m)$ si y sólo si $\operatorname{Tr}(\mu)=0$.
+Para obtener directamente una de estas soluciones, el algoritmo selecciona
+previamente un elemento $\theta\in\mathrm{GF}(2^m)$ que satisfaga 
+$\operatorname{Tr}(\theta)=1$.
+
+En este diseño $m=7$ es impar y, por lo tanto,
+$\operatorname{Tr}(1)=m\bmod2=1$. Se adopta entonces la constante
+$\theta=1$, que es la misma utilizada por el modelo de referencia y evita
+tener que buscar otro elemento del campo durante la decodificación.
+
+Una de las soluciones de \eqref{eq:bch-quadratic} se obtiene como
+
+\begin{equation}
+\begin{split}
+    \omega_1 ={}&
+    \mu\theta^2
+    +(\mu+\mu^2)\theta^{2^2}
+    +(\mu+\mu^2+\mu^{2^2})\theta^{2^3}
+    +\cdots \\
+    &+
+    \left(
+        \mu+\mu^2+\cdots+\mu^{2^{m-2}}
+    \right)\theta^{2^{m-1}},
+\end{split}
+\label{eq:bch-omega1-searchless}
+\end{equation}
+
+mientras que la segunda solución se obtiene directamente como
+
+\begin{equation}
+    \omega_2=\omega_1+1.
+\end{equation}
+
+Finalmente, deshaciendo el cambio de variable definido en
+\eqref{eq:bch-omega-mu}, las raíces del polinomio localizador resultan
+
+\begin{equation}
+    x_i
+    =
+    \frac{S_1^2}{S_1^3+S_3}\omega_i
+    =
+    \frac{\omega_i}{\mu S_1},
+    \qquad i\in\{1,2\}.
+\end{equation}
+
+A partir de cada raíz se obtiene la posición del error mediante el logaritmo
+discreto respecto de $\alpha$,
+
+\begin{equation}
+    j_i
+    =
+    -\log_{\alpha}(x_i)\bmod 127.
+\end{equation}
+
+El modelo de referencia en Python se verificó codificando 1000 mensajes
+aleatorios y comprobando que las palabras válidas produjeran $S_1=S_3=0$ y
+que el decodificador no las modificara. Además, para una palabra válida se
+recorrieron exhaustivamente las 127 posiciones posibles de un único error y
+las $\binom{127}{2}=8001$ combinaciones posibles de dos errores. En todos los
+casos se recuperó la palabra codificada original y los síndromes posteriores
+a la corrección fueron nulos.
+
+\paragraph{Comparación con una búsqueda de Chien paralela.}
+Una alternativa convencional para localizar los errores consiste en realizar
+una búsqueda de Chien, evaluando el polinomio localizador
+$\sigma(x)$ sobre los 127 elementos asociados a las posibles posiciones de la
+palabra de código. Si se desea realizar la localización completa en un único
+ciclo, deben efectuarse las 127 evaluaciones en paralelo.
+
+Para $t=2$, el evaluador correspondiente a la posición $i$ calcula
+
+\begin{equation}
+    \sigma(\alpha^{i}) = 1 + \sigma_1\alpha^{i} + \sigma_2\alpha^{2i}.
+\end{equation}
+
+Como $\alpha^{i}$ y $\alpha^{2i}$ son constantes conocidas para cada
+posición, cada evaluador puede implementarse mediante dos multiplicaciones por
+constante en $\mathrm{GF}(2^7)$, una red de sumas en el campo y un detector de
+cero. La arquitectura completamente paralela replica esta lógica 127 veces,
+obteniendo directamente una máscara de error de 127 bits. La estructura
+genérica de un evaluador se muestra en la Fig.~\ref{fig:chien-evaluator}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\linewidth]{generic_chien_search.png}
+    \caption{Estructura genérica para la evaluación recurrente del polinomio
+    localizador en una búsqueda de Chien.}
+    \label{fig:chien-evaluator}
+\end{figure}
+
+La arquitectura \textit{search-less}, en cambio, reemplaza esta exploración
+exhaustiva por un único camino algebraico que obtiene directamente, como
+máximo, las dos raíces del polinomio localizador. Su costo se concentra en un
+número reducido de operaciones sobre $\mathrm{GF}(2^7)$, principalmente
+multiplicaciones, divisiones, cuadrados y conversiones logarítmicas. Su 
+estructura se puede visualizar en la Fig.~\ref{fig:search-less-calculator}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{search-less_calculator.png}
+    \caption{Estructura para el calculo de $\mu$ y las raices del polinomio
+    localizador de error.}
+    \label{fig:search-less-calculator}
+\end{figure}
+
+Al no
+replicar un evaluador por cada posición del codeword, su área no escala
+directamente con $n$ como ocurre en una implementación de Chien completamente
+paralela.
+
+El precio de esta reducción de paralelismo espacial es un camino algebraico
+más profundo, por lo que la arquitectura \textit{search-less} puede requerir
+segmentación mediante registros de pipeline para alcanzar la frecuencia
+objetivo. La comparación conceptual entre ambas alternativas se resume en la
+Tabla~\ref{tab:comparacion-decoders-bch}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}p{0.25\linewidth}p{0.32\linewidth}p{0.32\linewidth}@{}}
+        \toprule
+        \textbf{Característica} &
+        \textbf{Chien paralelo} &
+        \textbf{Decoder \textit{search-less}} \\
+        \midrule
+
+        Localización &
+        Evalúa simultáneamente las 127 posiciones &
+        Calcula algebraicamente hasta dos raíces \\
+
+        Paralelismo principal &
+        127 evaluadores de $\sigma(\alpha^i)$ &
+        Un solucionador cuadrático en $\mathrm{GF}(2^7)$ \\
+
+        Operaciones principales &
+        Multiplicaciones GF por constantes, XOR y detección de cero &
+        Multiplicaciones, cuadrados, división y LUT log/exp \\
+
+        Escalamiento de área &
+        Aproximadamente proporcional a $n$ para paralelismo completo &
+        Determinado principalmente por la aritmética de campo para $t=2$ \\
+
+        Estructura &
+        Muy regular y altamente replicada &
+        Menos replicada, con operadores de campo más complejos \\
+
+        Camino combinacional &
+        Relativamente corto por evaluador &
+        Mayor profundidad algebraica; admite pipeline \\
+
+        Resultado &
+        Máscara de error de 127 bits directamente &
+        Hasta dos índices, posteriormente convertidos en una máscara \\
+        \bottomrule
+    \end{tabular}
+
+    \caption{Comparación arquitectónica entre una búsqueda de Chien totalmente
+    paralela y el algoritmo \textit{search-less} seleccionado.}
+    \label{tab:comparacion-decoders-bch}
+\end{table}
+
+Como referencia, Yoo y Park sintetizaron ambas alternativas para un código
+BCH(44,32,2) en una tecnología CMOS de 65 nm y el algoritmo \textit{search-less}
+presentó una reducción de aproximadamente $50{,}5\%$ en el conteo de compuertas
+para una latencia prácticamente equivalente~\cite{yoo2014}.
+
+Estos valores no pueden extrapolarse directamente al BCH(127,113), ya que
+cambian tanto la longitud del código como la extensión del campo. Sin embargo,
+muestran la ventaja arquitectónica de reemplazar la búsqueda explícita de
+raíces por su resolución algebraica.
 
 \subsubsection{Generador PRBS31 paralelo}
 \pendiente{Documentar la potenciación de la matriz de transición y su validación contra el modelo serie.}
@@ -1844,6 +2158,17 @@ $g(x)$.
 % ---------------------------------------------------------------------------
 
 \pendiente{Redactar las conclusiones una vez cerradas las siete etapas.}
+
+\begin{thebibliography}{9}
+
+\bibitem{yoo2014}
+I. Yoo e I.-C. Park,
+``A Search-less DEC BCH Decoder for Low-Complexity Fault-Tolerant Systems'',
+\textit{2014 IEEE Workshop on Signal Processing Systems (SiPS)},
+pp.~44--49, 2014.
+\href{https://doi.org/10.1109/SiPS.2014.6986060}{doi:10.1109/SiPS.2014.6986060}.
+
+\end{thebibliography}
 
 \clearpage
 \appendix
