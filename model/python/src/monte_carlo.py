@@ -12,25 +12,15 @@ FRAMES_PER_BATCH = 500
 MAX_FRAMES = 5_000
 MIN_POST_ERRORS = 200
 SEED = 2026
-OUTPUT_FILE = (
-    Path(__file__).resolve().parents[1]
-    / "results"
-    / "ber_system.png"
-)
+OUTPUT_FILE = (Path(__file__).resolve().parents[1]/ "results"/ "ber_system_new.png")
 
 
 def simulate() -> list[dict]:
     """Ejecuta Monte Carlo hasta alcanzar errores o el máximo de frames."""
 
     results = []
-    print(
-        "Eb/N0 | Frames | BER pre    | BER post   | FER post   | "
-        "Errores post | Fallas"
-    )
-    print(
-        "------+--------+------------+------------+------------+"
-        "--------------+-------"
-    )
+    print("Eb/N0 | Frames | BER pre    | BER post   | Errores post")
+    print("------+--------+------------+------------+-------------")
 
     for point_index, ebn0_db in enumerate(EBN0_DB_LIST):
         frames = 0
@@ -38,8 +28,6 @@ def simulate() -> list[dict]:
         pre_fec_errors = 0
         post_fec_bits = 0
         post_fec_errors = 0
-        post_fec_frame_errors = 0
-        decoder_failures = 0
 
         while frames < MAX_FRAMES and post_fec_errors < MIN_POST_ERRORS:
             batch_frames = min(FRAMES_PER_BATCH, MAX_FRAMES - frames)
@@ -57,12 +45,9 @@ def simulate() -> list[dict]:
             pre_fec_errors += batch["pre_fec_errors"]
             post_fec_bits += batch["post_fec_bits"]
             post_fec_errors += batch["post_fec_errors"]
-            post_fec_frame_errors += batch["post_fec_frame_errors"]
-            decoder_failures += batch["decoder_failures"]
 
         pre_fec_ber = pre_fec_errors / pre_fec_bits
         post_fec_ber = post_fec_errors / post_fec_bits
-        post_fec_fer = post_fec_frame_errors / frames
 
         result = {
             "ebn0_db": float(ebn0_db),
@@ -73,15 +58,12 @@ def simulate() -> list[dict]:
             "post_fec_bits": post_fec_bits,
             "post_fec_errors": post_fec_errors,
             "post_fec_ber": post_fec_ber,
-            "post_fec_fer": post_fec_fer,
-            "decoder_failures": decoder_failures,
         }
         results.append(result)
 
         print(
             f"{ebn0_db:5.1f} | {frames:6d} | {pre_fec_ber:10.3e} | "
-            f"{post_fec_ber:10.3e} | {post_fec_fer:10.3e} | "
-            f"{post_fec_errors:12d} | {decoder_failures:6d}"
+            f"{post_fec_ber:10.3e} | {post_fec_errors:12d}"
         )
 
     return results
