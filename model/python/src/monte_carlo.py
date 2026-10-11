@@ -1,18 +1,46 @@
+import csv
 from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
 
-from model.python.src.awgn_channel import theoretical_ber
-from model.python.src.system import CODE_RATE, run
+from model.python.src.system import run
 
 
-EBN0_DB_LIST = np.arange(3.0, 9.01, 0.5)
-FRAMES_PER_BATCH = 500
-MAX_FRAMES = 5_000
+EBN0_DB_LIST = np.arange(3.0, 8.01, 0.5)
+FRAMES_PER_BATCH = 20_000
+MAX_FRAMES = 2_000_000
 MIN_POST_ERRORS = 200
 SEED = 2026
-OUTPUT_FILE = (Path(__file__).resolve().parents[1]/ "results"/ "ber_system_new.png")
+OUTPUT_DIRECTORY = Path(__file__).resolve().parents[1] / "results"
+PLOT_FILE = OUTPUT_DIRECTORY / "ber_system_new.png"
+CSV_FILE = OUTPUT_DIRECTORY / "ber_system_new.csv"
+CSV_FIELDS = (
+    "ebn0_db",
+    "frames",
+    "pre_fec_bits",
+    "pre_fec_errors",
+    "pre_fec_ber",
+    "post_fec_bits",
+    "post_fec_errors",
+    "post_fec_ber",
+)
+
+
+def save_csv(results: list[dict]) -> None:
+    """Guarda los puntos completados de la simulación."""
+
+    OUTPUT_DIRECTORY.mkdir(parents=True, exist_ok=True)
+    with CSV_FILE.open("w", newline="", encoding="utf-8") as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=CSV_FIELDS)
+        writer.writeheader()
+        for result in results:
+            writer.writerow({
+                **result,
+                "ebn0_db": f"{result['ebn0_db']:.1f}",
+                "pre_fec_ber": f"{result['pre_fec_ber']:.12e}",
+                "post_fec_ber": f"{result['post_fec_ber']:.12e}",
+            })
 
 
 def simulate() -> list[dict]:
@@ -60,6 +88,7 @@ def simulate() -> list[dict]:
             "post_fec_ber": post_fec_ber,
         }
         results.append(result)
+        save_csv(results)
 
         print(
             f"{ebn0_db:5.1f} | {frames:6d} | {pre_fec_ber:10.3e} | "
@@ -75,60 +104,39 @@ def plot(results: list[dict]) -> None:
     ebn0_db = np.array([result["ebn0_db"] for result in results])
     pre_fec_ber = np.array([result["pre_fec_ber"] for result in results])
     post_fec_ber = np.array([result["post_fec_ber"] for result in results])
-    post_fec_bits = np.array([result["post_fec_bits"] for result in results])
-    theoretical_pre_fec = np.array([
-        theoretical_ber(value, CODE_RATE)
-        for value in ebn0_db
-    ])
 
     measured_post = post_fec_ber > 0.0
-    zero_post = ~measured_post
 
-    OUTPUT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    OUTPUT_DIRECTORY.mkdir(parents=True, exist_ok=True)
     plt.figure(figsize=(7, 5))
     plt.semilogy(
         ebn0_db,
-        theoretical_pre_fec,
-        "-",
-        label="Pre-FEC teórica",
-    )
-    plt.semilogy(
-        ebn0_db,
         pre_fec_ber,
-        "o",
-        label="Pre-FEC Monte Carlo",
+        "o-",
+        label="Pre-FEC",
     )
     plt.semilogy(
         ebn0_db[measured_post],
         post_fec_ber[measured_post],
         "s-",
-        label="Post-FEC Monte Carlo",
+        label="Post-FEC",
     )
-
-    if np.any(zero_post):
-        resolution = 1.0 / post_fec_bits[zero_post]
-        plt.semilogy(
-            ebn0_db[zero_post],
-            resolution,
-            "v",
-            fillstyle="none",
-            label="Post-FEC sin errores, resolución 1/N",
-        )
 
     plt.grid(True, which="both", alpha=0.4)
     plt.xlabel("$E_b/N_0$ [dB]")
     plt.ylabel("BER")
-    plt.title("Cadena BCH(127,113) sobre canal PAM2-AWGN")
+    plt.title("Cadena BCH(127,113) sobre canal AWGN")
     plt.legend()
     plt.tight_layout()
-    plt.savefig(OUTPUT_FILE, dpi=160)
+    plt.savefig(PLOT_FILE, dpi=160)
     plt.close()
 
 
 def main() -> None:
     results = simulate()
     plot(results)
-    print(f"\nGráfico guardado en {OUTPUT_FILE}")
+    print(f"\nTabla guardada en {CSV_FILE}")
+    print(f"Gráfico guardado en {PLOT_FILE}")
 
 
 if __name__ == "__main__":
