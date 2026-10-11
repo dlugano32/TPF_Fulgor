@@ -1,33 +1,29 @@
 # TPF FEC / VLSI / FPGA
 
-Implementacion de una cadena de transmision y recepcion con siete codigos
-BCH(127,113) en paralelo, tasa de linea de 800 Gb/s, interleaver
-convolucional y cruces entre los dominios FEC y DSP.
+Este repositorio contiene el Trabajo Práctico Final de los cursos de DDA, FEC y VLSI. El objetivo es diseñar, modelar, verificar e implementar una cadena de transmisión y recepción FEC de 800 Gb/s basada en siete códigos BCH(127,113) en paralelo.
 
-El desarrollo sigue los gates definidos por el enunciado. No se comienza una
-etapa de implementacion hasta cerrar los criterios de aceptacion de la etapa
-anterior.
+El trabajo abarca el modelo de referencia en Python y C, la implementación RTL, la verificación en SystemVerilog, la síntesis lógica y la validación sobre FPGA.
 
-## Fuentes de verdad
+## Organización del repositorio
 
-1. `docs/DAMIAN_LUGANO_TP.pdf`: especificacion del trabajo.
-2. `planning/acceptance_matrix.md`: trazabilidad y gates internos.
-3. Modelo Python: referencia inicial, analisis y generacion de vectores.
-4. Modelo C: referencia ejecutable para DPI-C y regresiones extensas.
-5. RTL: implementacion sintetizable, validada contra ambos modelos.
+```text
+docs/       Enunciado, bibliografía e informe en LaTeX
+model/      Modelos de referencia en Python y C
+rtl/        Implementación RTL del transmisor y del receptor
+tb/         Testbenches unitarios y de integración
+vectors/    Vectores de prueba y regresión
+syn/        Scripts, restricciones y resultados de síntesis
+fpga/       Integración y validación sobre FPGA
+reports/    Figuras, resultados y evidencia de las distintas etapas
+scripts/    Scripts generales de automatización
+```
 
-Los modelos Python y C deben ser bit-exactos entre si. Los vectores producidos
-por Python se conservan como regresiones estaticas; el modelo C permite generar
-resultados esperados durante la simulacion sin limitarse a vectores previos.
+La especificación original se encuentra en [`docs/DAMIAN_LUGANO_TP.pdf`](docs/DAMIAN_LUGANO_TP.pdf). El desarrollo y las decisiones de diseño se documentan en [`docs/informe/main.tex`](docs/informe/main.tex).
 
-## Directorios
+## Estado actual
 
-La estructura y las reglas de cada area se documentan en
-`docs/REPOSITORY_LAYOUT.md`.
+La etapa de **Análisis y dimensionamiento del sistema** está cerrada.
 
-## Estado inicial
+Actualmente se encuentra en desarrollo la etapa de **Modelos de referencia**. Los modelos Python de los bloques principales ya están implementados y verificados individualmente. El próximo paso es integrarlos en una simulación completa sin ruido y, posteriormente, incorporar el canal para realizar los barridos Monte Carlo de BER y FER.
 
-- Enunciado disponible.
-- Utilidades preliminares de campo y polinomios en `utils/`, pendientes de
-  auditoria antes de integrarlas al modelo Python.
-- Etapa activa: Etapa 0, analisis y dimensionamiento.
+Luego se continuará con la implementación RTL del transmisor y del receptor.
