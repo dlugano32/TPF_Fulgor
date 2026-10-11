@@ -1,6 +1,49 @@
 from model.python.tools.GF2m import GF2m
 from model.python.tools.GF2m_matrix import matrix_matrix_product, matrix_vector_product, vector_matrix_product
 
+
+ORDER = 31
+TAPS = [30, 27]
+STATE_MASK = (1 << ORDER) - 1
+
+
+class PRBS31Generator:
+    """Generador PRBS31 serie"""
+
+    def __init__(self, seed: int, taps: list[int]):
+        if seed <= 0 or seed > STATE_MASK:
+            raise ValueError("La seed debe ser un valor no nulo de 31 bits")
+
+        if not taps or any(tap < 0 or tap >= ORDER for tap in taps):
+            raise ValueError("Cada tap debe ser un índice válido del estado")
+
+        if len(set(taps)) != len(taps):
+            raise ValueError("Los taps no pueden estar repetidos")
+
+        self.state = seed
+        self.taps = taps.copy()
+
+    def generate(self, bit_count: int) -> list[int]:
+        """Genera bits en orden temporal y conserva el estado alcanzado."""
+
+        if bit_count < 0:
+            raise ValueError("La cantidad de bits no puede ser negativa")
+
+        output_bits = []
+
+        for _ in range(bit_count):
+            output = (self.state >> 30) & 1
+            feedback = 0
+
+            for tap in self.taps:
+                feedback ^= (self.state >> tap) & 1
+
+            self.state = ((self.state << 1) & STATE_MASK) | feedback
+            output_bits.append(output)
+
+        return output_bits
+
+
 def transition_matrix (field: GF2m, order: int, taps: list) -> list[list]:
     zero = field.element(0)
     one  = field.element(1)
@@ -57,8 +100,8 @@ def parallel_matrices(A: list[list], parallelism: int) -> tuple[list[list], list
 def main() -> None:
 
     # PRBS31: p(x) = x^31 + x^28 + 1
-    order = 31
-    taps = [30, 27]
+    order = ORDER
+    taps = TAPS
     parallelism = 791
     sequence_length = 2**12
 
@@ -90,8 +133,12 @@ def main() -> None:
 
     parallel_sequence = parallel_sequence[:sequence_length]
 
-
     assert parallel_sequence == serial_sequence
+
+    # El generador reutilizable debe respetar la misma convención de estado.
+    integer_generator = PRBS31Generator(seed=STATE_MASK, taps=taps)
+    integer_sequence = integer_generator.generate(sequence_length)
+    assert integer_sequence == serial_sequence
 
     print("PRBS31")
     print(f"Matriz de transición serial   : {len(A)}x{len(A[0])}")
@@ -100,6 +147,7 @@ def main() -> None:
     print(f"Bits comparados               : {sequence_length}")
     print("Serie y paralelo reducido     : OK")
     print("Serie y matriz extendida      : OK")
+    print("Generador serie: OK")
 
 if __name__ == "__main__":
     main()
