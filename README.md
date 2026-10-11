@@ -24,6 +24,6 @@ La especificación original se encuentra en [`docs/DAMIAN_LUGANO_TP.pdf`](docs/D
 
 La etapa de **Análisis y dimensionamiento del sistema** está cerrada.
 
-Actualmente se encuentra en desarrollo la etapa de **Modelos de referencia**. Los modelos Python de los bloques principales ya están implementados y verificados individualmente. El próximo paso es integrarlos en una simulación completa sin ruido y, posteriormente, incorporar el canal para realizar los barridos Monte Carlo de BER y FER.
+Actualmente se encuentra en desarrollo la etapa de **Modelos de referencia**. Los modelos Python de los bloques principales ya están implementados y verificados individualmente. La cadena completa también fue integrada y verificada sin ruido, obteniendo BER igual a cero. El próximo paso es incorporar los errores dirigidos y el canal para realizar los barridos Monte Carlo de BER y FER.
 
 Luego se continuará con la implementación RTL del transmisor y del receptor.
