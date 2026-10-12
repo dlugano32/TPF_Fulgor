@@ -11,6 +11,43 @@ K = 113
 PARITY_BITS = N - K
 
 
+def parity_masks_from_matrix(matrix: list[list]) -> tuple[int, ...]:
+    """Convierte las columnas de P en las filas enteras de P transpuesta."""
+
+    if len(matrix) != K or any(len(row) != PARITY_BITS for row in matrix):
+        raise ValueError(f"La matriz P debe tener dimensiones {K}x{PARITY_BITS}")
+
+    transposed_matrix = transpose_matrix(matrix)
+    masks = []
+
+    for row in transposed_matrix:
+        mask = 0
+
+        for message_bit, coefficient in enumerate(row):
+            mask |= int(coefficient) << message_bit
+
+        masks.append(mask)
+
+    return tuple(masks)
+
+
+def encode_with_parity_masks(message: int, parity_masks: tuple[int, ...]) -> int:
+    """Codifica con P transpuesta representada por máscaras enteras."""
+
+    if message < 0 or message >= 1 << K:
+        raise ValueError(f"El mensaje debe tener hasta {K} bits")
+
+    if len(parity_masks) != PARITY_BITS:
+        raise ValueError(f"Se requieren {PARITY_BITS} máscaras de paridad")
+
+    parity = 0
+
+    for parity_bit, mask in enumerate(parity_masks):
+        parity |= ((message & mask).bit_count() & 1) << parity_bit
+
+    return (message << PARITY_BITS) | parity
+
+
 def encode(message: int, generator: GFPoly) -> GFPoly:
     """Calcula c(x) = x^r m(x) + r(x) mediante division polinomica."""
 

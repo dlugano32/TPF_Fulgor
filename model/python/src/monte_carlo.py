@@ -4,7 +4,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-from model.python.src.system import run
+from model.python.src.system import FECSystem
 
 
 EBN0_DB_LIST = np.arange(3.0, 8.01, 0.5)
@@ -13,8 +13,8 @@ MAX_FRAMES = 2_000_000
 MIN_POST_ERRORS = 200
 SEED = 2026
 OUTPUT_DIRECTORY = Path(__file__).resolve().parents[1] / "results"
-PLOT_FILE = OUTPUT_DIRECTORY / "ber_system.png"
-CSV_FILE = OUTPUT_DIRECTORY / "ber_system.csv"
+PLOT_FILE = OUTPUT_DIRECTORY / "ber_system_new.png"
+CSV_FILE = OUTPUT_DIRECTORY / "ber_system_new.csv"
 CSV_FIELDS = (
     "ebn0_db",
     "frames",
@@ -46,6 +46,7 @@ def save_csv(results: list[dict]) -> None:
 def simulate() -> list[dict]:
     """Ejecuta Monte Carlo hasta alcanzar errores o el máximo de frames."""
 
+    system = FECSystem(mode="awgn")
     results = []
     print("Eb/N0 | Frames | BER pre    | BER post   | Errores post")
     print("------+--------+------------+------------+-------------")
@@ -60,9 +61,8 @@ def simulate() -> list[dict]:
         while frames < MAX_FRAMES and post_fec_errors < MIN_POST_ERRORS:
             batch_frames = min(FRAMES_PER_BATCH, MAX_FRAMES - frames)
             channel_seed = SEED + point_index * MAX_FRAMES + frames
-            batch = run(
+            batch = system.run(
                 frame_count=batch_frames,
-                mode="awgn",
                 ebn0_db=float(ebn0_db),
                 channel_seed=channel_seed,
                 verbose=False,

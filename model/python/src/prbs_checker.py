@@ -16,6 +16,11 @@ class PRBS31Checker:
 
         self.history_indices = [ORDER - 1 - tap for tap in taps]
         self.lock_matches = lock_matches
+        self.reset()
+
+    def reset(self) -> None:
+        """Limpia el estado y los contadores del checker."""
+
         self.history = []
         self.consecutive_matches = 0
         self.locked = False

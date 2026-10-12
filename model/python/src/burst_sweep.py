@@ -1,5 +1,5 @@
 from model.python.src.interleaver import FRAME_BITS
-from model.python.src.system import BURST_REFERENCE_CYCLE, run
+from model.python.src.system import BURST_REFERENCE_CYCLE, FECSystem
 
 
 MIN_BURST_LENGTH = 3
@@ -7,15 +7,14 @@ MAX_BURST_LENGTH = 127
 FRAME_COUNT = BURST_REFERENCE_CYCLE + 2
 
 
-def count_failing_offsets(burst_length: int) -> int:
+def count_failing_offsets(system: FECSystem, burst_length: int) -> int:
     """Cuenta las fases que dejan al menos un error post-FEC."""
 
     failing_offsets = 0
 
     for burst_offset in range(FRAME_BITS):
-        result = run(
+        result = system.run(
             frame_count=FRAME_COUNT,
-            mode="burst",
             burst_length=burst_length,
             burst_offset=burst_offset,
             verbose=False,
@@ -30,12 +29,13 @@ def count_failing_offsets(burst_length: int) -> int:
 def sweep() -> list[dict]:
     """Barre longitudes y las 889 fases posibles del inicio del burst."""
 
+    system = FECSystem(mode="burst")
     results = []
     print("Longitud | Offsets con error post-FEC | Offsets evaluados")
     print("---------+----------------------------+------------------")
 
     for burst_length in range(MIN_BURST_LENGTH, MAX_BURST_LENGTH + 1):
-        failing_offsets = count_failing_offsets(burst_length)
+        failing_offsets = count_failing_offsets(system, burst_length)
         result = {
             "burst_length": burst_length,
             "failing_offsets": failing_offsets,

@@ -20,8 +20,14 @@ class PRBS31Generator:
         if len(set(taps)) != len(taps):
             raise ValueError("Los taps no pueden estar repetidos")
 
-        self.state = seed
+        self.seed = seed
         self.taps = taps.copy()
+        self.reset()
+
+    def reset(self) -> None:
+        """Reinicia el generador en la seed configurada."""
+
+        self.state = self.seed
 
     def generate(self, bit_count: int) -> list[int]:
         """Genera bits en orden temporal y conserva el estado alcanzado."""
