@@ -2,7 +2,7 @@ from pathlib import Path
 
 from model.python.src.bch_design import cosets_for_t, generator_polynomial
 from model.python.tools.GF2m import GF2m
-from model.python.tools.GF2m_matrix import transpose_matrix, vector_matrix_product
+from model.python.tools.GF2m_matrix import transpose_matrix
 from model.python.tools.GFPoly import GFPoly
 
 
@@ -31,7 +31,7 @@ def parity_masks_from_matrix(matrix: list[list]) -> tuple[int, ...]:
     return tuple(masks)
 
 
-def encode_with_parity_masks(message: int, parity_masks: tuple[int, ...]) -> int:
+def encode_with_matrix(message: int, parity_masks: tuple[int, ...]) -> int:
     """Codifica con P transpuesta representada por máscaras enteras."""
 
     if message < 0 or message >= 1 << K:
@@ -93,38 +93,6 @@ def build_parity_matrix(generator: GFPoly, field: GF2m) -> list[list]:
     return matrix
 
 
-def encode_with_matrix(message: int, generator: GFPoly, matrix: list[list]) -> GFPoly:
-    """Calcula la paridad como r = m P y construye la palabra sistematica."""
-
-    message_bits = len(matrix)
-    parity_bits = len(matrix[0])
-
-    if message < 0 or message >= 1 << message_bits:
-        raise ValueError(f"El mensaje debe tener hasta {message_bits} bits")
-
-    if parity_bits != len(generator.coefficients) - 1:
-        raise ValueError("La cantidad de columnas no coincide con el grado de g(x)")
-
-    matrix_field = matrix[0][0].field
-    message_vector = [
-        matrix_field.element((message >> bit_index) & 1)
-        for bit_index in range(message_bits)
-    ]
-    parity_vector = vector_matrix_product(message_vector, matrix)
-
-    field = generator.field
-    parity_coefficients = [
-        field.element(int(element))
-        for element in parity_vector
-    ]
-    message_coefficients = [
-        field.element((message >> bit_index) & 1)
-        for bit_index in range(message_bits)
-    ]
-
-    return GFPoly(field, parity_coefficients + message_coefficients)
-
-
 def parity_matrix_to_systemverilog(matrix: list[list], name: str = "P_T") -> str:
     """Genera la declaracion SystemVerilog de la matriz transpuesta."""
 
@@ -174,18 +142,19 @@ def main() -> None:
     # La matriz de paridad es binaria, por lo que se construye sobre GF(2).
     gf2 = GF2m(m=1, primitive_poly=0b1)
     parity_matrix = build_parity_matrix(generator, gf2)
+    parity_masks = parity_masks_from_matrix(parity_matrix)
 
     # Mensaje de ejemplo de 113 bits.
     message = 0x123456789ABCDEF0123456789ABC
 
     codeword_polynomial = encode(message, generator)
-    codeword_matrix = encode_with_matrix(message, generator, parity_matrix)
-    _, remainder = codeword_matrix.divide(generator)
+    codeword_matrix = encode_with_matrix(message, parity_masks)
+    _, remainder = codeword_polynomial.divide(generator)
 
-    assert codeword_matrix == codeword_polynomial
+    assert codeword_matrix == codeword_polynomial.to_int()
     assert remainder == GFPoly(field, [field.element(0)])
 
-    codeword_value = codeword_matrix.to_int()
+    codeword_value = codeword_matrix
     parity_mask = (1 << PARITY_BITS) - 1
 
     output_file = (

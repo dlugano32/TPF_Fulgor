@@ -3,7 +3,7 @@ import random
 from model.python.src.awgn_channel import noise_sigma, pam2_awgn_frame
 from model.python.src.bch_decoder import decode
 from model.python.src.bch_design import cosets_for_t, generator_polynomial
-from model.python.src.bch_encoder import K, N, build_parity_matrix, encode_with_parity_masks, parity_masks_from_matrix
+from model.python.src.bch_encoder import K, N, build_parity_matrix, encode_with_matrix, parity_masks_from_matrix
 from model.python.src.interleaver import BRANCHES, DELAY, FRAME_BITS, TOTAL_DELAY, deinterleave, interleave
 from model.python.src.lane_permutation import LANES, inverse_permute_lanes, permute_lanes
 from model.python.src.prbs31 import PRBS31Generator
@@ -22,7 +22,7 @@ PAYLOAD_BITS = LANES * K
 PARITY_BITS = N - K
 MESSAGE_MASK = (1 << K) - 1
 CODEWORD_MASK = (1 << N) - 1
-BURST_REFERENCE_CYCLE = TOTAL_DELAY + 1
+BURST_REFERENCE_CYCLE = TOTAL_DELAY + 1     # Delay del interleaver + delay del lock de PRBS checker
 
 
 def bits_to_int(bits: list[int]) -> int:
@@ -96,7 +96,7 @@ class FECSystem:
 
         for lane in range(LANES):
             message = (payload >> (lane * K)) & MESSAGE_MASK
-            codeword = encode_with_parity_masks(message, self.parity_masks)
+            codeword = encode_with_matrix(message, self.parity_masks)
             encoded_frame |= codeword << (lane * N)
 
         return encoded_frame
@@ -194,31 +194,17 @@ class FECSystem:
             else:
                 channel_input = 0
 
-            interleaved_frame = interleave(
-                channel_input,
-                self.interleaver_fifos,
-            )
+            interleaved_frame = interleave(channel_input, self.interleaver_fifos)
 
             if self.mode == "awgn":
-                received_frame = pam2_awgn_frame(
-                    interleaved_frame,
-                    sigma,
-                    self.random_generator,
-                )
+                received_frame = pam2_awgn_frame(interleaved_frame, sigma, self.random_generator)
             elif self.mode == "burst":
-                error_mask = self.burst_mask_for_cycle(
-                    cycle,
-                    burst_offset,
-                    burst_length,
-                )
+                error_mask = self.burst_mask_for_cycle(cycle, burst_offset, burst_length)
                 received_frame = interleaved_frame ^ error_mask
             else:
                 received_frame = interleaved_frame
 
-            deinterleaved_frame = deinterleave(
-                received_frame,
-                self.deinterleaver_fifos,
-            )
+            deinterleaved_frame = deinterleave(received_frame, self.deinterleaver_fifos)
 
             # Equivale a esperar el valid luego de la latencia del interleaver.
             if cycle < TOTAL_DELAY:
@@ -230,9 +216,7 @@ class FECSystem:
             decoded_payload = self.decode_frame(encoded_frame)
 
             pre_fec_errors += (encoded_frame ^ transmitted_frame).bit_count()
-            self.post_fec_checker.check(
-                int_to_bits(decoded_payload, PAYLOAD_BITS)
-            )
+            self.post_fec_checker.check(int_to_bits(decoded_payload, PAYLOAD_BITS))
             decoded_frames += 1
 
         expected_bits = frame_count * PAYLOAD_BITS
@@ -266,14 +250,7 @@ class FECSystem:
 
         return results
 
-    def _print_results(
-        self,
-        results: dict,
-        decoded_frames: int,
-        ebn0_db: float,
-        burst_length: int | None,
-        burst_offset: int,
-    ) -> None:
+    def _print_results(self, results: dict, decoded_frames: int, ebn0_db: float, burst_length: int | None, burst_offset: int) -> None:
         if self.mode == "awgn":
             mode_description = f"AWGN, Eb/N0 = {ebn0_db:.1f} dB"
         elif self.mode == "burst":

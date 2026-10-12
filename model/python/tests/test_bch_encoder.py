@@ -15,7 +15,6 @@ from model.python.src.bch_encoder import (
     build_parity_matrix,
     encode,
     encode_with_matrix,
-    encode_with_parity_masks,
     parity_masks_from_matrix,
 )
 from model.python.tools.GF2m import GF2m
@@ -30,19 +29,16 @@ RANDOM_SEED = 127113
 def check_message(
     message,
     generator,
-    parity_matrix,
     transposed_masks,
     zero_polynomial,
 ) -> None:
     """Compara la división, P y las máscaras transpuestas para RTL."""
 
     codeword_polynomial = encode(message, generator)
-    codeword_matrix = encode_with_matrix(message, generator, parity_matrix)
-    codeword_masks = encode_with_parity_masks(message, tuple(transposed_masks))
-    _, remainder = codeword_matrix.divide(generator)
+    codeword_matrix = encode_with_matrix(message, tuple(transposed_masks))
+    _, remainder = codeword_polynomial.divide(generator)
 
-    assert codeword_matrix == codeword_polynomial
-    assert codeword_masks == codeword_polynomial.to_int()
+    assert codeword_matrix == codeword_polynomial.to_int()
     assert remainder == zero_polynomial
 
     rtl_parity = 0
@@ -51,7 +47,7 @@ def check_message(
         bit = (message & mask).bit_count() & 1
         rtl_parity |= bit << parity_bit
 
-    assert rtl_parity == codeword_matrix.to_int() & ((1 << PARITY_BITS) - 1)
+    assert rtl_parity == codeword_matrix & ((1 << PARITY_BITS) - 1)
 
 
 def test_matrix_dimensions(parity_matrix) -> None:
@@ -68,17 +64,15 @@ def test_matrix_dimensions(parity_matrix) -> None:
 
 def test_zero_and_ones(
     generator,
-    parity_matrix,
     transposed_masks,
     zero_polynomial,
 ) -> None:
     """Verifica los mensajes nulo y todo unos."""
 
-    check_message(0, generator, parity_matrix, transposed_masks, zero_polynomial)
+    check_message(0, generator, transposed_masks, zero_polynomial)
     check_message(
         (1 << K) - 1,
         generator,
-        parity_matrix,
         transposed_masks,
         zero_polynomial,
     )
@@ -86,7 +80,6 @@ def test_zero_and_ones(
 
 def test_basis_vectors(
     generator,
-    parity_matrix,
     transposed_masks,
     zero_polynomial,
 ) -> None:
@@ -96,7 +89,6 @@ def test_basis_vectors(
         check_message(
             1 << bit_index,
             generator,
-            parity_matrix,
             transposed_masks,
             zero_polynomial,
         )
@@ -104,7 +96,6 @@ def test_basis_vectors(
 
 def test_random_messages(
     generator,
-    parity_matrix,
     transposed_masks,
     zero_polynomial,
 ) -> None:
@@ -117,7 +108,6 @@ def test_random_messages(
         check_message(
             message,
             generator,
-            parity_matrix,
             transposed_masks,
             zero_polynomial,
         )
@@ -150,7 +140,6 @@ def main() -> None:
 
     test_zero_and_ones(
         generator,
-        parity_matrix,
         transposed_masks,
         zero_polynomial,
     )
@@ -158,7 +147,6 @@ def main() -> None:
 
     test_basis_vectors(
         generator,
-        parity_matrix,
         transposed_masks,
         zero_polynomial,
     )
@@ -166,7 +154,6 @@ def main() -> None:
 
     test_random_messages(
         generator,
-        parity_matrix,
         transposed_masks,
         zero_polynomial,
     )
