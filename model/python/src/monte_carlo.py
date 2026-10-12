@@ -13,8 +13,8 @@ MAX_FRAMES = 2_000_000
 MIN_POST_ERRORS = 200
 SEED = 2026
 OUTPUT_DIRECTORY = Path(__file__).resolve().parents[1] / "results"
-PLOT_FILE = OUTPUT_DIRECTORY / "ber_system_new.png"
-CSV_FILE = OUTPUT_DIRECTORY / "ber_system_new.csv"
+PLOT_FILE = OUTPUT_DIRECTORY / "ber_system.png"
+CSV_FILE = OUTPUT_DIRECTORY / "ber_system.csv"
 CSV_FIELDS = (
     "ebn0_db",
     "frames",
@@ -62,7 +62,7 @@ def simulate() -> list[dict]:
             channel_seed = SEED + point_index * MAX_FRAMES + frames
             batch = run(
                 frame_count=batch_frames,
-                use_channel=True,
+                mode="awgn",
                 ebn0_db=float(ebn0_db),
                 channel_seed=channel_seed,
                 verbose=False,

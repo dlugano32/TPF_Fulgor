@@ -12,9 +12,11 @@ from model.python.src.bch_design import cosets_for_t, generator_polynomial
 from model.python.src.bch_encoder import (
     K,
     PARITY_BITS,
+    PARITY_MASKS,
     build_parity_matrix,
     encode,
     encode_with_matrix,
+    encode_with_parity_matrix,
 )
 from model.python.tools.GF2m import GF2m
 from model.python.tools.GF2m_matrix import transpose_matrix
@@ -36,9 +38,11 @@ def check_message(
 
     codeword_polynomial = encode(message, generator)
     codeword_matrix = encode_with_matrix(message, generator, parity_matrix)
+    codeword_masks = encode_with_parity_matrix(message)
     _, remainder = codeword_matrix.divide(generator)
 
     assert codeword_matrix == codeword_polynomial
+    assert codeword_masks == codeword_polynomial.to_int()
     assert remainder == zero_polynomial
 
     rtl_parity = 0
@@ -136,6 +140,8 @@ def main() -> None:
             mask |= int(coefficient) << message_bit
 
         transposed_masks.append(mask)
+
+    assert tuple(transposed_masks) == PARITY_MASKS
 
     zero_polynomial = GFPoly(field, [field.element(0)])
 
