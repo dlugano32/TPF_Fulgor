@@ -1420,12 +1420,7 @@ convención desde un principio para todas las instancias del sistema.
 
 Para un vector de ancho $W$, la señal RTL se declara como
 \texttt{[W-1:0]}. El bit de índice cero es el más antiguo del vector y es el
-primero que se transmite:
-
-\begin{equation}
-    \text{primer bit transmitido}=v[0].
-    \label{eq:convencion-orden-vector}
-\end{equation}
+primero que se transmite.
 
 La representación polinómica asocia directamente el índice de cada bit con el
 grado del término correspondiente.
@@ -1436,28 +1431,13 @@ grado del término correspondiente.
     a_i=\texttt{a[i]}
 \end{equation}
 
-Por ejemplo,
+Esta es también la convención utilizada para los elementos de $\mathrm{GF}(2^7)$. 
+Por ejemplo, para el polinomio primitivo
 
 \begin{equation}
-    x^3+x+1
-    \quad\longleftrightarrow\quad
-    \texttt{0b1011}.
+    p(x)=x^7+x^3+1 \quad\longleftrightarrow\quad \texttt{0b1001001}.
 \end{equation}
 
-Esta es también la convención utilizada para los elementos de
-$\mathrm{GF}(2^7)$. En particular, con el polinomio primitivo
-
-\begin{equation}
-    p(x)=x^7+x^3+1,
-\end{equation}
-
-el elemento primitivo se representa como
-
-\begin{equation}
-    \alpha=x
-    \quad\longleftrightarrow\quad
-    \texttt{0b0000010}.
-\end{equation}
 
 Para la codificación BCH se adopta una representación sistemática. Sea el
 mensaje de 113 bits
@@ -1466,7 +1446,7 @@ mensaje de 113 bits
     m(x)=\sum_{i=0}^{112}m_i x^i.
 \end{equation}
 
-El resto de paridad se calcula como
+Su paridad se calcula como
 
 \begin{equation}
     r(x)=x^{14}m(x)\bmod g(x),
@@ -1491,10 +1471,6 @@ operación XOR. La correspondencia entre el polinomio y el vector de 127 bits es
     \end{cases}
     \label{eq:convencion-mapeo-codeword}
 \end{equation}
-
-En consecuencia, los bits de paridad ocupan
-\texttt{codeword[13:0]} y los bits de información ocupan
-\texttt{codeword[126:14]}.
 
 \subsubsection{Aritmética de \texorpdfstring{$\mathrm{GF}(2^7)$}{GF(2 elevado a 7)}}
 
@@ -1522,31 +1498,23 @@ primitivo
 
 La tabla completa de elementos del campo, incluyendo su representación como
 potencia de $\alpha$, su forma polinómica y su representación binaria, se
-presenta en la Tabla~\ref{tab:elementos-gf27} del
-Anexo~\ref{anexo:elementos-gf27}.
+presenta en la Tabla~\ref{tab:elementos-gf27} del Anexo A.
 
 \subsubsection{Polinomio generador y matriz de codificación}
 
-El polinomio generador se obtuvo algorítmicamente a partir de las clases
-ciclotómicas $C_1$ y $C_3$. Para cada clase se construyó el polinomio mínimo
-sobre $\mathrm{GF}(2)$ asociado a sus raíces en $\mathrm{GF}(2^7)$ y luego se
-multiplicaron ambos factores mediante el modelo polinómico desarrollado en
-Python. El resultado fue
+A partir del análisis realizado en la etapa anterior, el código BCH(127,113)
+queda definido por el polinomio generador
 
 \begin{equation}
     g(x)
     =
-    x^{14}+x^9+x^8+x^6+x^5+x^4+x^2+x+1,
+    x^{14}+x^9+x^8+x^6+x^5+x^4+x^2+x+1.
     \label{eq:generador-bch-127-113-etapa1}
 \end{equation}
 
-que coincide con el polinomio derivado durante el dimensionamiento del código.
-El grado 14 de $g(x)$ determina los 14 bits de redundancia del
-BCH(127,113).
-
 La codificación sistemática define una transformación lineal entre los 113
-coeficientes del mensaje y los 14 coeficientes del resto. Esta transformación
-se representó mediante la matriz de paridad
+coeficientes del mensaje y los 14 bits de paridad. Esta transformación se
+representó mediante la matriz
 
 \begin{equation}
     P\in\mathrm{GF}(2)^{113\times14},
@@ -1579,7 +1547,7 @@ y se calculó su resto mediante
 
 Los 14 coeficientes de $r^{(j)}(x)$ forman la fila $j$ de $P$. Por
 linealidad, la paridad de un mensaje arbitrario se obtiene como la combinación
-XOR de las filas correspondientes a sus bits activos
+XOR de las filas correspondientes a sus bits activos,
 
 \begin{equation}
     r_i
@@ -1601,10 +1569,10 @@ contribuyen al coeficiente de paridad $r_i$. La matriz transpuesta completa se
 presenta en la Tabla~\ref{tab:matriz-paridad-bch} del
 Anexo~\ref{anexo:matriz-paridad-bch}.
 
-El modelo matricial se comparó contra la codificación sistemática por división 
-polinómica utilizando el mensaje nulo, el mensaje con todos sus bits en uno, 
+El modelo matricial se comparó con la codificación sistemática por división
+polinómica utilizando el mensaje nulo, el mensaje con todos sus bits en uno,
 los 113 vectores de la base canónica y 1000 mensajes aleatorios. En todos los 
-casos se obtuvo la misma palabra codificada mediante ambos métodos y resto nulo 
+casos, se obtuvo la misma palabra codificada mediante ambos métodos y resto nulo 
 al dividir el resultado por $g(x)$.
 
 \subsubsection{Codificación y decodificación BCH}
@@ -1653,9 +1621,9 @@ coeficientes en los términos de menor grado de $c(x)$.
 La decodificación del código BCH, con capacidad de corrección $t=2$, se
 realiza mediante el algoritmo \textit{search-less} propuesto por Yoo y
 Park~\cite{yoo2014}. A diferencia de una búsqueda de Chien, en la que las
-raíces del polinomio localizador se determinan evaluándolo sobre las posibles
-posiciones de la palabra de código, este método aprovecha que para $t=2$ el
-polinomio localizador es cuadrático y puede resolverse algebraicamente.
+raíces del polinomio localizador se determinan evaluándolo sobre todos los 
+elementos del campo posibles, este método aprovecha que para $t=2$ el 
+polinomio localizador es cuadrático y tiene una solución cerrada.
 
 Sea la palabra recibida
 
@@ -1770,15 +1738,11 @@ $\mathrm{GF}(2^m)$ sobre $\mathrm{GF}(2)$, definida como
 La ecuación $\omega^2+\omega=\mu$ posee soluciones en
 $\mathrm{GF}(2^m)$ si y sólo si $\operatorname{Tr}(\mu)=0$.
 Para obtener directamente una de estas soluciones, el algoritmo selecciona
-previamente un elemento $\theta\in\mathrm{GF}(2^m)$ que satisfaga 
+previamente un elemento $\theta\in\mathrm{GF}(2^m)$ que satisfaga
 $\operatorname{Tr}(\theta)=1$.
 
-En este diseño $m=7$ es impar y, por lo tanto,
-$\operatorname{Tr}(1)=m\bmod2=1$. Se adopta entonces la constante
-$\theta=1$, que es la misma utilizada por el modelo de referencia y evita
-tener que buscar otro elemento del campo durante la decodificación.
-
-Una de las soluciones de \eqref{eq:bch-quadratic} se obtiene como
+A partir de este elemento puede construirse una solución de
+\eqref{eq:bch-quadratic} mediante
 
 \begin{equation}
 \begin{split}
@@ -1800,6 +1764,10 @@ mientras que la segunda solución se obtiene directamente como
 \begin{equation}
     \omega_2=\omega_1+1.
 \end{equation}
+
+Para el código utilizado en este trabajo, $m=7$ es impar y, por lo tanto,
+$\operatorname{Tr}(1)=m\bmod2=1$. Se adopta entonces $\theta=1$, lo que
+simplifica la implementación del algoritmo.
 
 Finalmente, deshaciendo el cambio de variable definido en
 \eqref{eq:bch-omega-mu}, las raíces del polinomio localizador resultan
@@ -1858,11 +1826,12 @@ genérica de un evaluador se muestra en la Fig.~\ref{fig:chien-evaluator}.
 \end{figure}
 
 La arquitectura \textit{search-less}, en cambio, reemplaza esta exploración
-exhaustiva por un único camino algebraico que obtiene directamente, como
-máximo, las dos raíces del polinomio localizador. Su costo se concentra en un
-número reducido de operaciones sobre $\mathrm{GF}(2^7)$, principalmente
+exhaustiva por un único camino algebraico que obtiene directamente las dos 
+raíces del polinomio localizador. Su costo se concentra en un número 
+reducido de operaciones sobre $\mathrm{GF}(2^7)$, principalmente
 multiplicaciones, divisiones, cuadrados y conversiones logarítmicas. Su 
-estructura se puede visualizar en la Fig.~\ref{fig:search-less-calculator}
+estructura simplificada se puede visualizar en la 
+Fig.~\ref{fig:search-less-calculator}
 
 \begin{figure}[H]
     \centering
@@ -1949,17 +1918,17 @@ asociado al polinomio primitivo
 Una implementación serie del LFSR produciría un único bit por ciclo, lo cual
 no resulta suficiente para la arquitectura propuesta, ya que en cada ciclo del
 dominio FEC se requiere un nuevo payload de 791 bits. Por este motivo, el
-generador PRBS debe producir 791 muestras consecutivas de la secuencia en
-paralelo y, simultáneamente, actualizar su estado al correspondiente luego de
+generador PRBS debe producir en paralelo 791 muestras consecutivas de la
+secuencia y, simultáneamente, actualizar su estado al correspondiente luego de
 esos 791 avances.
 
 Para realizar esta paralelización se utiliza una formulación matricial sobre
 $\mathrm{GF}(2)$. Esta construcción constituye una extensión directa de la
 técnica clásica de generación serie-paralelo de secuencias de longitud máxima
-presentada por O'Reilly~\cite{oreilly1975}. Rasmussen et al. aplican el mismo
-procedimiento a una implementación PRBS31 de 512 bits, obteniendo mediante
-potencias de la matriz de transición tanto las ecuaciones de salida como las
-del estado siguiente~\cite{rasmussen2010}.
+presentada por O'Reilly~\cite{oreilly1975}. Rasmussen et al. aplican un
+procedimiento equivalente a una implementación PRBS31 de 512 bits, utilizando
+potencias de la matriz de transición para obtener tanto las muestras de salida
+como el estado siguiente del LFSR~\cite{rasmussen2010}.
 
 Sea
 
@@ -2499,6 +2468,11 @@ vol.~9, no.~3, pp.~153--164, marzo de 2010.
 \section*{Anexos}
 \addcontentsline{toc}{section}{Anexos}
 \appendix
+\makeatletter
+\@addtoreset{table}{section}
+\makeatother
+\renewcommand{\thetable}{\arabic{table}}
+\renewcommand{\theHtable}{\thesection.\arabic{table}}
 
 % ---------------------------------------------------------------------------
 \section{Elementos de \texorpdfstring{$\mathrm{GF}(2^7)$}{GF(2 elevado a 7)}}
