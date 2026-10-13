@@ -11,7 +11,6 @@ docs/       Enunciado, bibliografía e informe en LaTeX
 model/      Modelos de referencia en Python y C
 rtl/        Implementación RTL del transmisor y del receptor
 tb/         Testbenches unitarios y de integración
-vectors/    Vectores de prueba y regresión
 syn/        Scripts, restricciones y resultados de síntesis
 fpga/       Integración y validación sobre FPGA
 reports/    Figuras, resultados y evidencia de las distintas etapas
@@ -22,8 +21,18 @@ La especificación original se encuentra en [`docs/DAMIAN_LUGANO_TP.pdf`](docs/D
 
 ## Estado actual
 
-La etapa de **Análisis y dimensionamiento del sistema** está cerrada.
+Las etapas de **Análisis y dimensionamiento del sistema** y de **Modelo de
+referencia en Python** están cerradas.
 
-Actualmente se encuentra en desarrollo la etapa de **Modelos de referencia**. Los modelos Python de los bloques principales ya están implementados y verificados individualmente. La cadena completa también fue integrada y verificada sin ruido, obteniendo BER igual a cero. El próximo paso es incorporar los errores dirigidos y el canal para realizar los barridos Monte Carlo de BER y FER.
+El modelo Python incluye la aritmética de `GF(2^7)`, la construcción del
+BCH(127,113), el codificador y el decodificador algebraico para `t = 2`, el
+generador y el checker PRBS31, la permutación de lanes, el interleaver
+convolucional y sus operaciones inversas, además de los modelos de canal y de
+inyección de ráfagas. Los bloques fueron verificados individualmente y la
+cadena completa fue integrada y simulada sin ruido, sobre canal aleatorio y
+con ráfagas. Se obtuvieron los barridos de BER pre-FEC y post-FEC y se
+evaluaron exhaustivamente los 889 offsets de inicio de las ráfagas.
 
-Luego se continuará con la implementación RTL del transmisor y del receptor.
+La siguiente etapa comprende los modelos de referencia en C para su uso
+directo desde los scoreboards y la implementación RTL del transmisor y del
+receptor.

@@ -30,6 +30,7 @@
 
 \graphicspath{
     {pics/}
+    {../../reports/figures/}
     {../../../VLSI_2026/TP2/top/informe/pics/}
 }
 
@@ -107,16 +108,15 @@ sobre silicio real.
 
 \subsubsection{Arquitectura}
 
-La cadena completa a implementar se muestra en la Fig.~\ref{fig:arquitectura}. El bloque de canal existe
-únicamente en el entorno de verificación y en la FPGA, no forma parte del diseño que se sintetiza
-para ASIC.
+La cadena completa a implementar se muestra en la Fig.~\ref{fig:arquitectura}. En azul se indican
+los módulos pertencientes al bloque del transmisor y en naranja los módulos pertenecientes al
+bloque del receptor. El bloque de canal existe únicamente en el entorno de verificación y 
+en la FPGA, no forma parte del diseño que se sintetiza para ASIC.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{arquitectura_sistema.png}
-    \caption{Cadena completa de transmisión, canal y recepción. El receptor
-    replica el paralelismo del transmisor y las etiquetas indican los cambios de
-    ancho de bus.}
+    \caption{Cadena completa de transmisión, canal y recepción.}
     \label{fig:arquitectura}
 \end{figure}
 
@@ -158,8 +158,11 @@ La Tabla~\ref{tab:parametros-sistema} resume los parámetros fijos definidos por
 \subsection{Análisis y dimensionamiento del sistema}
 \label{sec:etapa-0}
 
-En esta primer etapa se hará un análisis del sistema en su totalidad, para determinar
-las dimensiones y los detalles de cada etapa.
+En esta primera etapa se realizará un análisis global del sistema con el objetivo de
+definir y justificar los principales parámetros de diseño antes de avanzar con su
+modelado e implementación. Para ello, se dimensionarán el paralelismo, las tasas de
+datos, los anchos de bus, los mecanismos de adaptación entre dominios y las latencias
+de cada bloque de la cadena.
 % ---------------------------------------------------------------------------
 
 \subsubsection{Dimensionamiento del paralelismo y la tasa de datos}
@@ -200,9 +203,9 @@ requerida sería
 
 Si bien esta alternativa permite alcanzar la tasa de línea requerida, exige
 superar $1$ GHz en el dominio FEC, lo que incrementaría considerablemente
-la exigencia del cierre de timing.
+la exigencia del timing.
 
-Si, en cambio, se utilizaran ocho codificadores en paralelo, se obtendría
+Si en cambio, se utilizaran ocho codificadores en paralelo, se obtendría
 
 \begin{equation}
     f_{\mathrm{FEC}}(8)
@@ -417,11 +420,13 @@ aumentando la redundancia y reduciendo la tasa de información útil
 transmitida.
 
 La elección de $t$ constituye, por lo tanto, una decisión de diseño que debe
-realizarse a partir de las características del canal y de los requisitos de
-desempeño del sistema, considerando, entre otros aspectos, la estadística de
-errores esperada y la tasa de error admisible después de la decodificación.
-Para la arquitectura desarrollada en este trabajo se adopta el valor
-especificado $t=2$ y, en consecuencia, el código BCH$(127,113)$.
+realizarse a partir de la estadística de errores esperada y de la tasa de error
+admisible luego de la decodificación. Asimismo, debe considerarse el impacto
+de la tasa del código sobre la tasa de información útil, de manera de satisfacer
+la tasa de línea requerida dentro de las restricciones de ancho de banda y
+frecuencia de operación del sistema. Para la arquitectura desarrollada en este
+trabajo se adopta el valor especificado $t=2$ y, en consecuencia, el código
+BCH$(127,113)$.
 
 \subsubsection{Construcción del código BCH(127,113)}
 
@@ -492,8 +497,7 @@ Desarrollando el producto se obtiene
     &=
     \left(x^7+x^3+1\right)
     \left(x^7+x^3+x^2+x+1\right) \\
-    &=
-    x^{14}+x^9+x^8+x^6+x^5+x^4+x^2+x+1.
+    &g(x) = x^{14}+x^9+x^8+x^6+x^5+x^4+x^2+x+1.
 \end{split}
 \label{eq:polinomio-generador}
 \end{equation}
@@ -545,11 +549,13 @@ transportan la misma tasa media de $800$ Gb/s, la conversión entre anchos gener
 un patrón de transferencias no uniforme que debe ser tenido en cuenta para
 dimensionar correctamente el gearbox y la FIFO CDC.
 
-El gearbox recibe 889 bits en cada ciclo FEC y acumula los datos hasta disponer
-de una palabra completa de 1024 bits para escribir en la FIFO. Luego de $n$
-ciclos FEC, la cantidad acumulada de palabras completas y el número de bits que
-permanecen almacenados internamente en el gearbox pueden expresarse 
-correspondientemente como
+El gearbox resuelve esta diferencia de formato reagrupando el flujo continuo de
+bits en palabras del ancho requerido por el dominio de destino, sin alterar su
+orden ni su contenido. Para ello, acumula los datos recibidos y emite una nueva
+palabra cada vez que dispone de al menos 1024 bits, conservando internamente los
+bits restantes para completar transferencias posteriores. Luego de $n$ ciclos FEC,
+la cantidad acumulada de palabras completas y el número de bits que permanecen
+almacenados internamente en el gearbox pueden expresarse correspondientemente como
 
 \begin{align}
     W(n)
@@ -565,13 +571,14 @@ correspondientemente como
     \label{eq:gearbox-residuo}
 \end{align}
 
-El estado interno del gearbox se repite cuando el residuo vuelve a cero. Como 
-$\gcd(889,1024)=1$, es decir son coprimos, el menor valor de $n\neq0$ para el 
-cual se cumple $r(n)=0$ es $n=1024$
+El estado interno del gearbox se repite cuando el residuo vuelve a cero. Como
+$\gcd(889,1024)=1$, es decir son coprimos, el menor valor de
+$n\neq0$ para el cual se cumple $r(n)=0$ es $n=1024$.
 
-Durante estos 1024 ciclos FEC ingresan exactamente 889 palabras de 1024 bits. 
-Por lo tanto, un período completo del patrón del gearbox comprende 1024 
-ciclos FEC y genera 889 transferencias hacia la FIFO.
+Durante este período de 1024 ciclos del dominio FEC se reciben
+$1024\times 889$ bits, equivalentes exactamente a 889 palabras de 1024 bits.
+Por lo tanto, el patrón completo del gearbox comprende 889 transferencias hacia
+la FIFO antes de que su estado interno vuelva a repetirse.
 
 Este resultado es consistente con la relación entre las frecuencias de ambos
 dominios,
@@ -642,8 +649,8 @@ Sin embargo, en el ciclo 8 aparece un nuevo ciclo sin escritura aun cuando la
 producción de palabras ya se encuentra en régimen. Este comportamiento se repite
 a lo largo de todo el período de 1024 ciclos.
 
-La FIFO desacopla este patrón irregular de escrituras del patrón de lecturas del
-dominio DSP. Para analizar su comportamiento se define la ocupación física como
+La FIFO desacopla el patrón irregular de escrituras generado por el gearbox del
+patrón de lecturas del dominio DSP. Su ocupación física puede expresarse como
 
 \begin{equation}
     Q(t)
@@ -663,66 +670,44 @@ underflow y overflow debe cumplirse
 
 siendo $D$ la profundidad de la FIFO.
 
-A pesar de que las tasas medias de escritura y lectura son idénticas, los
-eventos instantáneos no se encuentran necesariamente alineados. Durante un
-período completo ocurren 1024 flancos FEC y 889 flancos DSP. Por lo tanto,
-existen 135 ciclos menos en el dominio DSP, exactamente la misma cantidad de
-ciclos FEC en los que el gearbox no genera una nueva palabra.
+Aunque las tasas medias de escritura y lectura son idénticas, sus eventos
+instantáneos no se encuentran necesariamente alineados. La relación de fase
+entre ambos relojes es desconocida y, para determinadas fases, un flanco de
+lectura puede ocurrir antes de que el gearbox haya generado la siguiente
+palabra. Por lo tanto, comenzar a leer apenas se dispone de la primera palabra
+puede producir huecos transitorios en la transferencia.
 
-Además, la relación de fase entre ambos relojes es desconocida, por lo que una
-determinada fase puede hacer que un flanco de lectura ocurra antes de que el 
-gearbox  haya escrito la siguiente palabra. Si la lectura comenzara apenas 
-estuviese disponible la primera palabra, esta diferencia temporal podría 
-agotar transitoriamente las palabras en la FIFO.
+Si bien la propia FIFO impide realizar una lectura físicamente inválida, dicho
+ciclo no transferiría información y reduciría la tasa efectiva sostenida. Para
+evitarlo se introduce un nivel de arranque, de modo que el dominio DSP comienza
+a consumir datos únicamente después de acumular una cantidad mínima de palabras.
 
-Si bien el mecanismo de la propia FIFO impediría una lectura físicamente 
-inválida, dicho ciclo no realizaría una transferencia y reduciría la tasa de 
-transferencia de línea. Por este motivo es necesario incorporar un nivel de 
-arranque, de forma que el dominio DSP permanezca en pausa hasta observar 
-una cantidad mínima de palabras disponibles en la FIFO.
-
-El análisis debe considerar además la latencia propia del cruce de dominio 
-de los punteros de lectura y escritura de la FIFO. Por ejemplo, el puntero 
-de escritura se genera en el dominio FEC y atraviesa un sincronizador de 
-dos etapas antes de ser utilizado por la lógica del dominio DSP.
-
-Como consecuencia, debe distinguirse entre la ocupación física de la memoria y
-la ocupación observada desde el dominio lector. Durante los transitorios puede
-ocurrir que
+A este efecto se suma la latencia propia del cruce de dominio de los punteros.
+En particular, el puntero de escritura generado en el dominio FEC atraviesa un
+sincronizador de dos etapas antes de ser observado en el dominio DSP. Por este
+motivo, la ocupación visible desde el lector puede diferir transitoriamente de
+la ocupación física,
 
 \begin{equation}
     Q_{\mathrm{visible,DSP}}(t)
     \neq
-    Q_{\mathrm{real}}(t),
+    Q_{\mathrm{real}}(t).
 \end{equation}
 
-ya que una palabra físicamente escrita puede requerir hasta dos flancos DSP
-adicionales para verse reflejada en el puntero de escritura sincronizado. Este
-comportamiento es conservador desde el punto de vista funcional, dado que el
-lector nunca puede acceder a información que todavía no haya sido escrita. Sin
-embargo, retrasa el conocimiento de las nuevas escrituras y aumenta el margen
-de ocupación necesario durante el arranque.
-
-Para verificar el comportamiento conjunto del gearbox, la FIFO y los
-sincronizadores se implementó un modelo temporal en Python. Los períodos de
-reloj se expresaron utilizando una unidad de tiempo entera,
+Para determinar conjuntamente la profundidad de la FIFO y el nivel de arranque
+se implementó un modelo temporal en Python que reproduce el gearbox, las
+escrituras y lecturas de la FIFO y la sincronización de punteros. Los períodos
+de reloj se representaron mediante unidades enteras,
 
 \begin{equation}
     T_{\mathrm{FEC}}=889,
     \qquad
-    T_{\mathrm{DSP}}=1024.
+    T_{\mathrm{DSP}}=1024,
 \end{equation}
 
-De esta manera se conserva exactamente la relación requerida,
-
-\begin{equation}
-    \frac{T_{\mathrm{DSP}}}{T_{\mathrm{FEC}}}
-    =
-    \frac{1024}{889},
-\end{equation}
-
-y, dado que ambos períodos son coprimos, los relojes vuelven a presentar la
-misma relación de fase luego del superperíodo
+de manera de conservar exactamente la relación entre ambos dominios. Como los
+períodos son coprimos, todas las relaciones de fase se recorren dentro del
+superperíodo
 
 \begin{equation}
     T_{\mathrm{super}}
@@ -733,24 +718,17 @@ misma relación de fase luego del superperíodo
     \label{eq:superperiodo-fifo}
 \end{equation}
 
-Durante este intervalo ocurren exactamente 1024 ciclos FEC y 889 ciclos DSP, por
-lo que también se recorre un período completo del patrón del gearbox.
+Tomando un flanco FEC como referencia en $t=0$, se analizaron las 1024 posiciones
+posibles del primer flanco DSP dentro de su período. Para cada fase inicial se
+simuló el funcionamiento completo y se consideró fallida una configuración si,
+una vez habilitada la lectura, aparecía al menos un ciclo DSP sin una palabra
+visible o se producía overflow.
 
-Tomando como referencia un flanco FEC en $t=0$, el primer flanco DSP puede
-ubicarse en cualquiera de las 1024 posiciones enteras dentro de su período, 
-pudiendo analizar las 1024 fases iniciales posibles del dominio DSP para
-cada nivel de arranque considerado.
-
-El modelo reproduce la acumulación de bits del gearbox, las escrituras y lecturas
-de la FIFO y los sincronizadores de punteros.
-Una fase se considera fallida si, una vez habilitada la lectura, aparece al menos
-un ciclo DSP sin una palabra visible o si se produce un overflow.
-
-Para el análisis se adoptó inicialmente una FIFO de profundidad 8. La elección de
-una profundidad potencia de dos resulta conveniente para la implementación de los
-punteros binarios y Gray de una FIFO asíncrona, y proporciona además margen para
-evaluar distintos niveles de arranque. La
-configuración utilizada se resume en la Tabla~\ref{tab:fifo-configuracion}.
+Se evaluó inicialmente una FIFO de profundidad 8. La elección de una profundidad
+potencia de dos permite la implementación de los punteros de escritura/lectura 
+en código Gray y proporciona margen suficiente para analizar distintos
+niveles de arranque. La configuración utilizada se resume en la
+Tabla~\ref{tab:fifo-configuracion}.
 
 \begin{table}[H]
     \centering
@@ -789,41 +767,29 @@ Tabla~\ref{tab:fifo-barrido}.
 \end{table}
 
 El barrido muestra que un nivel de arranque de una sola palabra no constituye
-un margen suficiente ya que 134 de las 1024 relaciones de fase analizadas producen al
-menos un hueco luego de habilitar la lectura. En cambio, un nivel de dos palabras
-evita underflow y overflow para todas las fases simuladas. Por lo tanto, para el
-modelo nominal se obtiene
+un margen suficiente, ya que 134 de las 1024 relaciones de fase analizadas
+producen al menos un hueco luego de habilitar la lectura.
 
-\begin{equation}
-    \texttt{START\_LEVEL}_{\min}=2.
-\end{equation}
-
-Este valor representa el mínimo funcional determinado por el barrido, pero para 
-proporcionar un margen adicional frente a escenarios reales no modelados, se 
-selecciona
+A partir de dos palabras no se observan underflows ni overflows para ninguna de
+las fases analizadas, por lo que, en principio, este valor representa el mínimo
+funcional. No obstante, para incorporar margen frente a efectos no contemplados
+por el modelo nominal, se adopta
 
 \begin{equation}
     \texttt{START\_LEVEL}=4.
 \end{equation}
 
-Con este valor, la ocupación máxima observada durante el barrido es de seis
-palabras. Una profundidad de ocho posiciones conserva, por lo tanto, dos entradas
-libres respecto del máximo alcanzado en el caso nominal.
-
-Como el productor y el consumidor transportan exactamente la misma tasa media,
-en condiciones normales de funcionamiento la ocupación no presenta una deriva
-creciente. El barrido de todas las fases relativas confirma este comportamiento:
-para el nivel de arranque seleccionado no se observa overflow y la ocupación
-permanece acotada a seis palabras. La profundidad de ocho palabras deja así un
-margen de dos posiciones respecto de la máxima ocupación observada, por lo que la
-FIFO no opera cerca de su capacidad máxima en el funcionamiento nominal.
+Con este umbral, la ocupación máxima observada es de seis palabras. Una FIFO de
+ocho posiciones conserva así un margen de dos entradas respecto del máximo
+alcanzado, sin presentar underflow ni overflow en ninguna de las relaciones de
+fase simuladas.
 
 La configuración final adoptada para el cruce entre los dominios FEC y DSP es
 
 \begin{equation}
     \boxed{
     \begin{aligned}
-        D &= 8\text{ palabras},\\
+        Depth &= 8\text{ palabras},\\
         W_{\mathrm{FIFO}} &= 1024\text{ bits},\\
         N_{\mathrm{sync}} &= 2,\\
         \texttt{START\_LEVEL} &= 4.
@@ -831,14 +797,10 @@ La configuración final adoptada para el cruce entre los dominios FEC y DSP es
     \label{eq:fifo-configuracion-final}
 \end{equation}
 
-El barrido temporal demuestra que esta configuración evita underflow y overflow
-para todas las relaciones de fase analizadas, al mismo tiempo que mantiene un
-margen adicional respecto del mínimo funcional obtenido para el caso nominal.
-
 \subsubsection{Análisis del sistema de entrelazado}
 
 El sistema utiliza dos mecanismos consecutivos de entrelazado con el objetivo
-de aumentar la tolerancia frente a errores en ráfaga de duración prolongada. 
+de aumentar la protección frente a errores en ráfaga de duración prolongada. 
 En primer lugar, la permutación de lanes intercala bit a bit las siete 
 codewords BCH generadas en paralelo. En segundo lugar, un interleaver 
 convolucional de Forney distribuye las posiciones resultantes entre ocho 
@@ -851,7 +813,7 @@ con su capacidad de corrección $t=2$.
 
 \paragraph{Combinación de la permutación de lanes y el interleaver}
 
-Como determina la especificación , dada ciclo del dominio FEC produce 
+Como determina la especificación, cada ciclo del dominio FEC produce 
 siete codewords en paralelo, una por cada encoder BCH. Una concatenación 
 directa dejaría 127 bits consecutivos pertenecientes a la misma codeword 
 y quedaría vulnerable a rafagas de errores. Para evitar esto, se utiliza 
@@ -872,7 +834,7 @@ continúa con el bit $j+1$:
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.98\textwidth]{permutacion_lanes.png}
+    \includegraphics[width=0.8\textwidth]{permutacion_lanes.png}
     \caption{Permutación de lanes. Una ráfaga corta toca bits de codewords
     diferentes en lugar de concentrarse sobre uno solo.}
     \label{fig:permutacion-lanes}
@@ -907,13 +869,19 @@ múltiplo de $D$:
     \label{eq:rama-posicion-p4}
 \end{equation}
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{interleaver_tx.png}
+    \caption{Funcionamiento del interleaver convolucional en transmisión para
+$B=8$ y $D=1$.}
+    \label{fig:interleaver-tx}
+\end{figure}
+
+
 La rama 0 pasa directamente, la rama 1 se retrasa $D$ ciclos, la rama 2 se
 retrasa $2D$ ciclos y así sucesivamente hasta la rama $B-1$, que se retrasa
 $(B-1)D$ ciclos. Para $B=8$ y $D=1$, los retardos del transmisor son
-
-\begin{equation}
-    0,1,2,\ldots,7\text{ ciclos FEC}.
-\end{equation}
+$0,1,2,\ldots,7$ ciclos FEC.
 
 El resultado es que bits que ingresaron juntos al interleaver salen escalonados
 en el tiempo. El receptor debe deshacer ese escalonamiento y, para ello, el
@@ -927,17 +895,21 @@ de-interleaver aplica a cada posición el retardo complementario
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.90\textwidth]{interleaver_forney.png}
+    \includegraphics[width=0.80\textwidth]{interleaver_forney.png}
     \caption{Interleaver convolucional de Forney y de-interleaver con retardos
     complementarios.}
     \label{fig:interleaver-forney}
 \end{figure}
 
-Al sumar los retardos del transmisor y del receptor, un bit ubicado en la rama
-$b=p\bmod B$ acumula
+Al sumar los retardos del transmisor y del receptor, el retardo total acumulado
+por un bit que atraviesa la rama $b=p\bmod B$ es
 
 \begin{equation}
-    bD+(B-1-b)D=(B-1)D.
+    \tau_{\mathrm{tot}}(b)
+    =
+    bD+(B-1-b)D
+    =
+    (B-1)D.
 \end{equation}
 
 La latencia conjunta es independiente de la posición del bit. Esta es la
@@ -946,13 +918,13 @@ lógica adicional de realineado. Con $B=8$ y $D=1$, todos los bits acumulan siet
 ciclos FEC entre el interleaver y el de-interleaver.
 
 La ventaja principal de combinar la permutación de lanes con el interleaver
-surge de la relación aritmética entre sus períodos. Dentro de un mismo frame,
-los bits de una misma codeword reaparecen cada 7 posiciones de línea, mientras
-que una misma rama del interleaver reaparece cada 8 posiciones. Por lo tanto,
-para que dos errores queden asociados nuevamente a la misma codeword y además
-atraviesen la misma rama de retardo, su separación $d$ debe ser múltiplo
-simultáneamente de 7 y de 8. Como 7 y 8 son coprimos, la menor separación que
-cumple ambas condiciones es
+surge de la relación entre sus períodos. Dentro de un mismo frame, los bits 
+de una misma codeword reaparecen cada 7 posiciones de línea, mientras que una 
+misma rama del interleaver reaparece cada 8 posiciones. Por lo tanto, para que 
+dos errores queden asociados nuevamente a la misma codeword y además atraviesen 
+la misma rama de retardo, su separación $d$ debe ser múltiplo simultáneamente de 
+7 y de 8. Como 7 y 8 son coprimos, la menor separación que cumple ambas 
+condiciones es
 
 \begin{equation}
     P_{\mathrm{par}}
@@ -969,8 +941,7 @@ lanes por sí sola haría reaparecer una misma codeword cada siete posiciones,
 las sucesivas apariciones de la codeword recorren las ocho ramas del interleaver
 antes de volver a experimentar el mismo retardo.
 
-Para una combinación determinada, las posiciones potencialmente asociadas a
-una misma codeword después del de-interleaver presentan entonces la secuencia
+Estas coincidencias se repiten entonces en las posiciones
 
 \begin{equation}
     p_0,\quad
@@ -979,13 +950,9 @@ una misma codeword después del de-interleaver presentan entonces la secuencia
     \label{eq:posiciones-mismo-codeword-p4}
 \end{equation}
 
-El BCH utilizado puede corregir hasta $t=2$ errores dentro de una misma
-palabra. Una ráfaga de longitud $L=112$ comprende posiciones desde $p_0$ hasta
-$p_0+111$, por lo que puede contener como máximo dos elementos de la secuencia
-anterior. Ambos errores permanecen dentro de la capacidad de corrección del
-código.
-
-Por lo tanto, para una ráfaga completamente contenida dentro de un frame,
+Como el código BCH corrige hasta $t=2$ errores por palabra, una ráfaga de
+longitud $L=112$ puede afectar como máximo dos de estas posiciones, por lo que
+permanece dentro de la capacidad de corrección del código.
 
 \begin{equation}
     L_{\max,\mathrm{frame}}
@@ -998,10 +965,10 @@ Por lo tanto, para una ráfaga completamente contenida dentro de un frame,
     \label{eq:rafaga-maxima-p4}
 \end{equation}
 
-Una ráfaga de 113 bits de errores constituye la primera longitud potencialmente 
-incorregible. Esto no implica que toda ráfaga de 113 bits produzca necesariamente 
-un error de decodificación, sino que deja de existir garantía de corrección 
-para cualquier offset de inicio.
+Por lo tanto, en principio, una ráfaga de 113 bits de errores constituye 
+la primera longitud potencialmente incorregible. Esto no implica que toda 
+ráfaga de 113 bits produzca necesariamente un error de decodificación, 
+sino que deja de existir garantía de corrección para cualquier offset de inicio.
 
 \paragraph{Efecto del cruce entre frames consecutivos}
 
@@ -1149,8 +1116,8 @@ mientras que sus ramas son
 \end{equation}
 
 El segundo error aparece un ciclo FEC más tarde pero atraviesa también una
-rama con un ciclo adicional de retardo. Como consecuencia, ambos errores
-pueden terminar asociados a la misma codeword después del de-interleaver.
+rama con un ciclo adicional de retardo. Como consecuencia, ambos errores 
+terminan asociados a la misma codeword después del de-interleaver.
 
 Este efecto reduce la separación mínima respecto del caso completamente
 contenido dentro de un frame. En el peor alineamiento, tres errores que
@@ -1186,120 +1153,39 @@ atraviesen el borde entre frames produciría el resultado optimista de
 máxima de ráfaga garantizadamente corregible se reduce a 98 bits, es decir,
 14 bits menos que en el caso contenido dentro de un único frame.
 
-
-\paragraph{Modificación para recuperar la protección completa}
-
-La pérdida de protección observada en el cruce entre frames se origina porque
-la asignación de ramas se reinicia en cada nuevo frame a partir de la posición
-local $p=0$. Como $889\bmod8=1$, la secuencia global de ramas debería avanzar
-una posición entre frames consecutivos para mantener la periodicidad natural del
-interleaver.
-
-Una forma de recuperar esta propiedad consiste en introducir una fase de
-interleaving $\phi_n$ asociada al frame $n$, definida como
-
-\begin{equation}
-    \phi_{n+1}
-    =
-    (\phi_n+1)\bmod8.
-\end{equation}
-
-La asignación de ramas dejaría entonces de depender únicamente de la posición
-local y pasaría a definirse como
-
-\begin{equation}
-    b_n(p)
-    =
-    (p+\phi_n)\bmod8.
-\end{equation}
-
-De esta manera, cada nuevo frame comienza el interleaving desplazado una rama
-respecto del anterior. En lugar de reiniciar siempre con la secuencia
-$0,1,\ldots,7$, los frames consecutivos comenzarían con fases
-$0,1,2,\ldots,7$ y luego volverían a cero. Esto permite que la asignación de
-ramas sea equivalente a la obtenida sobre una numeración global continua de
-los bits de línea.
-
-Desde el punto de vista RTL, los bits pueden agruparse inicialmente de forma
-estática según su posición local módulo 8,
-
-\begin{equation}
-    G_i=\{p:\ p\bmod8=i\},
-\end{equation}
-
-y posteriormente aplicar una rotación cíclica entre estos ocho grupos y las
-ocho ramas físicas del interleaver. La fase $\phi_n$, representada mediante un
-contador módulo 8, controlaría esta multiplexación. Por ejemplo, para
-$\phi_n=1$, el grupo $G_0$ se conecta a la rama 1, $G_1$ a la rama 2 y así
-sucesivamente hasta conectar $G_7$ a la rama 0.
-
-Esta modificación elimina la discontinuidad introducida por el borde de frame
-y recupera la periodicidad conjunta determinada por
-$\operatorname{mcm}(7,8)=56$. En consecuencia, la longitud máxima de ráfaga
-garantizadamente corregible vuelve al valor de 112 bits obtenido para una
-ráfaga contenida completamente dentro de un frame.
-
-El costo de esta solución se encuentra principalmente en la red de
-multiplexación necesaria para realizar la rotación dinámica de los ocho grupos.
-A diferencia de la implementación original, donde la asignación de posiciones
-a ramas es estática y puede resolverse esencialmente mediante cableado, la
-versión con fase variable requiere lógica combinacional adicional sobre un
-datapath de 889 bits. A simple vista, esto implica un aumento significativo de
-área y la incorporación de nuevos multiplexores en el camino crítico del
-dominio FEC, que debe operar a una frecuencia cercana a $900\,\mathrm{MHz}$.
-
-Por lo tanto, la modificación presenta un compromiso claro entre protección y
-costo de implementación. Se recuperan 14 bits de longitud máxima de ráfaga,
-pasando de 98 a 112 bits, pero a cambio de una red de multiplexación de ancho
-elevado y una mayor exigencia sobre el cierre de timing. Dado que la mejora en
-protección es relativamente pequeña frente al incremento esperado de área y
-complejidad temporal, la conveniencia de implementar esta arquitectura deberá
-evaluarse posteriormente mediante síntesis.
-
-
 \paragraph{Comparación con un interleaver de bloque}
 
 Una alternativa al interleaver convolucional es utilizar un interleaver de
-bloque. En este esquema se almacena primero un conjunto completo de datos en
-memoria siguiendo un determinado orden y posteriormente se lo lee utilizando
-un orden diferente. Un caso típico consiste en escribir los datos por filas
-de una matriz y leerlos por columnas.
+bloque. El principio es el mismo, bits originalmente próximos son separados
+antes de atravesar el canal para aumentar la tolerancia frente a ráfagas de
+errores, la diferencia principal es arquitectónica. Mientras que el esquema
+convolucional opera sobre un flujo continuo mediante retardos escalonados, un
+interleaver de bloque almacena un conjunto completo de datos y modifica su
+orden de lectura. Un caso típico consiste en escribir los datos por filas de
+una matriz y leerlos posteriormente por columnas.
 
-El principio es el mismo desde el punto de vista del FEC: bits originalmente
-próximos son separados antes de atravesar el canal, de modo que una ráfaga
-de errores consecutivos se transforme, luego del de-interleaver, en errores
-más dispersos y pueda ser corregida por los decodificadores BCH. La principal
-diferencia entre ambas alternativas es arquitectónica.
-
-El interleaver convolucional utilizado en este diseño opera sobre un flujo
-continuo y utiliza únicamente retardos escalonados entre sus ramas. Para
-$B=8$ y $D=1$, los retardos de cada rama del transmisor son
-$0,1,2,\ldots,7$ ciclos respectivamente.
-
-Como
+Para cuantificar el costo del interleaver convolucional utilizado, debe
+considerarse que
 
 \begin{equation}
-    889=8\cdot111+1,
+    889 = 8\cdot111+1.
 \end{equation}
 
-la rama 0 contiene 112 posiciones del bus, mientras que las restantes siete
-ramas contienen 111 posiciones cada una. El almacenamiento necesario en el
-interleaver del transmisor es entonces
+Por lo tanto, la rama 0 contiene 112 posiciones del bus y las restantes siete
+contienen 111. Con $B=8$ y $D=1$, los retardos del transmisor son
+$0,1,\ldots,7$ ciclos, por lo que el almacenamiento requerido es
 
 \begin{equation}
     M_{\mathrm{TX}}
     =
     111\sum_{i=1}^{7}i
     =
-    111\cdot28
-    =
     3108\text{ bits}.
     \label{eq:memoria-conv-tx}
 \end{equation}
 
-En el receptor se utilizan los retardos complementarios. La rama 0, que
-contiene 112 bits, recibe un retardo de siete ciclos, mientras que las ramas
-restantes presentan retardos de seis a cero ciclos. Por lo tanto,
+En el receptor se aplican los retardos complementarios. La rama 0 recibe siete
+ciclos de retardo y las restantes, de seis a cero, resultando
 
 \begin{equation}
 \begin{aligned}
@@ -1307,16 +1193,14 @@ restantes presentan retardos de seis a cero ciclos. Por lo tanto,
     &=
     112\cdot7
     +
-    111\sum_{i=0}^{6}i\\
-    &=
-    784+2331\\
+    111\sum_{i=0}^{6}i \\
     &=
     3115\text{ bits}.
 \end{aligned}
 \label{eq:memoria-conv-rx}
 \end{equation}
 
-El almacenamiento total del interleaver y de-interleaver resulta
+El almacenamiento total del interleaver y de-interleaver es entonces
 
 \begin{equation}
     M_{\mathrm{conv,total}}
@@ -1326,29 +1210,23 @@ El almacenamiento total del interleaver y de-interleaver resulta
     6223\text{ bits}.
 \end{equation}
 
-La arquitectura convolucional puede además aceptar y producir un frame de
-889 bits en cada ciclo FEC una vez lleno el pipeline. No requiere almacenar
-un bloque completo antes de comenzar a generar datos de salida, ni necesita
-un patrón complejo de direcciones de lectura y escritura.
-
-Para realizar una comparación con un interleaver de bloque se puede considerar
-una matriz formada por ocho frames consecutivos de 889 bits, donde los frames 
-se escriben por filas, y posteriormente se leen por columnas. Su principio de
-funcionamiento se describe mejor en la Fig.\ref{fig:interleaver-block}
+Como alternativa comparable, puede considerarse un interleaver de bloque
+formado por una matriz de ocho frames consecutivos de 889 bits. Los frames se
+escriben por filas y se leen por columnas, como se ilustra en la
+Fig.~\ref{fig:interleaver-block}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.65\textwidth]{interleaver_block.png}
+    \includegraphics[width=0.5\textwidth]{interleaver_block.png}
     \caption{Interleaver de bloque equivalente.}
     \label{fig:interleaver-block}
 \end{figure}
 
-De esta manera, dos bits consecutivos de un mismo frame quedan separados por
-ocho posiciones en la salida. Como la permutación de lanes hace que los bits
-de una misma codeword reaparezcan cada siete posiciones dentro de cada frame,
-para volver a encontrar simultáneamente un bit perteneciente al mismo frame
-y a la misma codeword deben avanzarse siete columnas. Cada columna contiene
-ocho bits, por lo que la separación resulta
+Con esta organización, dos bits consecutivos de un mismo frame quedan separados
+por ocho posiciones en la salida. A su vez, debido a la permutación de lanes,
+los bits de una misma codeword reaparecen cada siete posiciones dentro del
+frame. Por lo tanto, para volver a encontrar simultáneamente el mismo frame y
+la misma codeword deben recorrerse siete columnas, obteniéndose una separación
 
 \begin{equation}
     d_{\mathrm{bloque}}
@@ -1358,14 +1236,21 @@ ocho bits, por lo que la separación resulta
     56\text{ bits}.
 \end{equation}
 
-Por lo tanto, este interleaver de bloque propuesto permite obtener una 
-separación equivalente a la protección del interleaver convolucional
-con siete codewords y ocho ramas. Con un BCH capaz de corregir hasta
-$t=2$ errores por codeword, la tercera aparición sobre una misma codeword
-puede producirse recién luego de 112 posiciones.
+Esta separación coincide con la obtenida mediante la combinación de siete 
+codewords y ocho ramas del interleaver convolucional. Para $t=2$, una ráfaga
+puede abarcar hasta 112 posiciones antes de poder alcanzar una tercera
+aparición asociada a una misma codeword.
 
-Sin embargo, el costo de esta alternativa es considerablemente mayor en 
-términos de almacenamiento. Un banco debe contener los ocho frames completos,
+Como los ocho frames consecutivos forman parte de un mismo bloque de
+entrelazado, el paso de un frame al siguiente no reinicia la regla de
+reordenamiento. En consecuencia, no aparece la discontinuidad observada en el
+interleaver convolucional cuando la asignación de ramas se calcula a partir de
+la posición local dentro de cada frame. Desde este punto de vista, el
+interleaver de bloque presenta una ventaja respecto de la implementación
+convolucional analizada. 
+
+Sin embargo, esta ventaja se obtiene a costa de un mayor requerimiento de memoria, 
+cada banco debe almacenar ocho frames completos
 
 \begin{equation}
     M_{\mathrm{bloque}}
@@ -1375,11 +1260,9 @@ términos de almacenamiento. Un banco debe contener los ocho frames completos,
     7112\text{ bits}.
 \end{equation}
 
-Además, para mantener el throughput continuo mientras se recibe el bloque
-siguiente y se transmite el anterior, resulta necesario utilizar una
-arquitectura de doble banco o \emph{ping-pong}. Mientras un banco se encuentra
-en escritura, el otro se utiliza para lectura, intercambiando sus funciones al
-finalizar cada bloque. El almacenamiento requerido por lado resulta entonces
+Además, para mantener un flujo continuo mientras se escribe un bloque y se lee
+el anterior, es necesaria una arquitectura de doble banco o \emph{ping-pong}.
+El almacenamiento requerido por lado pasa entonces a ser
 
 \begin{equation}
     M_{\mathrm{bloque,pp}}
@@ -1389,32 +1272,30 @@ finalizar cada bloque. El almacenamiento requerido por lado resulta entonces
     14224\text{ bits}.
 \end{equation}
 
-Por lo tanto, para una separación de errores comparable, el interleaver de
-bloque requiere aproximadamente
+En comparación con los 3108 bits requeridos por el interleaver convolucional
+del transmisor,
 
 \begin{equation}
     \frac{14224}{3108}
     \approx
-    4.6
+    4.6,
 \end{equation}
 
-veces más almacenamiento que el interleaver convolucional en el transmisor.
+por lo que el esquema de bloque necesita aproximadamente 4.6 veces más
+almacenamiento para obtener una separación comparable.
 
-Además del costo de memoria, el interleaver de bloque requiere lógica para
-generar las direcciones de lectura y escritura, controlar la conmutación entre
-los bancos y seleccionar las posiciones que forman el bus paralelo de salida.
-Esta lógica introduce una complejidad adicional respecto del interleaver
-convolucional, cuya estructura está formada principalmente por retardos fijos.
+A esta diferencia se agrega la complejidad de implementación. El interleaver
+de bloque requiere generación de direcciones de lectura y escritura, control
+de los bancos \emph{ping-pong} y selección de las posiciones que conforman el
+bus paralelo de salida. El interleaver convolucional, en cambio, se implementa
+principalmente mediante retardos fijos y puede procesar de forma continua un
+frame de 889 bits por ciclo FEC.
 
-Para la arquitectura considerada en este trabajo, el interleaver convolucional
-presenta una mejor correspondencia con los requisitos del sistema. El datapath
-procesa 889 bits por ciclo FEC de manera continua y opera a una frecuencia
-cercana a $900\,\mathrm{MHz}$. Los retardos escalonados permiten obtener una
-separación de errores comparable a la del interleaver de bloque analizado,
-utilizando aproximadamente 3100 bits de almacenamiento por lado y sin requerir
-memorias \emph{ping-pong} ni lógica compleja de direccionamiento. Por estas
-razones se selecciona el interleaver convolucional frente a una arquitectura
-de bloque.
+Por estas razones, para un datapath que opera cerca de $900\,\mathrm{MHz}$ y
+debe sostener un flujo continuo de 889 bits por ciclo, se adopta el interleaver
+convolucional. La arquitectura proporciona la separación requerida con menor
+almacenamiento y una estructura de control más simple que la alternativa de
+bloque considerada.
 
 \subsubsection{Presupuesto de latencia}
 
@@ -1436,9 +1317,7 @@ latencia de tres ciclos FEC.
 La permutación de lanes y su operación inversa no introducen latencia, ya que
 se implementan como un reordenamiento puramente combinacional de las señales.
 Por su parte, el interleaver y el de-interleaver presentan una latencia conjunta
-determinada por la arquitectura. Para $B=8$ y $D=1$, los retardos
-complementarios de ambas etapas hacen que todos los bits acumulen exactamente
-siete ciclos FEC.
+de siete ciclos FEC.
 
 El gearbox introduce aproximadamente un ciclo asociado al rearmado de las 
 palabras entre ambos anchos de bus. En la FIFO, la latencia depende de su 
@@ -1525,8 +1404,13 @@ $12T_{\mathrm{FEC}}+9T_{\mathrm{DSP}}$ y equivale a aproximadamente
 $22.37T_{\mathrm{FEC}}$.
 
 % ---------------------------------------------------------------------------
-\subsection{Modelos de referencia}
+\subsection{Modelos de referencia en Python}
 % ---------------------------------------------------------------------------
+En esta etapa se modela en Python el comportamiento de los distintos bloques de
+la cadena antes de avanzar con su implementación en RTL. El objetivo es contar
+con una referencia funcional y bit-exacta que permita verificar los algoritmos,
+generar resultados esperados y comparar posteriormente el comportamiento del
+diseño RTL y de su implementación en FPGA.
 
 \subsubsection{Convenciones de representación}
 
@@ -1575,7 +1459,6 @@ el elemento primitivo se representa como
     \texttt{0b0000010}.
 \end{equation}
 
-\pagebreak
 Para la codificación BCH se adopta una representación sistemática. Sea el
 mensaje de 113 bits
 
@@ -1944,8 +1827,7 @@ aleatorios y comprobando que las palabras válidas produjeran $S_1=S_3=0$ y
 que el decodificador no las modificara. Además, para una palabra válida se
 recorrieron exhaustivamente las 127 posiciones posibles de un único error y
 las $\binom{127}{2}=8001$ combinaciones posibles de dos errores. En todos los
-casos se recuperó la palabra codificada original y los síndromes posteriores
-a la corrección fueron nulos.
+casos se recuperó la palabra codificada original.
 
 \paragraph{Comparación con una búsqueda de Chien paralela.}
 Una alternativa convencional para localizar los errores consiste en realizar
@@ -2056,16 +1938,441 @@ muestran la ventaja arquitectónica de reemplazar la búsqueda explícita de
 raíces por su resolución algebraica.
 
 \subsubsection{Generador PRBS31 paralelo}
-\pendiente{Documentar la potenciación de la matriz de transición y su validación contra el modelo serie.}
 
-\subsubsection{Permutación de lanes e interleaver convolucional}
-\pendiente{Documentar ambos modelos, sus inversas y la latencia uniforme.}
+La secuencia de prueba del sistema se genera mediante un LFSR de 31 bits
+asociado al polinomio primitivo
 
-\subsubsection{Modelo de canal}
-\pendiente{Documentar el canal BSC y el generador parametrizable de ráfagas.}
+\begin{equation}
+    p(x)=x^{31}+x^{28}+1.
+\end{equation}
 
-\subsubsection{Autotests y barridos de BER}
-\pendiente{Documentar cobertura de casos, semillas y resultados de la cadena completa.}
+Una implementación serie del LFSR produciría un único bit por ciclo, lo cual
+no resulta suficiente para la arquitectura propuesta, ya que en cada ciclo del
+dominio FEC se requiere un nuevo payload de 791 bits. Por este motivo, el
+generador PRBS debe producir 791 muestras consecutivas de la secuencia en
+paralelo y, simultáneamente, actualizar su estado al correspondiente luego de
+esos 791 avances.
+
+Para realizar esta paralelización se utiliza una formulación matricial sobre
+$\mathrm{GF}(2)$. Esta construcción constituye una extensión directa de la
+técnica clásica de generación serie-paralelo de secuencias de longitud máxima
+presentada por O'Reilly~\cite{oreilly1975}. Rasmussen et al. aplican el mismo
+procedimiento a una implementación PRBS31 de 512 bits, obteniendo mediante
+potencias de la matriz de transición tanto las ecuaciones de salida como las
+del estado siguiente~\cite{rasmussen2010}.
+
+Sea
+
+\begin{equation}
+    \mathbf{s}[n]
+    =
+    \begin{bmatrix}
+        s_0[n] &
+        s_1[n] &
+        \cdots &
+        s_{30}[n]
+    \end{bmatrix}^{\mathrm{T}}
+\end{equation}
+
+el estado del LFSR luego de $n$ avances serie. La convención adoptada desplaza
+el estado hacia los índices crecientes, utiliza $s_{30}$ como salida serie y
+calcula la realimentación como
+
+\begin{equation}
+    s_0[n+1]=s_{30}[n]\oplus s_{27}[n].
+\end{equation}
+
+El resto de los registros se actualiza según
+
+\begin{equation}
+    s_i[n+1]=s_{i-1}[n],
+    \qquad i=1,\ldots,30.
+\end{equation}
+
+De esta forma, un avance del generador puede expresarse como
+
+\begin{equation}
+    \mathbf{s}[n+1]
+    =
+    A_{\mathrm{s}}\mathbf{s}[n],
+    \label{eq:prbs-transicion-serie}
+\end{equation}
+
+donde $A_{\mathrm{s}}\in\mathrm{GF}(2)^{31\times31}$ es la matriz de
+transición correspondiente a un avance serie. Para la convención adoptada,
+
+\begin{equation}
+A_{\mathrm{s}}=
+\begin{bmatrix}
+0 & \cdots & 0 & 1 & 0 & 0 & 1 \\
+1 & 0      & \cdots & 0 & 0 & 0 & 0 \\
+0 & 1      & \ddots & \vdots & \vdots & \vdots & \vdots \\
+\vdots & \ddots & \ddots & 0 & 0 & 0 & 0 \\
+0 & \cdots & 0 & 1 & 0 & 0 & 0
+\end{bmatrix},
+\label{eq:prbs-matriz-serie}
+\end{equation}
+
+donde la primera fila contiene unos únicamente en las columnas 27 y 30
+correspondientes a los taps del polinomio generador, mientras que la
+subdiagonal de unos implementa el desplazamiento del estado.
+
+Como la salida serie corresponde al último elemento del estado, se define el
+vector selector
+
+\begin{equation}
+    \mathbf{C} =
+    \begin{bmatrix}
+        0 & 0 & \cdots & 0 & 1
+    \end{bmatrix}.
+\end{equation}
+
+La primera muestra de salida asociada al estado $\mathbf{s}[n]$ es entonces
+
+\begin{equation}
+    y_0=\mathbf{C}\mathbf{s}[n],
+\end{equation}
+
+mientras que, luego de $i$ avances del LFSR serie,
+
+\begin{equation}
+    y_i
+    =
+    \mathbf{C}A_{\mathrm{s}}^i\mathbf{s}[n].
+\end{equation}
+
+Por lo tanto, las 791 muestras consecutivas pueden obtenerse en paralelo
+apilando las correspondientes ecuaciones de salida. Se define
+
+\begin{equation}
+    B=
+    \begin{bmatrix}
+        \mathbf{C} \\
+        \mathbf{C}A_{\mathrm{s}} \\
+        \mathbf{C}A_{\mathrm{s}}^2 \\
+        \vdots \\
+        \mathbf{C}A_{\mathrm{s}}^{790}
+    \end{bmatrix}
+    \in\mathrm{GF}(2)^{791\times31},
+    \label{eq:prbs-matriz-salida}
+\end{equation}
+
+de modo que
+
+\begin{equation}
+    \mathbf{y}[m]
+    =
+    B\,\mathbf{s}_{p}[m],
+\end{equation}
+
+con
+
+\begin{equation}
+    \mathbf{y}[m]
+    =
+    \begin{bmatrix}
+        y_0 & y_1 & \cdots & y_{790}
+    \end{bmatrix}^{\mathrm{T}}.
+\end{equation}
+
+Se adopta la convención de que $y_0$ es la primera muestra que produciría el
+LFSR serie a partir del estado actual, seguida temporalmente por
+$y_1,\ldots,y_{790}$.
+
+Al mismo tiempo, el estado que debe almacenarse para el siguiente ciclo del
+generador paralelo es aquel que alcanzaría el LFSR luego de 791 avances serie.
+Se define entonces
+
+\begin{equation}
+    A
+    =
+    A_{\mathrm{s}}^{791}
+    \in\mathrm{GF}(2)^{31\times31}.
+    \label{eq:prbs-matriz-transicion-paralela}
+\end{equation}
+
+Si $\mathbf{s}_{p}[m]$ representa el estado al comienzo del ciclo paralelo
+$m$, su actualización queda dada por
+
+\begin{equation}
+    \mathbf{s}_{p}[m+1]
+    =
+    A\,\mathbf{s}_{p}[m].
+\end{equation}
+
+De esta manera, el generador PRBS31 paralelo queda completamente descripto
+por
+
+\begin{equation}
+    \boxed{
+    \begin{aligned}
+        \mathbf{y}[m]       &= B\,\mathbf{s}_{p}[m], \\
+        \mathbf{s}_{p}[m+1] &= A\,\mathbf{s}_{p}[m].
+    \end{aligned}}
+    \label{eq:prbs-generador-paralelo}
+\end{equation}
+
+Todas las operaciones de matrices se realizan sobre un $\mathrm{GF}(2)$.
+Las matrices $A$ y $B$ obtenidas se exportaron como constantes a
+SystemVerilog,  permitiendo que el modelo de referencia y la
+implementación RTL utilicen exactamente las mismas ecuaciones.
+
+La validación del modelo se realizó comparando 4096 bits consecutivos
+generados por la implementación paralela contra los producidos por un LFSR
+serie inicializado con la misma semilla. Ambas secuencias coincidieron bit a
+bit.
+
+\subsubsection{Modelo del canal y modulación PAM-2}
+
+Para modelar de forma simplificada el canal de transmisión se utilizó una
+modulación PAM-2 sobre un canal con ruido blanco gaussiano aditivo (AWGN),
+seguida por un demodulador con decisión dura. En este esquema, cada bit se
+representa mediante uno de dos niveles de amplitud, según el mapeo
+
+\begin{equation}
+    x(b)=
+    \begin{cases}
+        +1, & b=0,\\
+        -1, & b=1,
+    \end{cases}
+    \label{eq:pam2-mapping}
+\end{equation}
+
+donde $b\in\{0,1\}$ es el bit transmitido y $x\in\{-1,+1\}$ el símbolo PAM-2
+correspondiente.
+
+Durante la transmisión, el símbolo enviado se ve perturbado por una muestra
+de ruido gaussiano. Por lo tanto, para cada símbolo $x\in\{-1,+1\}$, 
+la señal recibida se modela como
+
+\begin{equation}
+    y=x+n,
+    \qquad
+    n\sim\mathcal{N}(0,\sigma^2).
+\end{equation}
+
+A la salida del canal, el demodulador realiza una decisión dura donde se 
+resuelve cero cuando $y\geq0$ y uno cuando $y<0$. De esta forma, cuanto 
+mayor sea la dispersión introducida por el ruido, mayor será la probabilidad 
+de que una muestra cruce el umbral nulo y sea detectada incorrectamente. 
+La Fig.~\ref{fig:pam2-constelacion} muestra los dos niveles PAM-2 y la 
+dispersión de amplitud asociada al ruido.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{pam2_constellation.png}
+    \caption{Símbolos PAM-2 y dispersión de amplitud de una desviación estándar
+    para $E_b/N_0=3$~dB.}
+    \label{fig:pam2-constelacion}
+\end{figure}
+
+La amplitud del ruido se parametrizó a partir de la relación $E_b/N_0$. Donde
+$E_b$ representa la energía por bit de información y $R=113/127$ es la tasa
+del código. La energía por símbolo codificado queda relacionada mediante
+
+\begin{equation}
+    E_s=R E_b.
+\end{equation}
+
+Tomando los símbolos normalizados a energía unitaria, $E_s=1$, para un valor
+dado de $E_b/N_0$ la varianza del ruido resulta
+
+\begin{equation}
+    \sigma^2
+    =
+    \frac{N_0}{2}
+    =
+    \frac{1}{2R\,10^{(E_b/N_0)_{\mathrm{dB}}/10}},
+\end{equation}
+
+y, por lo tanto, su desviación estándar es
+
+\begin{equation}
+    \sigma
+    =
+    \sqrt{
+        \frac{1}{2R\,10^{(E_b/N_0)_{\mathrm{dB}}/10}}
+    }.
+    \label{eq:awgn-sigma}
+\end{equation}
+
+Con este valor de $\sigma$, el ruido queda caracterizado por una distribución
+gaussiana de media nula,
+
+\begin{equation}
+    f_n(n)
+    =
+    \frac{1}{\sqrt{2\pi}\sigma}
+    \exp\!\left(-\frac{n^2}{2\sigma^2}\right).
+    \label{eq:awgn-pdf}
+\end{equation}
+
+Como los símbolos $-1$ y $+1$ son equiprobables, la distribución observada a
+la entrada del decisor resulta de superponer dos gaussianas centradas en cada
+uno de esos niveles:
+
+\begin{equation}
+    f_y(y)
+    =
+    \frac{1}{2}\,\mathcal{N}(y;-1,\sigma^2)
+    +
+    \frac{1}{2}\,\mathcal{N}(y;+1,\sigma^2).
+    \label{eq:awgn-received-pdf}
+\end{equation}
+
+
+\begin{figure}[H]
+    \centering
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{noise_pdf.png}
+
+        \small (a) Densidad de probabilidad del ruido AWGN.
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.48\linewidth}
+        \centering
+        \includegraphics[width=\linewidth]{received_samples_pdf.png}
+
+        \small (b) Densidad de las muestras recibidas y umbral de decisión.
+    \end{minipage}
+    \caption{Distribuciones del modelo PAM-2 sobre AWGN para
+    $E_b/N_0=3$~dB.}
+    \label{fig:pdf-canal-awgn}
+\end{figure}
+
+Una vez aplicada la decisión dura, la amplitud de la muestra deja de estar
+disponible y cada símbolo vuelve a representarse únicamente por un bit. En
+consecuencia, desde el punto de vista de la entrada del decodificador, el
+conjunto formado por el modulador PAM-2, el canal AWGN y el decisor puede
+interpretarse como un canal binario simétrico (BSC). La probabilidad de que un
+símbolo cruce el umbral y produzca un error de bit está dada por
+
+\begin{equation}
+    p
+    =
+    Q\!\left(
+        \sqrt{2R\frac{E_b}{N_0}}
+    \right)
+    =
+    \frac{1}{2}\operatorname{erfc}\!\left(
+        \sqrt{R\frac{E_b}{N_0}}
+    \right).
+    \label{eq:awgn-bsc-equivalencia}
+\end{equation}
+
+Esta expresión permite relacionar directamente el nivel de ruido del canal con
+la BER observada antes de la decodificación FEC. La
+Fig.~\ref{fig:ber-pre-fec-teorica} muestra dicha relación en función de
+$E_b/N_0$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\linewidth]{ber_pre_fec.png}
+    \caption{BER pre-FEC de PAM-2 sobre AWGN con decisión dura.}
+    \label{fig:ber-pre-fec-teorica}
+\end{figure}
+
+
+\subsubsection{Simulación de la cadena completa}
+
+En esta etapa se integraron los modelos desarrollados individualmente con el
+objetivo de construir una cadena bit-exacta respecto de la arquitectura RTL.
+La cadena completa está compuesta por el generador PRBS31, los siete
+codificadores BCH, el permutador de lanes, el interleaver convolucional, el
+modelo de canal, las transformaciones inversas, los siete decodificadores BCH
+y el checker PRBS31.
+
+La simulación contempla además la latencia introducida por el interleaver, que
+para la configuración utilizada es de siete frames, y agrega los ciclos
+necesarios para vaciar completamente sus registros antes de finalizar cada
+medición. De esta manera, todos los bits transmitidos son incluidos en el
+cálculo de BER y no se descartan datos aún almacenados en la cadena.
+
+Como primera verificación funcional se transmitieron 100 frames sin canal
+de por medio, es decir, sin errores agregados. En estas condiciones, la 
+secuencia recuperada coincidió bit a bit con la secuencia transmitida y 
+se obtuvieron BER pre-FEC y post-FEC iguales a cero.
+
+Una vez verificado el funcionamiento sin ruido, se caracterizó el sistema
+frente al canal AWGN mediante un barrido Monte Carlo de $E_b/N_0$ entre
+3 y 8~dB, con pasos de 0,5~dB. Cada punto se simuló en lotes de
+20000 frames hasta acumular al menos 200 errores post-FEC. Este criterio
+permite mantener una cantidad mínima de eventos de error en cada punto y,
+por lo tanto, evitar estimaciones dominadas por un número demasiado reducido
+de muestras erróneas.
+
+La Fig.~\ref{fig:ber-sistema-python} muestra la BER medida antes y después de
+la corrección FEC.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\linewidth]{ber_system.png}
+    \caption{BER pre-FEC y post-FEC de la cadena BCH(127,113) sobre un canal
+    PAM-2 con AWGN y decisión dura.}
+    \label{fig:ber-sistema-python}
+\end{figure}
+
+A bajas relaciones señal a ruido es frecuente que una misma palabra BCH
+contenga más de dos errores. En ese régimen, el decodificador opera fuera de
+su capacidad garantizada de corrección y puede producir correcciones erroneas, 
+por lo que a 3~dB la BER post-FEC resulta incluso superior a la BER de entrada.
+
+Entre 3 y 3,5~dB se observa el punto de cruce a partir del cual la codificación
+comienza a aportar ganancia. Desde allí, la BER post-FEC decrece con una
+pendiente mayor que la BER pre-FEC. Para $E_b/N_0=8$~dB se obtuvo una BER
+pre-FEC de $4{,}04\times10^{-4}$ y una BER post-FEC de
+$6{,}32\times10^{-7}$.
+
+Si bien este barrido permite validar el comportamiento del modelo y obtener una
+primera caracterización del sistema, la exploración de BER más bajas mediante
+simulación en Python resulta costosa en tiempo de cómputo, ya que requiere
+procesar una cantidad muy grande de bits para observar suficientes errores.
+Por este motivo, es que se realizará una caracterización más extensa sobre la
+implementación en FPGA, donde será posible evaluar una mayor cantidad de
+puntos de $E_b/N_0$ y alcanzar regiones de BER menores.
+
+Por último, se evaluó la protección frente a errores en ráfaga. Para ello se
+incorporó un generador que recibe una posición inicial y una longitud, ambas
+definidas sobre el flujo continuo de bits. De esta forma, una ráfaga puede
+comenzar cerca del final de un frame de 889 bits y continuar sobre el siguiente,
+sin quedar artificialmente restringida a un único frame.
+
+Con este modelo se realizó un barrido exhaustivo de ráfagas de entre 3 y
+127 bits. Para cada longitud se evaluaron los 889 offsets posibles de inicio
+dentro del frame de referencia, incluyendo aquellos casos en los que la ráfaga
+cruza el borde entre frames. Los resultados se resumen en la
+Tabla~\ref{tab:burst-sweep-python}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}cc@{}}
+        \toprule
+        \textbf{Longitud de ráfaga} & \textbf{Resultado sobre los 889 offsets} \\
+        \midrule
+        $3$--$98$ bits & Corregible para todos los offsets \\
+        $99$ bits & Algunos offsets con error residual \\
+        $113$ bits & Solo 2 offsets permanecen corregibles \\
+        $114$--$127$ bits & Todos los offsets presentan error residual \\
+        \bottomrule
+    \end{tabular}
+    \caption{Resultado del barrido exhaustivo de errores en ráfaga.}
+    \label{tab:burst-sweep-python}
+\end{table}
+
+El barrido confirma el análisis modular realizado previamente: todas las
+ráfagas de hasta 98 bits son corregidas para cualquier alineación posible
+respecto del borde de frame. A partir de 99 bits aparecen posiciones iniciales
+para las cuales quedan errores residuales luego de la decodificación. Para
+113 bits aún existen dos offsets corregibles, mientras que desde 114 bits los
+889 offsets producen al menos un error post-FEC.
+
+Por lo tanto, la máxima longitud de ráfaga para la cual se garantiza la
+corrección, independientemente de su posición dentro del flujo, es de 98 bits.
+Para longitudes comprendidas entre 99 y 113 bits la corrección depende del
+offset de inicio de la ráfaga y, por lo tanto, deja de estar garantizada.
+Finalmente, a partir de 114 bits la corrección falla para todos los offsets
+posibles.
 
 % ---------------------------------------------------------------------------
 \subsection{RTL del transmisor}
@@ -2113,7 +2420,7 @@ raíces por su resolución algebraica.
 \pendiente{Documentar las interfaces y el seguimiento de las transacciones.}
 
 \subsubsection{Scoreboard}
-\pendiente{Documentar los modos basados en vectores Python y modelo C mediante DPI-C.}
+\pendiente{Documentar la integración del modelo de referencia en C mediante DPI-C.}
 
 \subsubsection{Cobertura funcional y de código}
 \pendiente{Documentar el modelo de cobertura y los resultados alcanzados.}
@@ -2159,6 +2466,9 @@ raíces por su resolución algebraica.
 
 \pendiente{Redactar las conclusiones una vez cerradas las siete etapas.}
 
+\clearpage
+\phantomsection
+\addcontentsline{toc}{section}{Referencias}
 \begin{thebibliography}{9}
 
 \bibitem{yoo2014}
@@ -2168,9 +2478,26 @@ I. Yoo e I.-C. Park,
 pp.~44--49, 2014.
 \href{https://doi.org/10.1109/SiPS.2014.6986060}{doi:10.1109/SiPS.2014.6986060}.
 
+\bibitem{oreilly1975}
+J. J. O'Reilly,
+``Series-parallel generation of m-sequences'',
+\textit{The Radio and Electronic Engineer},
+vol.~45, no.~4, pp.~171--176, abril de 1975.
+\href{https://doi.org/10.1049/ree.1975.0033}{doi:10.1049/ree.1975.0033}.
+
+\bibitem{rasmussen2010}
+A. Rasmussen, J. Zhang, H. Yu, R. Fu, S. Ruepp, H. Wessing y M. Berger,
+``Towards 100 Gigabit Carrier Ethernet Transport Networks'',
+\textit{WSEAS Transactions on Communications},
+vol.~9, no.~3, pp.~153--164, marzo de 2010.
+\href{https://www.wseas.us/e-library/transactions/communications/2010/89-424.pdf}{Documento en línea}.
+
 \end{thebibliography}
 
 \clearpage
+\phantomsection
+\section*{Anexos}
+\addcontentsline{toc}{section}{Anexos}
 \appendix
 
 % ---------------------------------------------------------------------------
