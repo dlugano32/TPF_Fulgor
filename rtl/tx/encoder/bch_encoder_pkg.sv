@@ -1,4 +1,11 @@
-    localparam logic [112:0] P_T [13:0] = '{
+    
+package bch_encoder_pkg;
+
+    localparam int N = 127;
+    localparam int K = 113;
+    localparam int R = N-K;
+
+    localparam logic [K - 1 : 0] P_T [R - 1 : 0] = '{
         113'h1ADF818A1B4AA9516BC533C2771B0,
         113'h0D6FC0C50DA554A8B5E299E13B8D8,
         113'h06B7E06286D2AA545AF14CF09DC6C,
@@ -14,3 +21,6 @@
         113'h1EC1053C5BBFF7E7789EA88D325A3,
         113'h15BF0314369552A2D78A6784EE361
     };
+
+endpackage : bch_encoder_pkg
+

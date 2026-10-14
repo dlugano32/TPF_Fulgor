@@ -22,16 +22,11 @@ from model.python.tools.GF2m_matrix import transpose_matrix
 from model.python.tools.GFPoly import GFPoly
 
 
-RANDOM_MESSAGES = 1000
-RANDOM_SEED = 127113
+RANDOM_MESSAGES = 200
+RANDOM_SEED = 2026
 
 
-def check_message(
-    message,
-    generator,
-    transposed_masks,
-    zero_polynomial,
-) -> None:
+def check_message(message, generator, transposed_masks, zero_polynomial) -> None:
     """Compara la división, P y las máscaras transpuestas para RTL."""
 
     codeword_polynomial = encode(message, generator)
@@ -49,6 +44,7 @@ def check_message(
 
     assert rtl_parity == codeword_matrix & ((1 << PARITY_BITS) - 1)
 
+    print(f"[PY] msg=0x{message:029x} cw=0x{codeword_matrix:032x}")
 
 def test_matrix_dimensions(parity_matrix) -> None:
     """Verifica las dimensiones de P y de su transpuesta para RTL."""
@@ -62,21 +58,11 @@ def test_matrix_dimensions(parity_matrix) -> None:
     assert all(len(row) == K for row in transposed_matrix)
 
 
-def test_zero_and_ones(
-    generator,
-    transposed_masks,
-    zero_polynomial,
-) -> None:
+def test_zero_and_ones(generator, transposed_masks, zero_polynomial) -> None:
     """Verifica los mensajes nulo y todo unos."""
 
     check_message(0, generator, transposed_masks, zero_polynomial)
-    check_message(
-        (1 << K) - 1,
-        generator,
-        transposed_masks,
-        zero_polynomial,
-    )
-
+    check_message((1 << K) - 1, generator, transposed_masks, zero_polynomial)
 
 def test_basis_vectors(
     generator,

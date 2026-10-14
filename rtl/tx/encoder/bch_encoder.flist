@@ -1,0 +1,3 @@
+rtl/bch_encoder_pkg.sv
+rtl/bch_mult_p.sv
+rtl/bch_encoder.sv
