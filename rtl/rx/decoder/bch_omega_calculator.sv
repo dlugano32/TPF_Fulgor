@@ -7,7 +7,8 @@ module bch_omega_calculator #(
     output logic [M - 1 : 0] o_omega1,
     output logic [M - 1 : 0] o_omega2
 );
-
+    //! With m=7 and theta=1 equals to omega = mu^2 + mu^8 + mu^32
+    // which can be calculated with combinational logic since square is a linear transformation in GF(2^m)
     assign o_omega1[0] = i_mu[0];
     assign o_omega1[1] = i_mu[2] ^ i_mu[3] ^ i_mu[4] ^ i_mu[6];
     assign o_omega1[2] = i_mu[3] ^ i_mu[4] ^ i_mu[6];

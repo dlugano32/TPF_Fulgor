@@ -9,7 +9,8 @@ module bch_decoder
     output logic [N - 1 : 0] o_err,
     output logic [N - 1 : 0] o_cw,
     output logic [K - 1 : 0] o_msg,
-    output logic             o_corrected
+    output logic             o_corrected,
+    output logic             o_uncorrectable
 );
 
     // =========================================================================
@@ -120,7 +121,10 @@ module bch_decoder
     logic [N - 1 : 0] double_err_mask;
     logic [N - 1 : 0] sel_err_mask;
     logic [N - 1 : 0] corrected_cw;
+    logic             single_err;
+    logic             double_err;
     logic             corrected;
+    logic             uncorrectable;
 
     // Double-error locations
     bch_root_calculator
@@ -149,28 +153,39 @@ module bch_decoder
     assign single_err_mask =  127'd1 << single_err_pos;
     assign double_err_mask = (127'd1 << double_err_pos1) | (127'd1 << double_err_pos2);
 
-    // Error classification and correction
-    assign sel_err_mask = (syn1_r1 == '0)            ? '0 : 
-                          (syn1_cubed_r1 == syn3_r1) ? single_err_mask : 
-                                                       double_err_mask;
+    // Error classification
+    assign single_err = (syn1_r1 != '0) && (syn1_cubed_r1 == syn3_r1);
+
+    // For GF(2^7) with p(x) = x^7 + x^3 + 1, Tr(mu) = mu[0] = omega1[0].
+    assign double_err = (syn1_r1 != '0) && (syn1_cubed_r1 != syn3_r1) && (omega1_r1[0] == 1'b0);
+
+    assign uncorrectable = ((syn1_r1 == '0) && (syn3_r1 != '0)) ||
+                           ((syn1_r1 != '0) && (syn1_cubed_r1 != syn3_r1) && (omega1_r1[0] == 1'b1));
+
+    // Error correction. Uncorrectable words pass-through.
+    assign sel_err_mask = single_err ? single_err_mask :
+                          double_err ? double_err_mask :
+                                       '0;
 
     assign corrected_cw = rx_r1 ^ sel_err_mask;
-    assign corrected    = (syn1_r1 != '0);
+    assign corrected    = single_err || double_err;
 
     // =========================================================================
     // PIPE 2 END: OUTPUT REGISTER
     // =========================================================================
     always_ff @(posedge i_clk) begin
         if (!i_rst_n) begin
-            o_err       <= '0;
-            o_cw        <= '0;
-            o_msg       <= '0;
-            o_corrected <= 1'b0;
+            o_err           <= '0;
+            o_cw            <= '0;
+            o_msg           <= '0;
+            o_corrected     <= 1'b0;
+            o_uncorrectable <= 1'b0;
         end else begin
-            o_err       <= sel_err_mask;
-            o_cw        <= corrected_cw;
-            o_msg       <= corrected_cw[N - 1 -: K];
-            o_corrected <= corrected;
+            o_err           <= sel_err_mask;
+            o_cw            <= corrected_cw;
+            o_msg           <= corrected_cw[N - 1 -: K];
+            o_corrected     <= corrected;
+            o_uncorrectable <= uncorrectable;
         end
     end
 
