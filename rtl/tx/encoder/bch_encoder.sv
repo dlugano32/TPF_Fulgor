@@ -17,7 +17,7 @@ module bch_encoder
     );
 
     always_ff @(posedge i_clk) begin
-        if (!i_arst_n) begin
+        if (!i_rst_n) begin
             o_cw <= '0;
         end else begin
             o_cw <= {i_msg, parity};
