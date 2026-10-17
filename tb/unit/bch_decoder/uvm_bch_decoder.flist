@@ -1,0 +1,3 @@
+uvm/bch_decoder_if.sv
+uvm/bch_decoder_tb_pkg.sv
+uvm/bch_decoder_tb.sv
