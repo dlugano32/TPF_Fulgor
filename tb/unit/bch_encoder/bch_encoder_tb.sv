@@ -14,7 +14,7 @@ module bch_encoder_tb;
 
     bch_encoder u_bch_encoder (
         .i_clk    (clk),
-        .i_arst_n (vif.i_arst_n),
+        .i_rst_n (vif.i_rst_n),
         .i_msg    (vif.i_msg),
         .o_cw     (vif.o_cw)
     );

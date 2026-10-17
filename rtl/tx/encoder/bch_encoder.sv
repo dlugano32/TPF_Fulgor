@@ -4,7 +4,7 @@ module bch_encoder
     import bch_encoder_pkg::*;
 (
     input  logic i_clk,
-    input  logic i_arst_n,
+    input  logic i_rst_n,
     input  logic [K - 1 : 0] i_msg,
     output logic [N - 1 : 0] o_cw
 );
@@ -16,7 +16,7 @@ module bch_encoder
         .o_vec (parity)
     );
 
-    always_ff @(posedge i_clk or negedge i_arst_n) begin
+    always_ff @(posedge i_clk) begin
         if (!i_arst_n) begin
             o_cw <= '0;
         end else begin

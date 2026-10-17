@@ -14,12 +14,12 @@ class bch_encoder_drv;
     endfunction
 
     task do_reset(int unsigned cycles = 3);
-        vif.cb_drv.i_arst_n <= 1'b0;
+        vif.cb_drv.i_rst_n <= 1'b0;
         vif.cb_drv.i_msg   <= '0;
         vif.cb_drv.i_valid <= '0;
 
         repeat (cycles) @(vif.cb_drv);
-        vif.cb_drv.i_arst_n <= 1'b1;
+        vif.cb_drv.i_rst_n <= 1'b1;
     endtask
 
     task run(int unsigned txn_count);

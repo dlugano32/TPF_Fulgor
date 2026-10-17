@@ -1,7 +1,11 @@
 import random
 
 from model.python.src.awgn_channel import noise_sigma, pam2_awgn_frame
-from model.python.src.bch_decoder import decode
+from model.python.src.bch_decoder import (
+    build_syndrome_matrix,
+    decode,
+    syndrome_masks_from_matrix,
+)
 from model.python.src.bch_design import cosets_for_t, generator_polynomial
 from model.python.src.bch_encoder import K, N, build_parity_matrix, encode_with_matrix, parity_masks_from_matrix
 from model.python.src.interleaver import BRANCHES, DELAY, FRAME_BITS, TOTAL_DELAY, deinterleave, interleave
@@ -62,6 +66,8 @@ class FECSystem:
         gf2 = GF2m(m=1, primitive_poly=0b1)
         parity_matrix = build_parity_matrix(self.generator, gf2)
         self.parity_masks = parity_masks_from_matrix(parity_matrix)
+        syndrome_matrix = build_syndrome_matrix(self.field)
+        self.syndrome_masks = syndrome_masks_from_matrix(syndrome_matrix)
 
         self.prbs_generator = PRBS31Generator(PRBS_SEED, PRBS_TAPS)
         self.post_fec_checker = PRBS31Checker(PRBS_TAPS, LOCK_MATCHES)
@@ -110,7 +116,7 @@ class FECSystem:
             received = (encoded_frame >> (lane * N)) & CODEWORD_MASK
 
             try:
-                corrected, _ = decode(received, self.field)
+                corrected, _ = decode(received, self.field, self.syndrome_masks)
             except (ValueError, ZeroDivisionError):
                 corrected = received
 

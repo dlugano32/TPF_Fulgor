@@ -15,7 +15,7 @@ class bch_encoder_mon;
         forever begin
             @(vif.cb_mon);
 
-            if ((vif.cb_mon.i_arst_n === 1'b1) && (vif.cb_mon.i_valid  === 1'b1)) begin
+            if ((vif.cb_mon.i_rst_n === 1'b1) && (vif.cb_mon.i_valid  === 1'b1)) begin
                 bch_encoder_txn txn = new();
 
                 txn.msg = vif.cb_mon.i_msg;
