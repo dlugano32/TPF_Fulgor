@@ -1,4 +1,10 @@
-    localparam logic [30:0] A [30:0] = '{
+
+package prbs31_pkg;
+
+    localparam int ORDER = 31;
+    localparam int P = 791;
+
+    localparam logic [ORDER - 1 : 0] A [ORDER - 1 : 0] = '{
         31'h32E8C812,
         31'h19746409,
         31'h44BA3204,
@@ -32,7 +38,7 @@
         31'h216BA220
     };
 
-    localparam logic [30:0] B [790:0] = '{
+    localparam logic [ORDER - 1 : 0] B [P - 1 : 0] = '{
         31'h65D19024,
         31'h5BA32049,
         31'h27464093,
@@ -825,3 +831,6 @@
         31'h20000000,
         31'h40000000
     };
+
+endpackage : prbs31_pkg
+   
