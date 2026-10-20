@@ -5,6 +5,7 @@ module bch_decoder
 (
     input  logic             i_clk,
     input  logic             i_rst_n,
+    input  logic             i_en,
     input  logic [N - 1 : 0] i_rx,
     output logic [N - 1 : 0] o_err,
     output logic [N - 1 : 0] o_cw,
@@ -38,7 +39,7 @@ module bch_decoder
             rx_r0   <= '0;
             syn1_r0 <= '0;
             syn3_r0 <= '0;
-        end else begin
+        end else if (i_en) begin
             rx_r0   <= i_rx;
             syn1_r0 <= syn1;
             syn3_r0 <= syn3;
@@ -63,6 +64,7 @@ module bch_decoder
     u_bch_mu_calculator (
         .i_clk       (i_clk),
         .i_rst_n     (i_rst_n),
+        .i_en        (i_en),
         .i_syn1      (syn1_r0),
         .i_syn3      (syn3_r0),
         .o_mu        (mu),
@@ -78,7 +80,7 @@ module bch_decoder
             rx_r1   <= '0;
             syn1_r1 <= '0;
             syn3_r1 <= '0;
-        end else begin
+        end else if (i_en) begin
             rx_r1   <= rx_r0;
             syn1_r1 <= syn1_r0;
             syn3_r1 <= syn3_r0;
@@ -120,7 +122,7 @@ module bch_decoder
             log_mu_r2     <= '0;
             log_syn1_r2   <= '0;
             syn1_cubed_r2 <= '0;
-        end else begin
+        end else if (i_en) begin
             rx_r2         <= rx_r1;
             syn1_r2       <= syn1_r1;
             syn3_r2       <= syn3_r1;
@@ -206,7 +208,7 @@ module bch_decoder
             o_msg           <= '0;
             o_corrected     <= 1'b0;
             o_uncorrectable <= 1'b0;
-        end else begin
+        end else if (i_en) begin
             o_err           <= sel_err_mask;
             o_cw            <= corrected_cw;
             o_msg           <= corrected_cw[N - 1 -: K];

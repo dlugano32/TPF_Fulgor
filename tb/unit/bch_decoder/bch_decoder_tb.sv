@@ -15,6 +15,7 @@ module bch_decoder_tb;
     bch_decoder u_bch_decoder (
         .i_clk           (clk),
         .i_rst_n         (vif.i_rst_n),
+        .i_en            (1'b1),
         .i_rx            (vif.i_rx),
         .o_err           (vif.o_err),
         .o_cw            (vif.o_cw),

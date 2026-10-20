@@ -5,6 +5,7 @@ module bch_mu_calculator #(
 ) (
     input  logic                 i_clk,
     input  logic                 i_rst_n,
+    input  logic                 i_en,
     input  logic [M - 1 : 0]     i_syn1,
     input  logic [M - 1 : 0]     i_syn3,
     output logic [M - 1 : 0]     o_mu,
@@ -64,7 +65,7 @@ module bch_mu_calculator #(
             log_syn1_cubed_r1   <= '0;
             log_syn1_r1         <= '0;
             syn1_cubed_r1       <= '0;
-        end else begin
+        end else if (i_en) begin
             num_r1              <= num;
             log_syn1_cubed_r1   <= log_syn1_cubed;
             log_syn1_r1         <= log_syn1;

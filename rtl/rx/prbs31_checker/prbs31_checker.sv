@@ -11,7 +11,7 @@ module prbs31_checker
     input  logic [P - 1 : 0]    i_data,
 
     output logic                o_locked,
-    output logic [CNT_W- 1 : 0] o_error_count
+    output logic [CNT_W - 1 : 0] o_error_count
 );
     
     typedef enum logic {SEEDING, LOCKED} state_e;

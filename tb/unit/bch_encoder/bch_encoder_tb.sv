@@ -13,8 +13,9 @@ module bch_encoder_tb;
     bch_encoder_if vif (clk);
 
     bch_encoder u_bch_encoder (
-        .i_clk    (clk),
+        .i_clk   (clk),
         .i_rst_n (vif.i_rst_n),
+        .i_en    (1'b1),
         .i_msg    (vif.i_msg),
         .o_cw     (vif.o_cw)
     );
