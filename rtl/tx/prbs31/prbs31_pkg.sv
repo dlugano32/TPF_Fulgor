@@ -1,6 +1,14 @@
 
 package prbs31_pkg;
 
+    // PRBS31 polynomial: p(x) = x^31 + x^28 + 1.
+    //
+    // State convention:
+    //   - state[30] is the serial output bit.
+    //   - feedback = state[30] ^ state[27].
+    //   - state shifts toward increasing indices.
+    //   - B[i] generates the i-th bit in time, so B[0] is the first output.
+    //   - A advances the LFSR by P serial steps.
     localparam int ORDER = 31;
     localparam int P = 791;
 
@@ -833,4 +841,3 @@ package prbs31_pkg;
     };
 
 endpackage : prbs31_pkg
-   

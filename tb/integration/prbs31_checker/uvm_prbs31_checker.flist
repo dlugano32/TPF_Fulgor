@@ -1,0 +1,3 @@
+uvm/prbs31_checker_if.sv
+uvm/prbs31_checker_tb_pkg.sv
+uvm/prbs31_checker_tb.sv
