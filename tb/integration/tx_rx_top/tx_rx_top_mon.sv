@@ -23,6 +23,7 @@ class tx_rx_top_mon;
 
                 txn.locked      = vif.cb_mon.o_locked;
                 txn.error_count = vif.cb_mon.o_error_count;
+                txn.error_mask  = vif.cb_mon.error_mask;
                 mon2scb.put(txn);
             end
         end

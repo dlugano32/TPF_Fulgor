@@ -5,7 +5,11 @@ class tx_rx_top_test_cfg;
     rand seed_t       seed;
     rand int unsigned cycles;
 
-    int unsigned test_index;
+    test_mode_e       mode;
+    int unsigned      test_index;
+    int unsigned      burst_length;
+    int unsigned      burst_offset;
+    bit               expect_post_fec_errors;
 
     constraint seed_c {
         seed != '0;
@@ -16,7 +20,16 @@ class tx_rx_top_test_cfg;
     }
 
     function void display(string tag = "");
-        $display("[%s] test=%0d seed=0x%08h cycles=%0d", tag, test_index, seed, cycles);
+        if (mode == CLEAN_TEST) begin
+            $display("[%s] mode=CLEAN test=%0d seed=0x%08h cycles=%0d",
+                tag, test_index, seed, cycles
+            );
+        end else begin
+            $display("[%s] mode=BURST test=%0d seed=0x%08h length=%0d offset=%0d expect_errors=%0b window=%0d",
+                tag, test_index, seed, burst_length, burst_offset,
+                expect_post_fec_errors, cycles
+            );
+        end
     endfunction
 
 endclass
@@ -27,5 +40,6 @@ class tx_rx_top_txn;
 
     logic                 locked;
     logic [CNT_W - 1 : 0] error_count;
+    line_t                error_mask;
 
 endclass

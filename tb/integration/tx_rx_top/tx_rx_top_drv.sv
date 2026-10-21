@@ -25,10 +25,29 @@ class tx_rx_top_drv;
         vif.cb_drv.i_rst_n <= 1'b0;
         vif.cb_drv.i_en    <= 1'b0;
         vif.cb_drv.i_seed  <= seed;
+        vif.cb_drv.error_mask <= '0;
 
         repeat (RESET_CYCLES) @(vif.cb_drv);
         vif.cb_drv.i_rst_n <= 1'b1;
     endtask
+
+    function automatic line_t get_burst_mask(tx_rx_top_test_cfg cfg, int unsigned cycle);
+        line_t mask = '0;
+        int unsigned burst_start;
+        int unsigned burst_end;
+
+        burst_start = PRE_BURST_CYCLES * LINE_W + cfg.burst_offset;
+        burst_end   = burst_start + cfg.burst_length;
+
+        for (int unsigned bit_index = 0; bit_index < LINE_W; bit_index++) begin
+            int unsigned stream_position = cycle * LINE_W + bit_index;
+
+            if ((stream_position >= burst_start) && (stream_position < burst_end))
+                mask[bit_index] = 1'b1;
+        end
+
+        return mask;
+    endfunction
 
     task drive_test(tx_rx_top_test_cfg cfg);
         bit locked_seen = 1'b0;
@@ -47,10 +66,19 @@ class tx_rx_top_drv;
             end
         end
 
-        if (locked_seen)
-            repeat (cfg.cycles) @(vif.cb_drv);
+        if (locked_seen) begin
+            if (cfg.mode == CLEAN_TEST) begin
+                repeat (cfg.cycles) @(vif.cb_drv);
+            end else begin
+                for (int unsigned cycle = 0; cycle < cfg.cycles; cycle++) begin
+                    vif.cb_drv.error_mask <= get_burst_mask(cfg, cycle);
+                    @(vif.cb_drv);
+                end
+            end
+        end
 
-        vif.cb_drv.i_en <= 1'b0;
+        vif.cb_drv.i_en       <= 1'b0;
+        vif.cb_drv.error_mask <= '0;
     endtask
 
     task run(int unsigned test_count);
