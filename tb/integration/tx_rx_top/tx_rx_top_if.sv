@@ -11,8 +11,8 @@ interface tx_rx_top_if #(
     logic                             i_en;
     logic [ORDER - 1 : 0]             i_seed;
 
-    logic [LANES - 1 : 0] [N - 1 : 0] tx_payload;
-    logic [LANES - 1 : 0] [K - 1 : 0] rx_data;
+    logic [LANES - 1 : 0] [N - 1 : 0] tx_line;
+    logic [LANES - 1 : 0] [K - 1 : 0] rx_payload;
     logic                             o_locked;
     logic [CNT_W - 1 : 0]             o_error_count;
 

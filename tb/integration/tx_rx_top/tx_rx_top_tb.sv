@@ -16,15 +16,15 @@ module tx_rx_top_tb;
         .i_rst_n   (vif.i_rst_n),
         .i_en      (vif.i_en),
         .i_seed    (vif.i_seed),
-        .o_payload (vif.tx_payload)
+        .o_line    (vif.tx_line)
     );
 
     rx_top u_rx_top (
         .i_clk         (clk),
         .i_rst_n       (vif.i_rst_n),
         .i_en          (vif.i_en),
-        .i_payload     (vif.tx_payload),
-        .o_data        (vif.rx_data),
+        .i_line        (vif.tx_line),
+        .o_payload     (vif.rx_payload),
         .o_locked      (vif.o_locked),
         .o_error_count (vif.o_error_count)
     );
