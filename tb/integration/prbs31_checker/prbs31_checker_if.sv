@@ -17,6 +17,7 @@ interface prbs31_checker_if
     logic [P - 1 : 0]     checked_received_data;  // Preserves data consumed by the checker for posterior comparition
     logic                 o_locked;
     logic [CNT_W - 1 : 0] o_error_count;
+    logic                 o_valid;
 
     // Synchronization scheme (the RTL samples and updates on posedge clk):
     //
@@ -36,7 +37,7 @@ interface prbs31_checker_if
         default input #1step;
         input i_rst_n, i_checker_en;
         input checked_generated_data, checked_received_data;
-        input o_locked, o_error_count;
+        input o_locked, o_error_count, o_valid;
     endclocking
 
     modport MON (clocking cb_mon, input clk);

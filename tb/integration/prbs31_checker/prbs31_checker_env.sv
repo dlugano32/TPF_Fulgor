@@ -10,7 +10,8 @@ class prbs31_checker_env;
     mailbox #(prbs31_checker_test_cfg) gen2drv;       // One configuration per test.
     mailbox #(prbs31_checker_test_cfg) drv2scb_cfg;   // Tells the scoreboard how many frames to consume.
     mailbox #(prbs31_checker_txn)      drv2scb_frame; // Expected mask and data for each frame.
-    mailbox #(prbs31_checker_txn)      mon2scb;       // Aligned RTL input/output sample for each frame.
+    mailbox #(prbs31_checker_txn)      mon2scb;       // Independent input/output-valid samples.
+    mailbox #(bit)                    scb2drv_done;  // Pipeline drained before the next reset.
 
     prbs31_checker_gen gen;
     prbs31_checker_drv drv;
@@ -24,11 +25,12 @@ class prbs31_checker_env;
         drv2scb_cfg   = new();
         drv2scb_frame = new();
         mon2scb       = new();
+        scb2drv_done   = new();
 
         gen = new(gen2drv);
-        drv = new(vif, gen2drv, drv2scb_cfg, drv2scb_frame);
+        drv = new(vif, gen2drv, drv2scb_cfg, drv2scb_frame, scb2drv_done);
         mon = new(vif, mon2scb);
-        scb = new(drv2scb_cfg, drv2scb_frame, mon2scb);
+        scb = new(drv2scb_cfg, drv2scb_frame, mon2scb, scb2drv_done);
     endfunction
 
     task run();
@@ -49,7 +51,8 @@ class prbs31_checker_env;
         if (scb.error_count != 0)
             $fatal(1, "PRBS31 checker regression failed with %0d mismatches", scb.error_count);
 
-        $display("PRBS31 checker regression PASS: %0d tests, %0d frames matched", scb.checked_tests, scb.checked_frames);
+        $display("PRBS31 checker regression PASS: %0d tests, %0d input frames, %0d valid counts matched",
+            scb.checked_tests, scb.checked_frames, scb.checked_counts);
     endtask
 
 endclass

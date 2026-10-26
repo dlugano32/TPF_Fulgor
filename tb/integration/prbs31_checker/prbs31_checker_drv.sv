@@ -4,6 +4,7 @@ class prbs31_checker_drv;
     mailbox #(prbs31_checker_test_cfg) gen2drv;
     mailbox #(prbs31_checker_test_cfg) drv2scb_cfg;
     mailbox #(prbs31_checker_txn)      drv2scb_frame;
+    mailbox #(bit)                   scb2drv_done;
 
     bit done = 1'b0;
 
@@ -11,7 +12,8 @@ class prbs31_checker_drv;
         virtual prbs31_checker_if.DRV vif,
         mailbox #(prbs31_checker_test_cfg) gen2drv,
         mailbox #(prbs31_checker_test_cfg) drv2scb_cfg,
-        mailbox #(prbs31_checker_txn) drv2scb_frame
+        mailbox #(prbs31_checker_txn) drv2scb_frame,
+        mailbox #(bit) scb2drv_done
     );
         if (vif == null)
             $fatal(1, "prbs31_checker_drv: vif is null");
@@ -20,6 +22,7 @@ class prbs31_checker_drv;
         this.gen2drv       = gen2drv;
         this.drv2scb_cfg   = drv2scb_cfg;
         this.drv2scb_frame = drv2scb_frame;
+        this.scb2drv_done  = scb2drv_done;
     endfunction
 
     task do_reset(seed_t seed, int unsigned reset_cycles = 3);
@@ -82,6 +85,12 @@ class prbs31_checker_drv;
         vif.cb_drv.i_prbs_en    <= 1'b0;
         vif.cb_drv.i_checker_en <= 1'b0;
         vif.cb_drv.i_error_mask <= '0;
+
+        // Do not reset the next test until every expected result has arrived.
+        begin
+            bit completed;
+            scb2drv_done.get(completed);
+        end
     endtask
 
     task run(int unsigned test_count);

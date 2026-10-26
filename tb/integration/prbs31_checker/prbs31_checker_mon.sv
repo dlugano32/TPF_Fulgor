@@ -15,13 +15,16 @@ class prbs31_checker_mon;
         forever begin
             @(vif.cb_mon);
 
-            if ((vif.cb_mon.i_rst_n === 1'b1) && (vif.cb_mon.i_checker_en === 1'b1)) begin
+            if ((vif.cb_mon.i_rst_n === 1'b1) &&
+                ((vif.cb_mon.i_checker_en === 1'b1) || (vif.cb_mon.o_valid !== 1'b0))) begin
                 prbs31_checker_txn frame = new();
 
                 frame.generated_data = vif.cb_mon.checked_generated_data;
                 frame.received_data  = vif.cb_mon.checked_received_data;
                 frame.locked         = vif.cb_mon.o_locked;
                 frame.error_count    = vif.cb_mon.o_error_count;
+                frame.input_valid    = vif.cb_mon.i_checker_en;
+                frame.output_valid   = vif.cb_mon.o_valid;
                 mon2scb.put(frame);
             end
         end

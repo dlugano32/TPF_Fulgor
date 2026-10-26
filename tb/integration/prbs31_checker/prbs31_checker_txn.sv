@@ -31,8 +31,8 @@ class prbs31_checker_test_cfg;
 endclass
 
 class prbs31_checker_txn;
-    // This class is used for two different objects per checker-enabled frame;
-    // driver and monitor do not fill the same instance.
+    // The driver describes input frames; the monitor describes clock samples.
+    // They create separate objects.
     //
     // Expected object:
     //   prbs31_checker_drv sets error_mode, randomizes error_mask/n_errors, adds
@@ -40,11 +40,12 @@ class prbs31_checker_txn;
     //
     // Actual object:
     //   prbs31_checker_mon creates a separate object, fills generated_data,
-    //   received_data, locked and error_count, and sends it through mon2scb.
+    //   received_data, locked, input_valid, output_valid and error_count.
+    //   A sample can describe an accepted input, a valid output, or both.
     //
     // Consumer:
-    //   prbs31_checker_scb gets one object from each mailbox in frame order and
-    //   compares the intended injection against the aligned RTL observation.
+    //   prbs31_checker_scb consumes a driver frame on each input_valid sample
+    //   and compares queued expected counts on each output_valid sample.
     
     import prbs31_pkg::*;
     import prbs31_checker_tb_pkg::*;
@@ -60,7 +61,9 @@ class prbs31_checker_txn;
     logic [P - 1 : 0] generated_data; // Filled only in the monitor's actual object.
     logic [P - 1 : 0] received_data;  // generated_data after error injection.
     logic             locked;         // RTL result aligned with received_data.
-    logic [CNT_W - 1 : 0] error_count; // RTL result aligned with received_data.
+    logic [CNT_W - 1 : 0] error_count; // Count output sampled independently of the input.
+    logic             input_valid;
+    logic             output_valid;
 
     // Constraining the mask weight also makes all selected positions unique:
     // each active vector bit represents exactly one injected error.

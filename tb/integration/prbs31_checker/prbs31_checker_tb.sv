@@ -40,7 +40,8 @@ module prbs31_checker_tb;
         .i_en          (vif.i_checker_en),
         .i_data        (vif.received_data),
         .o_locked      (vif.o_locked),
-        .o_error_count (vif.o_error_count)
+        .o_error_count (vif.o_error_count),
+        .o_valid       (vif.o_valid)
     );
 
     prbs31_checker_program u_tb (vif);

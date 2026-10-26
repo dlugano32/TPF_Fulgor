@@ -10,10 +10,10 @@ module prbs31_checker
     input  logic                i_en,
     input  logic [P - 1 : 0]    i_data,
 
-    output logic                o_locked,
-    output logic [CNT_W - 1 : 0] o_error_count
+    output logic                 o_locked,
+    output logic [CNT_W - 1 : 0] o_error_count,
+    output logic                 o_valid
 );
-    
     typedef enum logic {SEEDING, LOCKED} state_e;
 
     state_e state_r;
@@ -28,6 +28,8 @@ module prbs31_checker
     logic [P - 1 : 0] error_pattern;
     logic [CNT_W - 1 : 0] error_weight;
     logic [CNT_W - 1 : 0] error_count_r;
+    logic [P - 1 : 0] error_pattern_r;
+    logic error_pattern_valid_r;
 
     logic locked;
     logic match;
@@ -93,23 +95,38 @@ module prbs31_checker
         end
     end
 
+    // Register the error pattern before the popcount.
+    always_ff @(posedge i_clk) begin
+        if (!i_rst_n) begin
+            error_pattern_r <= '0;
+            error_pattern_valid_r <= 1'b0;
+        end else begin
+            // Evaluate lock on input acceptance to exclude the acquisition block.
+            error_pattern_valid_r <= i_en && (state_r == LOCKED);
+            if (i_en && (state_r == LOCKED)) begin
+                error_pattern_r <= error_pattern;
+            end
+        end
+    end
+
     popcount #(
         .WIDTH (P)
     ) u_popcount (
-        .i_vec    (error_pattern),
+        .i_vec    (error_pattern_r),
         .o_weight (error_weight)
     );
 
-    // The acquisition block is intentionally excluded from the BER. 
-    // The count holds whenever no valid input block is presented.
+    // A block captured by stage 1 updates the output on the following edge.
+    // Pending results drain even when i_en is low, otherwise the output holds.
     always_ff @(posedge i_clk) begin
         if (!i_rst_n) begin
             error_count_r <= '0;
-        end else if (i_en) begin
-            if (state_r == LOCKED)
+            o_valid <= 1'b0;
+        end else begin
+            if (error_pattern_valid_r)
                 error_count_r <= error_weight;
-            else
-                error_count_r <= '0;
+
+            o_valid <= error_pattern_valid_r;
         end
     end
 
