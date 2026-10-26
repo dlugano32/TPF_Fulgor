@@ -41,5 +41,7 @@ class tx_rx_top_txn;
     logic                 locked;
     logic [CNT_W - 1 : 0] error_count;
     line_t                error_mask;
+    logic                 input_valid;
+    logic                 output_valid;
 
 endclass

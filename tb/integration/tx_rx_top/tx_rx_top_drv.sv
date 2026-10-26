@@ -5,13 +5,15 @@ class tx_rx_top_drv;
     virtual tx_rx_top_if.DRV vif;
     mailbox #(tx_rx_top_test_cfg) gen2drv;
     mailbox #(tx_rx_top_test_cfg) drv2scb_cfg;
+    mailbox #(bit)               scb2drv_done;
 
     bit done = 1'b0;
 
     function new(
         virtual tx_rx_top_if.DRV vif,
         mailbox #(tx_rx_top_test_cfg) gen2drv,
-        mailbox #(tx_rx_top_test_cfg) drv2scb_cfg
+        mailbox #(tx_rx_top_test_cfg) drv2scb_cfg,
+        mailbox #(bit) scb2drv_done
     );
         if (vif == null)
             $fatal(1, "tx_rx_top_drv: vif is null");
@@ -19,6 +21,7 @@ class tx_rx_top_drv;
         this.vif         = vif;
         this.gen2drv     = gen2drv;
         this.drv2scb_cfg = drv2scb_cfg;
+        this.scb2drv_done = scb2drv_done;
     endfunction
 
     task do_reset(seed_t seed);
@@ -79,6 +82,11 @@ class tx_rx_top_drv;
 
         vif.cb_drv.i_en       <= 1'b0;
         vif.cb_drv.error_mask <= '0;
+        // Wait for all valid checker results before resetting the next test.
+        begin
+            bit completed;
+            scb2drv_done.get(completed);
+        end
     endtask
 
     task run(int unsigned test_count);

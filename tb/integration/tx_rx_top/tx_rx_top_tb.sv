@@ -28,7 +28,8 @@ module tx_rx_top_tb;
         .i_line        (vif.channel_line),
         .o_payload     (vif.rx_payload),
         .o_locked      (vif.o_locked),
-        .o_error_count (vif.o_error_count)
+        .o_error_count (vif.o_error_count),
+        .o_valid       (vif.o_valid)
     );
 
     tx_rx_top_program u_tb (vif);

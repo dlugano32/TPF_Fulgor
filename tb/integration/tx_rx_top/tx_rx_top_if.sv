@@ -18,6 +18,7 @@ interface tx_rx_top_if #(
     logic [LANES  - 1 : 0][K - 1 : 0] rx_payload;
     logic                             o_locked;
     logic [CNT_W - 1 : 0]             o_error_count;
+    logic                             o_valid;
 
     clocking cb_drv @(negedge clk);
         default input #1step output #1ps;
@@ -29,7 +30,7 @@ interface tx_rx_top_if #(
 
     clocking cb_mon @(negedge clk);
         default input #1step;
-        input i_rst_n, i_en, error_mask, o_locked, o_error_count;
+        input i_rst_n, i_en, error_mask, o_locked, o_error_count, o_valid;
     endclocking
 
     modport MON (clocking cb_mon, input clk);

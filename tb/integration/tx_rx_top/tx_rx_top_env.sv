@@ -8,6 +8,7 @@ class tx_rx_top_env;
     mailbox #(tx_rx_top_test_cfg) gen2drv;
     mailbox #(tx_rx_top_test_cfg) drv2scb_cfg;
     mailbox #(tx_rx_top_txn)      mon2scb;
+    mailbox #(bit)               scb2drv_done;
 
     tx_rx_top_gen gen;
     tx_rx_top_drv drv;
@@ -21,11 +22,12 @@ class tx_rx_top_env;
         gen2drv     = new();
         drv2scb_cfg = new();
         mon2scb     = new();
+        scb2drv_done = new();
 
         gen = new(gen2drv, mode);
-        drv = new(vif, gen2drv, drv2scb_cfg);
+        drv = new(vif, gen2drv, drv2scb_cfg, scb2drv_done);
         mon = new(vif, mon2scb);
-        scb = new(drv2scb_cfg, mon2scb);
+        scb = new(drv2scb_cfg, mon2scb, scb2drv_done);
     endfunction
 
     task run();

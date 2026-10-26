@@ -14,7 +14,8 @@ module rx_top #(
     input  logic [LINE_W -1 : 0]                i_line,
     output logic [LANES - 1 : 0][PAY_W - 1 : 0] o_payload,
     output logic                                o_locked,
-    output logic [CNT_W - 1 : 0]                o_error_count
+    output logic [CNT_W - 1 : 0]                o_error_count,
+    output logic                                o_valid
 );
 
     logic [LINE_W - 1 : 0]                deinterleaved;
@@ -60,7 +61,8 @@ module rx_top #(
         .i_en(i_en),
         .i_data(payload),
         .o_locked(o_locked),
-        .o_error_count(o_error_count)
+        .o_error_count(o_error_count),
+        .o_valid(o_valid)
     );
 
     assign o_payload = payload;

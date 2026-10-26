@@ -18,12 +18,15 @@ class tx_rx_top_mon;
         forever begin
             @(vif.cb_mon);
 
-            if ((vif.cb_mon.i_rst_n === 1'b1) && (vif.cb_mon.i_en === 1'b1)) begin
+            if ((vif.cb_mon.i_rst_n === 1'b1) &&
+                ((vif.cb_mon.i_en === 1'b1) || (vif.cb_mon.o_valid !== 1'b0))) begin
                 tx_rx_top_txn txn = new();
 
                 txn.locked      = vif.cb_mon.o_locked;
                 txn.error_count = vif.cb_mon.o_error_count;
                 txn.error_mask  = vif.cb_mon.error_mask;
+                txn.input_valid = vif.cb_mon.i_en;
+                txn.output_valid = vif.cb_mon.o_valid;
                 mon2scb.put(txn);
             end
         end
