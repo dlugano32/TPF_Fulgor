@@ -1,19 +1,21 @@
 `timescale 1ns/1ps
 
 module async_fifo #(
-    parameter int WIDTH = 1024,
-    parameter int DEPTH  = 8
+    parameter  int WIDTH  = 1024,
+    parameter  int DEPTH  = 8
 ) (
-    input  logic                 i_rd_clk,
-    input  logic                 i_wr_clk,
-    input  logic                 i_wr_rst_n,
-    input  logic                 i_rd_rst_n,
-    input  logic                 i_wr_en,
-    input  logic                 i_rd_en,
-    input  logic [WIDTH - 1 : 0] i_data,
-    output logic [WIDTH - 1 : 0] o_data,
-    output logic                 o_empty,
-    output logic                 o_full
+    input  logic                     i_rd_clk,
+    input  logic                     i_wr_clk,
+    input  logic                     i_wr_rst_n,
+    input  logic                     i_rd_rst_n,
+    input  logic                     i_wr_en,
+    input  logic                     i_rd_en,
+    input  logic [WIDTH     - 1 : 0] i_data,
+    output logic [WIDTH     - 1 : 0] o_data,
+    output logic                     o_empty,
+    output logic                     o_full,
+    output logic                     o_rd_valid,
+    output logic [$clog2(DEPTH) : 0] o_rd_level
 );
 
     localparam int ADDR_W = $clog2(DEPTH);
@@ -37,6 +39,9 @@ module async_fifo #(
     logic [PTR_W - 1 : 0] rd_ptr_gr_r;
     logic [PTR_W - 1 : 0] wr_ptr_gr_next;
     logic [PTR_W - 1 : 0] rd_ptr_gr_next;
+
+    //! Puntero syncronizado convertido de grey a binario
+    logic [PTR_W-1:0] wr_ptr_bin_sync;
 
     //! Punteros sincronizados entre dominios de clock
     logic [PTR_W - 1 : 0] wr_ptr_gr_sync;   //! wr_ptr_gr_sync sincronizado hacia i_clk_r
@@ -63,6 +68,7 @@ module async_fifo #(
             o_data <= mem[rd_addr];
         end
     end
+
     assign rd_addr = rd_ptr_r[ADDR_W - 1 : 0];
     assign rd_pop = (~o_empty) && i_rd_en;
 
@@ -71,7 +77,7 @@ module async_fifo #(
     always_ff @(posedge i_wr_clk) begin
         if(!i_wr_rst_n) begin
             wr_ptr_r <= '0;
-        end else if(wr_push)begin
+        end else begin
             wr_ptr_r <= wr_ptr_next;
         end
     end
@@ -81,10 +87,12 @@ module async_fifo #(
 
     //! FIFO de lectura
     always_ff @(posedge i_rd_clk) begin
-        if(!i_rd_rst_n) begin
-            rd_ptr_r <= '0;
-        end else if(rd_pop) begin
-            rd_ptr_r <= rd_ptr_next;
+        if (!i_rd_rst_n) begin
+            rd_ptr_r   <= '0;
+            o_rd_valid <= 1'b0;
+        end else begin
+            rd_ptr_r   <= rd_ptr_next;
+            o_rd_valid <= rd_pop;
         end
     end
 
@@ -147,5 +155,17 @@ module async_fifo #(
     //! La FIFO está llena cuando el puntero de escritura está una vuelta por delante del puntero de lectura sincronizado al dominio de escritura.
     //! En Gray, esta condición se detecta invirtiendo los dos MSB del puntero de lectura sincronizado.
     assign o_full  =  (wr_ptr_gr_r == {~rd_ptr_gr_sync[PTR_W - 1 -: 2], rd_ptr_gr_sync[PTR_W - 3 : 0]});
+
+    // Gray a binario.
+    always_comb begin
+        wr_ptr_bin_sync[PTR_W-1] = wr_ptr_gr_sync[PTR_W-1];
+
+        for (int i = PTR_W-2; i >= 0; i--) begin
+            wr_ptr_bin_sync[i] = wr_ptr_bin_sync[i+1] ^ wr_ptr_gr_sync[i];
+        end
+    end
+
+    // Ocupación visible desde el dominio de lectura.
+    assign o_rd_level = wr_ptr_bin_sync - rd_ptr_r;
 
 endmodule
