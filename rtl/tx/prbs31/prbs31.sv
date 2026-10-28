@@ -14,9 +14,6 @@ module prbs31
     logic [ORDER - 1 : 0] lfsr_r;
     logic [ORDER - 1 : 0] lfsr_next;
 
-    logic [P - 1 : 0] prbs_r;
-    logic [P - 1 : 0] prbs_next;
-
     always_ff @(posedge i_clk) begin
         if(!i_rst_n) begin
             lfsr_r <= i_seed;
@@ -34,17 +31,7 @@ module prbs31
     prbs31_mult_b
     u_prbs31_mult_b (
         .i_state(lfsr_r),
-        .o_prbs(prbs_next)
+        .o_prbs(o_prbs)
     );
-
-    always_ff @(posedge i_clk) begin
-        if(!i_rst_n) begin
-            prbs_r <= '0;
-        end else if (i_en) begin
-            prbs_r <= prbs_next;
-        end
-    end
-
-    assign o_prbs = prbs_r;
 
 endmodule

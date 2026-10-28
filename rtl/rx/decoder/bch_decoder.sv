@@ -11,8 +11,23 @@ module bch_decoder
     output logic [N - 1 : 0] o_cw,
     output logic [K - 1 : 0] o_msg,
     output logic             o_corrected,
-    output logic             o_uncorrectable
+    output logic             o_uncorrectable,
+    output logic             o_valid
 );
+
+    // Four enabled register stages. History holds when the datapath stalls;
+    // output valid pulses only when a new decoded word reaches the output.
+    logic [2:0] valid_history_r;
+    always_ff @(posedge i_clk) begin
+        if (!i_rst_n) begin
+            valid_history_r <= '0;
+            o_valid <= 1'b0;
+        end else begin
+            o_valid <= i_en && valid_history_r[2];
+            if (i_en)
+                valid_history_r <= {valid_history_r[1:0], 1'b1};
+        end
+    end
 
     // =========================================================================
     // PIPE 0 START: SYNDROME CALCULATION

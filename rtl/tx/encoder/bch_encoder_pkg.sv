@@ -22,5 +22,5 @@ package bch_encoder_pkg;
         113'h15BF0314369552A2D78A6784EE361
     };
 
-endpackage : bch_encoder_pkgports
+endpackage : bch_encoder_pkg
 
