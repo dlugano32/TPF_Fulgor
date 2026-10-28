@@ -1,5 +1,11 @@
 `timescale 1ns/1ps
 
+// Asynchronous FIFO with first-word fall-through (FWFT) read data.
+// When o_empty is low, o_data presents the current head word without a
+// read request. i_rd_en consumes that word at the read-clock rising edge.
+// The asynchronous memory read may infer distributed RAM or registers.
+// Supported DEPTH values are powers of two >= 4. Reset both domains together.
+
 module async_fifo #(
     parameter  int WIDTH  = 1024,
     parameter  int DEPTH  = 8
@@ -14,7 +20,6 @@ module async_fifo #(
     output logic [WIDTH     - 1 : 0] o_data,
     output logic                     o_empty,
     output logic                     o_full,
-    output logic                     o_rd_valid,
     output logic [$clog2(DEPTH) : 0] o_rd_level
 );
 
@@ -62,13 +67,9 @@ module async_fifo #(
     assign wr_push = (~o_full) && i_wr_en;
 
 
-    //! Leer memoria
-    always_ff @(posedge i_rd_clk) begin
-        if(rd_pop) begin
-            o_data <= mem[rd_addr];
-        end
-    end
-
+    //! FWFT: la cabecera está disponible antes del flanco que la consume.
+    //! Esto implica una lectura combinacional.
+    assign o_data = mem[rd_addr];
     assign rd_addr = rd_ptr_r[ADDR_W - 1 : 0];
     assign rd_pop = (~o_empty) && i_rd_en;
 
@@ -89,10 +90,8 @@ module async_fifo #(
     always_ff @(posedge i_rd_clk) begin
         if (!i_rd_rst_n) begin
             rd_ptr_r   <= '0;
-            o_rd_valid <= 1'b0;
         end else begin
             rd_ptr_r   <= rd_ptr_next;
-            o_rd_valid <= rd_pop;
         end
     end
 
