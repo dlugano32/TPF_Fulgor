@@ -128,6 +128,5 @@ module tx_top #(
         .o_full(o_fifo_full),
         .o_rd_level(o_dsp_rd_level)
     );
+    
 endmodule
-
-`default_nettype wire

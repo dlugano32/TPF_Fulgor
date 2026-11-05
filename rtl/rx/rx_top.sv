@@ -86,8 +86,7 @@ module rx_top #(
             fifo_started <= 1'b1;
     end
 
-    assign gearbox_en = i_en
-                     && (fifo_started || fifo_rd_level >= FIFO_LEVEL_W'(START_LEVEL));
+    assign gearbox_en = i_en && (fifo_started || fifo_rd_level >= FIFO_LEVEL_W'(START_LEVEL));
 
     gearbox_narrow #(
         .BITS_IN(DSP_W),
@@ -154,5 +153,3 @@ module rx_top #(
     assign o_payload = payload;
 
 endmodule
-
-`default_nettype wire
