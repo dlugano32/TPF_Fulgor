@@ -5,25 +5,27 @@ module tx_top #(
     localparam int unsigned DSP_W = 1024,
     localparam int unsigned FIFO_DEPTH = 8
 ) (
-    input  wire logic                          i_clk_fec,
-    input  wire logic                          i_clk_dsp,
-    input  wire logic                          i_arst_n,
-    input  wire logic                          i_en,
-    input  wire logic [PRBS_ORDER - 1 : 0]     i_seed,
+    input  logic                          i_clk_fec,
+    input  logic                          i_clk_dsp,
+    input  logic                          i_arst_n,
+    input  logic                          i_en,
+    input  logic [PRBS_ORDER - 1 : 0]     i_seed,
 
-    // DSP-domain FIFO interface: consume o_line when !o_dsp_empty.
-    input  wire logic                          i_dsp_rd_en,
-    output wire logic [DSP_W - 1 : 0]          o_line,
-    output wire logic                          o_dsp_empty,
-    output wire logic [$clog2(FIFO_DEPTH) : 0] o_dsp_rd_level,
+    // DSP-domain stream: one word per DSP cycle after FIFO prefill.
+    // The downstream must accept every word marked by o_dsp_valid.
+    output logic [DSP_W - 1 : 0]          o_dsp_line,
+    output logic                          o_dsp_valid,
+    output logic                          o_dsp_empty,
 
     // Write-domain status, for overflow monitoring in the FEC domain.
-    output wire logic                          o_fifo_full
+    output logic                          o_fifo_full
 );
     localparam int unsigned LANES = 7;
     localparam int unsigned CW_W = 127;
     localparam int unsigned PAY_W = 113;
     localparam int unsigned FEC_W = LANES * CW_W;
+    localparam int unsigned FIFO_LEVEL_W = $clog2(FIFO_DEPTH) + 1;
+    localparam int unsigned START_LEVEL = 2;
     localparam int unsigned RESET_SYNC_STAGES = 2;
 
     logic fec_rst_n;
@@ -39,6 +41,11 @@ module tx_top #(
     // DSP-width words, still generated in the FEC clock domain.
     logic [DSP_W - 1 : 0] gearbox_data;
     logic gearbox_valid;
+
+    // DSP-domain read control, matching the RX FIFO startup convention.
+    logic [FIFO_LEVEL_W - 1 : 0] fifo_rd_level;
+    logic fifo_rd_en;
+    logic fifo_started;
 
     sync_rst_n #(
         .PIPE(RESET_SYNC_STAGES)
@@ -121,12 +128,23 @@ module tx_top #(
         .i_wr_rst_n(fec_rst_n),
         .i_rd_rst_n(dsp_rst_n),
         .i_wr_en(gearbox_valid),
-        .i_rd_en(i_dsp_rd_en),
+        .i_rd_en(fifo_rd_en),
         .i_data(gearbox_data),
-        .o_data(o_line),
+        .o_data(o_dsp_line),
         .o_empty(o_dsp_empty),
         .o_full(o_fifo_full),
-        .o_rd_level(o_dsp_rd_level)
+        .o_rd_level(fifo_rd_level)
     );
-    
+
+    always_ff @(posedge i_clk_dsp) begin
+        if (!dsp_rst_n)
+            fifo_started <= 1'b0;
+        else if (i_en && (fifo_rd_level >= FIFO_LEVEL_W'(START_LEVEL)))
+            fifo_started <= 1'b1;
+    end
+
+    assign fifo_rd_en = i_en && (fifo_started || fifo_rd_level >= FIFO_LEVEL_W'(START_LEVEL));
+
+    assign o_dsp_valid = fifo_rd_en;
+
 endmodule

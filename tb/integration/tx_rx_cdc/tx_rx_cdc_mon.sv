@@ -24,6 +24,7 @@ class tx_rx_cdc_mon;
                 txn.locked       = vif.cb_mon.o_locked;
                 txn.error_count  = vif.cb_mon.o_error_count;
                 txn.valid        = vif.cb_mon.o_valid;
+                txn.injection_done = vif.cb_mon.injection_done;
                 mon2scb.put(txn);
             end
         end

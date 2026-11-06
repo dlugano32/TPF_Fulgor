@@ -9,6 +9,8 @@ class tx_rx_cdc_scb;
     int unsigned     error_count = 0;
     longint unsigned accumulated_errors = 0;
     bit              done = 1'b0;
+    int unsigned     burst_cases [5];
+    int unsigned     burst_cases_with_errors [5];
 
     function new(
         mailbox #(tx_rx_cdc_test_cfg) drv2scb_cfg,
@@ -26,6 +28,8 @@ class tx_rx_cdc_scb;
         int unsigned output_cycles = 0;
         longint unsigned post_fec_errors = 0;
         bit unknown_count = 1'b0;
+        int unsigned remaining_cycles = cfg.cycles;
+        int unsigned wait_cycles = 0;
 
         for (int unsigned cycle = 0; cycle < LOCK_TIMEOUT; cycle++) begin
             tx_rx_cdc_txn actual;
@@ -42,8 +46,9 @@ class tx_rx_cdc_scb;
             $fatal(1, "TX/RX CDC lock timeout test=%0d seed=0x%08h timeout=%0d",
                 cfg.test_index, cfg.seed, LOCK_TIMEOUT);
 
-        // Count valid error reports, after the first report no gaps are allowed.
-        for (int unsigned cycle = 0; cycle < cfg.cycles + CHECKER_TIMEOUT; cycle++) begin
+        // Accumulate every valid report. BURST ends after cfg.cycles valid
+        // reports following injection_done; CLEAN counts from acquisition.
+        while (remaining_cycles != 0) begin
             tx_rx_cdc_txn actual;
 
             mon2scb.get(actual);
@@ -61,28 +66,36 @@ class tx_rx_cdc_scb;
 
                 output_cycles++;
                 checked_cycles++;
-                if (output_cycles == cfg.cycles)
-                    break;
+                if (cfg.mode == CLEAN_TEST || actual.injection_done === 1'b1)
+                    remaining_cycles--;
             end else if (results_started) begin
                 $fatal(1, "TX/RX CDC missing result test=%0d result=%0d", cfg.test_index, output_cycles);
-            end else if (cycle + 1 >= CHECKER_TIMEOUT) begin
-                $fatal(1, "TX/RX CDC first result timeout test=%0d", cfg.test_index);
+            end else begin
+                wait_cycles++;
+                if (wait_cycles >= CHECKER_TIMEOUT)
+                    $fatal(1, "TX/RX CDC first result timeout test=%0d", cfg.test_index);
             end
         end
 
-        if (output_cycles != cfg.cycles)
-            $fatal(1, "TX/RX CDC result count mismatch test=%0d expected=%0d received=%0d",
-                cfg.test_index, cfg.cycles, output_cycles);
-
         accumulated_errors += post_fec_errors;
-        if (unknown_count || post_fec_errors != 0) begin
+        if (cfg.mode == BURST_TEST) begin
+            int unsigned length_index = cfg.test_index % 5;
+            burst_cases[length_index]++;
+            if (post_fec_errors != 0)
+                burst_cases_with_errors[length_index]++;
+        end
+
+        if (unknown_count ||
+            ((cfg.mode == CLEAN_TEST || cfg.burst_length == 98) && post_fec_errors != 0) ||
+            (cfg.mode == BURST_TEST && cfg.burst_length == 114 && post_fec_errors == 0)) begin
             $error("TX/RX CDC mismatch test=%0d seed=0x%08h post_fec_errors=%0d unknown_count=%0b",
                 cfg.test_index, cfg.seed, post_fec_errors, unknown_count);
             error_count++;
         end
 
-        $display("[SCB] mode=CLEAN test=%0d seed=0x%08h checked_cycles=%0d post_fec_errors=%0d",
-            cfg.test_index, cfg.seed, output_cycles, post_fec_errors);
+        $display("[SCB] mode=%s test=%0d seed=0x%08h checked_cycles=%0d burst_length=%0d dsp_offset=%0d post_fec_errors=%0d",
+            (cfg.mode == CLEAN_TEST) ? "CLEAN" : "BURST", cfg.test_index, cfg.seed,
+            output_cycles, cfg.burst_length, cfg.burst_offset, post_fec_errors);
 
         checked_tests++;
         scb2drv_done.put(1'b1);

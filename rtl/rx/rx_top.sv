@@ -6,20 +6,20 @@ module rx_top #(
     localparam int unsigned DSP_W = 1024,
     localparam int unsigned CNT_W = $clog2(LANES * PAY_W + 1)
 ) (
-    input  wire logic                                i_clk_fec,
-    input  wire logic                                i_clk_dsp,
-    input  wire logic                                i_arst_n,
-    input  wire logic                                i_en,
+    input  logic                                i_clk_fec,
+    input  logic                                i_clk_dsp,
+    input  logic                                i_arst_n,
+    input  logic                                i_en,
 
     // DSP-domain FIFO interface: accept i_dsp_line when i_dsp_wr_en && !o_dsp_full.
-    input  wire logic [DSP_W - 1 : 0]                i_dsp_line,
-    input  wire logic                                i_dsp_wr_en,
-    output wire logic                                o_dsp_full,
+    input  logic [DSP_W - 1 : 0]                i_dsp_line,
+    input  logic                                i_dsp_wr_en,
+    output logic                                o_dsp_full,
 
-    output wire logic [LANES - 1 : 0][PAY_W - 1 : 0] o_payload,
-    output wire logic                                o_locked,
-    output wire logic [CNT_W - 1 : 0]                o_error_count,
-    output wire logic                                o_valid
+    output logic [LANES - 1 : 0][PAY_W - 1 : 0] o_payload,
+    output logic                                o_locked,
+    output logic [CNT_W - 1 : 0]                o_error_count,
+    output logic                                o_valid
 );
     localparam int unsigned CW_W = 127;
     localparam int unsigned FEC_W = LANES * CW_W;
@@ -43,6 +43,8 @@ module rx_top #(
     logic [FIFO_LEVEL_W - 1 : 0] fifo_rd_level;
     logic fifo_rd_en;
     logic fifo_started;
+    logic fifo_empty;
+
     logic gearbox_en;
     logic gearbox_valid;
 
@@ -74,7 +76,7 @@ module rx_top #(
         .i_rd_en(fifo_rd_en),
         .i_data(i_dsp_line),
         .o_data(fifo_data),
-        .o_empty(),
+        .o_empty(fifo_empty),
         .o_full(o_dsp_full),
         .o_rd_level(fifo_rd_level)
     );
