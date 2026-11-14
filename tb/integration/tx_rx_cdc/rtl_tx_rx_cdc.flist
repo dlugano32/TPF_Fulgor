@@ -1,6 +1,6 @@
-rtl/common/sync_bus.sv
 rtl/common/sync_rst_n.sv
-rtl/common/async_fifo.sv
+rtl/common/sync_level.sv
+rtl/common/gearbox_cdc.sv
 rtl/tx/prbs31/prbs31_pkg.sv
 rtl/tx/prbs31/prbs31_mult_a.sv
 rtl/tx/prbs31/prbs31_mult_b.sv
@@ -10,7 +10,6 @@ rtl/tx/encoder/bch_mult_p.sv
 rtl/tx/encoder/bch_encoder.sv
 rtl/tx/lane_permuter/lane_permuter.sv
 rtl/tx/conv_interleaver/conv_interleaver.sv
-rtl/tx/gearbox_widen/gearbox_widen.sv
 rtl/rx/decoder/bch_decoder_pkg.sv
 rtl/rx/decoder/bch_mult_m.sv
 rtl/rx/decoder/bch_syndrome.sv
@@ -22,7 +21,6 @@ rtl/rx/decoder/bch_root_calculator.sv
 rtl/rx/decoder/bch_decoder.sv
 rtl/rx/conv_deinterleaver/conv_deinterleaver.sv
 rtl/rx/lane_depermuter/lane_depermuter.sv
-rtl/rx/gearbox_narrow/gearbox_narrow.sv
 rtl/rx/prbs31_checker/popcount.sv
 rtl/rx/prbs31_checker/prbs31_checker.sv
 rtl/tx/tx_top.sv

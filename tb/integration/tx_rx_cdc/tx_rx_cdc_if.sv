@@ -13,7 +13,7 @@ interface tx_rx_cdc_if #(
     logic                 o_locked;
     logic [CNT_W - 1 : 0] o_error_count;
     logic                 o_valid;
-    logic [1023:0]        error_mask;
+    logic [1015:0]        error_mask;
     logic                 injection_done;
     logic                 dsp_transfer;
 

@@ -10,7 +10,7 @@ package tx_rx_cdc_tb_pkg;
     localparam int unsigned RANDOM_SEED = 32'h0FEC_2026;
     localparam int unsigned CNT_W = $clog2(7 * 113 + 1);
     localparam int unsigned ORDER = 31;
-    localparam int unsigned DSP_W = 1024;
+    localparam int unsigned DSP_W = 1016;
     localparam int unsigned BURST_TEST_COUNT = 100;
     localparam int unsigned POST_BURST_CYCLES = 16;
 

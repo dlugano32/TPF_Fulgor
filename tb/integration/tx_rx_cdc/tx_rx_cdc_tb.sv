@@ -2,9 +2,9 @@
 
 module tx_rx_cdc_tb;
 
-    // Integer half-periods preserve 889*f_FEC = 1024*f_DSP exactly at 1 ps.
+    // Integer half-periods preserve 889*f_FEC = 1016*f_DSP exactly at 1 ps.
     localparam time FEC_PERIOD = 2 * 889ps;
-    localparam time DSP_PERIOD = 2 * 1024ps;
+    localparam time DSP_PERIOD = 2 * 1016ps;
     localparam time DSP_PHASE = 1ps;
 
     logic clk_fec = 1'b0;
@@ -18,11 +18,9 @@ module tx_rx_cdc_tb;
 
     tx_rx_cdc_if vif (clk_fec, clk_dsp);
 
-    logic [1023:0] tx_dsp_line;
+    logic [1015:0] tx_dsp_line;
     logic tx_dsp_valid;
-    logic tx_dsp_empty;
-    logic rx_dsp_full;
-    logic [1023:0] channel_line;
+    logic [1015:0] channel_line;
 
     tx_top u_tx_top (
         .i_clk_fec      (clk_fec),
@@ -31,8 +29,7 @@ module tx_rx_cdc_tb;
         .i_en           (vif.i_en),
         .i_seed         (vif.i_seed),
         .o_dsp_line     (tx_dsp_line),
-        .o_dsp_valid    (tx_dsp_valid),
-        .o_dsp_empty    (tx_dsp_empty)
+        .o_dsp_valid    (tx_dsp_valid)
     );
 
     assign vif.dsp_transfer = tx_dsp_valid;
@@ -42,10 +39,8 @@ module tx_rx_cdc_tb;
         .i_clk_fec     (clk_fec),
         .i_clk_dsp     (clk_dsp),
         .i_arst_n      (vif.i_arst_n),
-        .i_en          (vif.i_en),
         .i_dsp_line    (channel_line),
-        .i_dsp_wr_en   (tx_dsp_valid),
-        .o_dsp_full    (rx_dsp_full),
+        .i_dsp_valid   (tx_dsp_valid),
         .o_locked      (vif.o_locked),
         .o_error_count (vif.o_error_count),
         .o_valid       (vif.o_valid)
@@ -53,10 +48,6 @@ module tx_rx_cdc_tb;
 
     always @(posedge clk_dsp) begin
         if (tx_dsp_valid) begin
-            if (tx_dsp_empty !== 1'b0)
-                $fatal(1, "TX/RX CDC TX FIFO underflow");
-            if (rx_dsp_full !== 1'b0)
-                $fatal(1, "TX/RX CDC RX FIFO rejected write");
             if ($isunknown(tx_dsp_line))
                 $fatal(1, "TX/RX CDC unknown DSP data");
         end

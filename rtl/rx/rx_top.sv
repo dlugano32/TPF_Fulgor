@@ -3,18 +3,15 @@
 module rx_top #(
     localparam int unsigned LANES = 7,
     localparam int unsigned PAY_W = 113,
-    localparam int unsigned DSP_W = 1024,
+    localparam int unsigned DSP_W = 1016,
     localparam int unsigned CNT_W = $clog2(LANES * PAY_W + 1)
 ) (
     input  logic                                i_clk_fec,
     input  logic                                i_clk_dsp,
     input  logic                                i_arst_n,
-    input  logic                                i_en,
 
-    // DSP-domain FIFO interface: accept i_dsp_line when i_dsp_wr_en && !o_dsp_full.
     input  logic [DSP_W - 1 : 0]                i_dsp_line,
-    input  logic                                i_dsp_wr_en,
-    output logic                                o_dsp_full,
+    input  logic                                i_dsp_valid,
 
     output logic [LANES - 1 : 0][PAY_W - 1 : 0] o_payload,
     output logic                                o_locked,
@@ -23,9 +20,6 @@ module rx_top #(
 );
     localparam int unsigned CW_W = 127;
     localparam int unsigned FEC_W = LANES * CW_W;
-    localparam int unsigned FIFO_DEPTH = 8;
-    localparam int unsigned FIFO_LEVEL_W = $clog2(FIFO_DEPTH) + 1;
-    localparam int unsigned START_LEVEL = 2;
     localparam int unsigned RESET_SYNC_STAGES = 2;
 
     logic fec_rst_n;
@@ -35,17 +29,9 @@ module rx_top #(
     logic [LANES - 1 : 0][CW_W  - 1 : 0] codewords;
     logic [LANES - 1 : 0] payload_valid;
     logic decoded_line_valid;
-    logic [FEC_W - 1 : 0] interleaved_line;
+    logic [FEC_W - 1 : 0] gearbox_data;
     logic [FEC_W - 1 : 0] deinterleaved_line;
 
-    // DSP-width FWFT head, consumed in the FEC clock domain.
-    logic [DSP_W - 1 : 0] fifo_data;
-    logic [FIFO_LEVEL_W - 1 : 0] fifo_rd_level;
-    logic fifo_rd_en;
-    logic fifo_started;
-    logic fifo_empty;
-
-    logic gearbox_en;
     logic gearbox_valid;
 
     sync_rst_n #(
@@ -64,43 +50,20 @@ module rx_top #(
         .o_rst_n(dsp_rst_n)
     );
 
-    async_fifo #(
-        .WIDTH(DSP_W),
-        .DEPTH(FIFO_DEPTH)
-    ) u_rx_fifo (
+    gearbox_cdc #(
+        .PAR_IN(8),
+        .PAR_OUT(LANES),
+        .DEPTH(112),
+        .DATA_T(logic [CW_W  - 1 : 0])
+    ) u_rx_gearbox_cdc(
         .i_wr_clk(i_clk_dsp),
         .i_rd_clk(i_clk_fec),
         .i_wr_rst_n(dsp_rst_n),
         .i_rd_rst_n(fec_rst_n),
-        .i_wr_en(i_dsp_wr_en),
-        .i_rd_en(fifo_rd_en),
+        .i_wr_en(i_dsp_valid),
         .i_data(i_dsp_line),
-        .o_data(fifo_data),
-        .o_empty(fifo_empty),
-        .o_full(o_dsp_full),
-        .o_rd_level(fifo_rd_level)
-    );
-
-    always_ff @(posedge i_clk_fec) begin
-        if (!fec_rst_n)
-            fifo_started <= 1'b0;
-        else if (i_en && fifo_rd_level >= FIFO_LEVEL_W'(START_LEVEL))
-            fifo_started <= 1'b1;
-    end
-
-    assign gearbox_en = i_en && (fifo_started || fifo_rd_level >= FIFO_LEVEL_W'(START_LEVEL));
-
-    gearbox_narrow #(
-        .BITS_IN(DSP_W),
-        .BITS_OUT(FEC_W)
-    ) u_gearbox_narrow (
-        .i_clk(i_clk_fec),
-        .i_rst_n(fec_rst_n),
-        .i_en(gearbox_en),
-        .i_data(fifo_data),
-        .o_data(interleaved_line),
-        .o_valid(gearbox_valid),
-        .o_rd_en(fifo_rd_en)
+        .o_data(gearbox_data),
+        .o_valid(gearbox_valid)
     );
 
     conv_deinterleaver #(
@@ -111,7 +74,7 @@ module rx_top #(
         .i_clk(i_clk_fec),
         .i_rst_n(fec_rst_n),
         .i_en(gearbox_valid),
-        .i_line(interleaved_line),
+        .i_line(gearbox_data),
         .o_line(deinterleaved_line)
     );
 
