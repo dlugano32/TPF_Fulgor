@@ -15,17 +15,17 @@ module bch_decoder
     output logic             o_valid
 );
 
-    // Four enabled register stages. History holds when the datapath stalls;
+    // Five enabled register stages. History holds when the datapath stalls;
     // output valid pulses only when a new decoded word reaches the output.
-    logic [2:0] valid_history_r;
+    logic [3:0] valid_history_r;
     always_ff @(posedge i_clk) begin
         if (!i_rst_n) begin
             valid_history_r <= '0;
             o_valid <= 1'b0;
         end else begin
-            o_valid <= i_en && valid_history_r[2];
+            o_valid <= i_en && valid_history_r[3];
             if (i_en)
-                valid_history_r <= {valid_history_r[1:0], 1'b1};
+                valid_history_r <= {valid_history_r[2:0], 1'b1};
         end
     end
 
@@ -150,7 +150,7 @@ module bch_decoder
     end
 
     // =========================================================================
-    // PIPE 3 START: ERROR LOCATION AND CORRECTION
+    // PIPE 3 START: ROOT CALCULATION AND ERROR CLASSIFICATION
     // =========================================================================
     // Combinational signals
     logic [M - 1 : 0] single_err_pos;
@@ -169,6 +169,15 @@ module bch_decoder
     logic             corrected;
     logic             uncorrectable;
 
+    // Stage registers: roots and matching data/control before mask generation.
+    logic [N - 1 : 0] rx_r3;
+    logic [M - 1 : 0] log_root1_r3;
+    logic [M - 1 : 0] log_root2_r3;
+    logic [M - 1 : 0] log_syn1_r3;
+    logic             single_err_r3;
+    logic             double_err_r3;
+    logic             uncorrectable_r3;
+
     // Double-error locations
     bch_root_calculator
     u_bch_root1_calculator (
@@ -186,16 +195,6 @@ module bch_decoder
         .o_log_root (log_root2)
     );
 
-    // Error positions and masks
-    assign single_err_pos = log_syn1_r2;
-
-    assign double_err_pos1 = (log_root1 == '0) ? 7'd0 : (7'd127 - log_root1);
-
-    assign double_err_pos2 = (log_root2 == '0) ? 7'd0 : (7'd127 - log_root2);
-
-    assign single_err_mask =  127'd1 << single_err_pos;
-    assign double_err_mask = (127'd1 << double_err_pos1) | (127'd1 << double_err_pos2);
-
     // Error classification
     assign single_err = (syn1_r2 != '0) && (syn1_cubed_r2 == syn3_r2);
 
@@ -205,16 +204,49 @@ module bch_decoder
     assign uncorrectable = ((syn1_r2 == '0) && (syn3_r2 != '0)) ||
                            ((syn1_r2 != '0) && (syn1_cubed_r2 != syn3_r2) && (omega1_r2[0] == 1'b1));
 
-    // Error correction. Uncorrectable words pass-through.
-    assign sel_err_mask = single_err ? single_err_mask :
-                          double_err ? double_err_mask :
-                                       '0;
-
-    assign corrected_cw = rx_r2 ^ sel_err_mask;
-    assign corrected    = single_err || double_err;
+    // PIPE 3 END: ROOT AND CLASSIFICATION REGISTER
+    always_ff @(posedge i_clk) begin
+        if (!i_rst_n) begin
+            rx_r3            <= '0;
+            log_root1_r3     <= '0;
+            log_root2_r3     <= '0;
+            log_syn1_r3      <= '0;
+            single_err_r3    <= 1'b0;
+            double_err_r3    <= 1'b0;
+            uncorrectable_r3 <= 1'b0;
+        end else if (i_en) begin
+            rx_r3            <= rx_r2;
+            log_root1_r3     <= log_root1;
+            log_root2_r3     <= log_root2;
+            log_syn1_r3      <= log_syn1_r2;
+            single_err_r3    <= single_err;
+            double_err_r3    <= double_err;
+            uncorrectable_r3 <= uncorrectable;
+        end
+    end
 
     // =========================================================================
-    // PIPE 3 END: OUTPUT REGISTER
+    // PIPE 4 START: ERROR MASK GENERATION AND CORRECTION
+    // =========================================================================
+    assign single_err_pos = log_syn1_r3;
+
+    assign double_err_pos1 = (log_root1_r3 == '0) ? 7'd0 : (7'd127 - log_root1_r3);
+
+    assign double_err_pos2 = (log_root2_r3 == '0) ? 7'd0 : (7'd127 - log_root2_r3);
+
+    assign single_err_mask =  127'd1 << single_err_pos;
+    assign double_err_mask = (127'd1 << double_err_pos1) | (127'd1 << double_err_pos2);
+
+    // Error correction. Uncorrectable words pass-through.
+    assign sel_err_mask = single_err_r3 ? single_err_mask :
+                          double_err_r3 ? double_err_mask :
+                                          '0;
+
+    assign corrected_cw = rx_r3 ^ sel_err_mask;
+    assign corrected    = single_err_r3 || double_err_r3;
+
+    // =========================================================================
+    // PIPE 4 END: OUTPUT REGISTER
     // =========================================================================
     always_ff @(posedge i_clk) begin
         if (!i_rst_n) begin
@@ -228,7 +260,7 @@ module bch_decoder
             o_cw            <= corrected_cw;
             o_msg           <= corrected_cw[N - 1 -: K];
             o_corrected     <= corrected;
-            o_uncorrectable <= uncorrectable;
+            o_uncorrectable <= uncorrectable_r3;
         end
     end
 

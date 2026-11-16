@@ -4,7 +4,7 @@
 
 set TOP $::env(TOP)
 set LIB_BASE [file normalize $::env(LIB_BASE)]
-set PROJ_ROOT [file normalize [file join [file dirname [info script]] /../..]]
+set PROJ_ROOT [file normalize [file join [file dirname [info script]] ../../]]
 if {$TOP ni {tx_top rx_top}} {
     error "TOP debe ser tx_top o rx_top"
 }
@@ -44,9 +44,9 @@ set CMIN_FILE [file join $LIB_BASE physical saed14nm_1p9m_Cmin.tlup]
 # Fuentes RTL
 ###############################################################################
 set RTL_SOURCE [list \
-    common/sync_bus.sv \
+    common/sync_level.sv \
     common/sync_rst_n.sv \
-    common/async_fifo.sv \
+    common/gearbox_cdc.sv \
     tx/prbs31/prbs31_pkg.sv \
     tx/prbs31/prbs31_mult_a.sv \
     tx/prbs31/prbs31_mult_b.sv]
@@ -59,7 +59,6 @@ if {$TOP eq "tx_top"} {
         tx/encoder/bch_encoder.sv \
         tx/lane_permuter/lane_permuter.sv \
         tx/conv_interleaver/conv_interleaver.sv \
-        tx/gearbox_widen/gearbox_widen.sv \
         tx/tx_top.sv
 } else {
     lappend RTL_SOURCE \
@@ -74,7 +73,6 @@ if {$TOP eq "tx_top"} {
         rx/decoder/bch_decoder.sv \
         rx/conv_deinterleaver/conv_deinterleaver.sv \
         rx/lane_depermuter/lane_depermuter.sv \
-        rx/gearbox_narrow/gearbox_narrow.sv \
         rx/prbs31_checker/popcount.sv \
         rx/prbs31_checker/prbs31_checker.sv \
         rx/rx_top.sv
@@ -124,6 +122,7 @@ foreach {corner pvt rc} [list slow $SLOW_PVT Cmax fast $FAST_PVT Cmin] {
 ###############################################################################
 # Sintesis y reportes
 ###############################################################################
+set_app_options -name compile.flow.high_effort_timing -value 1
 compile_fusion
 
 report_units > $REPORT_DIR/units.rpt
@@ -143,7 +142,7 @@ foreach corner {slow fast} {
         report_timing -group $clock -delay_type min -max_paths 10 -significant_digits 6 > $REPORT_DIR/hold_${corner}_${clock}.rpt
     }
     report_power > $REPORT_DIR/power_${corner}.rpt
-    report_qor > $REPORT_DIR/qor_${corner}.rpt
+    report_qor -significant_digits 6 > $REPORT_DIR/qor_${corner}.rpt
     write_sdf $OUT_DIR/${TOP}_${corner}.sdf
     write_sdc -output $OUT_DIR/${TOP}_${corner}.sdc
 }

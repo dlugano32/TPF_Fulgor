@@ -15,32 +15,38 @@ interface bch_decoder_if
     logic [N - 1 : 0]     rx_r0;
     logic [N - 1 : 0]     rx_r1;
     logic [N - 1 : 0]     rx_r2;
+    logic [N - 1 : 0]     rx_r3;
     logic [N - 1 : 0]     rx_aligned;
     logic                 valid_r0;
     logic                 valid_r1;
     logic                 valid_r2;
+    logic                 valid_r3;
     logic                 o_valid;
 
-    //! 4 stage FIFO
+    //! 5 stage FIFO
     always_ff @(posedge clk) begin
         if (!i_rst_n) begin
             rx_r0      <= '0;
             rx_r1      <= '0;
             rx_r2      <= '0;
+            rx_r3      <= '0;
             rx_aligned <= '0;
             valid_r0   <= 1'b0;
             valid_r1   <= 1'b0;
             valid_r2   <= 1'b0;
+            valid_r3   <= 1'b0;
             o_valid    <= 1'b0;
         end else begin
             rx_r0      <= i_rx;
             rx_r1      <= rx_r0;
             rx_r2      <= rx_r1;
-            rx_aligned <= rx_r2;
+            rx_r3      <= rx_r2;
+            rx_aligned <= rx_r3;
             valid_r0   <= i_valid;
             valid_r1   <= valid_r0;
             valid_r2   <= valid_r1;
-            o_valid    <= valid_r2;
+            valid_r3   <= valid_r2;
+            o_valid    <= valid_r3;
         end
     end
 

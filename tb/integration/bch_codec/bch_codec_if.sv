@@ -19,52 +19,61 @@ interface bch_codec_if
     logic [N - 1 : 0]     encoder_cw_r0;
     logic [N - 1 : 0]     encoder_cw_r1;
     logic [N - 1 : 0]     encoder_cw_r2;
+    logic [N - 1 : 0]     encoder_cw_r3;
     logic [N - 1 : 0]     encoded_cw_aligned;
     logic [N - 1 : 0]     rx_r0;
     logic [N - 1 : 0]     rx_r1;
     logic [N - 1 : 0]     rx_r2;
+    logic [N - 1 : 0]     rx_r3;
     logic [N - 1 : 0]     rx_aligned;
     logic                 valid_r0;
     logic                 valid_r1;
     logic                 valid_r2;
     logic                 valid_r3;
+    logic                 valid_r4;
     logic                 o_valid;
 
-    // 5 latency cycles encoder + decoder
+    // 6 latency cycles encoder + decoder
     always_ff @(posedge clk) begin
         if (!i_rst_n) begin
             encoder_cw_r0      <= '0;
             encoder_cw_r1      <= '0;
             encoder_cw_r2      <= '0;
+            encoder_cw_r3      <= '0;
             encoded_cw_aligned <= '0;
             rx_r0              <= '0;
             rx_r1              <= '0;
             rx_r2              <= '0;
+            rx_r3              <= '0;
             rx_aligned         <= '0;
             valid_r0           <= 1'b0;
             valid_r1           <= 1'b0;
             valid_r2           <= 1'b0;
             valid_r3           <= 1'b0;
+            valid_r4           <= 1'b0;
             o_valid            <= 1'b0;
         end else begin
-            // 4 stages decoder
+            // 5 stages decoder
             encoder_cw_r0      <= encoder_cw;
             encoder_cw_r1      <= encoder_cw_r0;
             encoder_cw_r2      <= encoder_cw_r1;
-            encoded_cw_aligned <= encoder_cw_r2;
+            encoder_cw_r3      <= encoder_cw_r2;
+            encoded_cw_aligned <= encoder_cw_r3;
 
-            // 4 stages decoder
+            // 5 stages decoder
             rx_r0              <= decoder_rx;
             rx_r1              <= rx_r0;
             rx_r2              <= rx_r1;
-            rx_aligned         <= rx_r2;
+            rx_r3              <= rx_r2;
+            rx_aligned         <= rx_r3;
 
-            // 5 stages from encoder to decoder
+            // 6 stages from encoder to decoder
             valid_r0           <= i_valid;
             valid_r1           <= valid_r0;
             valid_r2           <= valid_r1;
             valid_r3           <= valid_r2;
-            o_valid            <= valid_r3;
+            valid_r4           <= valid_r3;
+            o_valid            <= valid_r4;
         end
     end
 
