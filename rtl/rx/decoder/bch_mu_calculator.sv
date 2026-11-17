@@ -34,6 +34,7 @@ module bch_mu_calculator #(
 
     logic [M - 1 : 0] mu;
     logic [M - 1 : 0] log_mu;
+    logic [M     : 0] log_mu_diff;
 
     // log(S1)
     gf127_log_lut
@@ -42,17 +43,17 @@ module bch_mu_calculator #(
         .o_logarithm (log_syn1)
     );
 
-    // S1^3 = exp(3 * log(S1) mod 127)
+    // Logarithmic denominator, computed in parallel with the direct cube.
     assign triple_log_syn1 = 3 * log_syn1;
 
     assign log_syn1_cubed = (triple_log_syn1 >= 9'd254) ? (triple_log_syn1 - 9'd254) :
                             (triple_log_syn1 >= 9'd127) ? (triple_log_syn1 - 9'd127) :
                                                            triple_log_syn1;
 
-    gf127_exp_lut
-    u_exp_cube_syn1_lut (
-        .i_exponent (log_syn1_cubed),
-        .o_element  (syn1_cubed)
+    gf127_cube_lut
+    u_cube_syn1_lut (
+        .i_element (i_syn1),
+        .o_cube    (syn1_cubed)
     );
 
     // Numerator: S1^3 + S3
@@ -82,9 +83,12 @@ module bch_mu_calculator #(
         .o_logarithm (log_num)
     );
 
-    // Division in the logarithmic domain
-    assign log_mu = (log_num >= log_syn1_cubed_r1) ? (log_num - log_syn1_cubed_r1) :
-                                                     (7'd127 - (log_syn1_cubed_r1 - log_num));
+    // Module substraction for division
+    // log(mu) = log(S1^3 + S1) / S1^3
+    // Correct the wrapped difference by -1 when the subtraction borrows.
+    assign log_mu_diff = {1'b0, log_num} - {1'b0, log_syn1_cubed_r1};
+    assign log_mu = log_mu_diff[M] ? (log_mu_diff[M - 1 : 0] - 7'd1)
+                                   :  log_mu_diff[M - 1 : 0];
 
     gf127_exp_lut
     u_exp_mu_lut (

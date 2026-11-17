@@ -11,6 +11,7 @@ module gf127_divider #(
     logic [M - 1 : 0] log_num;
     logic [M - 1 : 0] log_den;
     logic [M - 1 : 0] log_quo;
+    logic [M     : 0] log_quo_diff;
     logic [M - 1 : 0] quo;
 
     gf127_log_lut
@@ -25,8 +26,10 @@ module gf127_divider #(
         .o_logarithm (log_den)
     );
 
-    assign log_quo = (log_num >= log_den) ? log_num - log_den : 
-                                            (7'd127 - (log_den - log_num));
+    // Correct the wrapped difference by -1 when the subtraction borrows.
+    assign log_quo_diff = {1'b0, log_num} - {1'b0, log_den};
+    assign log_quo = log_quo_diff[M] ? (log_quo_diff[M - 1 : 0] - 7'd1)
+                                   :  log_quo_diff[M - 1 : 0];
 
     gf127_exp_lut
     u_quo_exp_lut (

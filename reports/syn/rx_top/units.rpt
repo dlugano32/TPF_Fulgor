@@ -1,0 +1,30 @@
+****************************************
+Report : user_units
+Design : rx_top
+Version: Y-2026.03
+Date   : Tue Nov 17 17:10:09 2026
+****************************************
+
+Input Units (set by technology library)
+----------------------------------------------
+time                         : 1.00ns
+resistance                   : 1.00kOhm
+capacitance                  : 1.00pF
+voltage                      : 1.00V
+current                      : 1.00uA
+power                        : 1.00pW
+length                       : 1.00um
+energy                       : 1.00pj/t
+
+Output Units (set by technology library)
+----------------------------------------------
+time                         : 1.00ns
+resistance                   : 1.00kOhm
+capacitance                  : 1.00pF
+voltage                      : 1.00V
+current                      : 1.00uA
+power                        : 1.00pW
+length                       : 1.00um
+energy                       : 1.00pj/t
+
+1

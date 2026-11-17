@@ -1,0 +1,590 @@
+****************************************
+Report : timing
+        -path_type full
+        -delay_type max
+        -max_paths 10
+        -report_by design
+        -groups i_clk_dsp
+Design : tx_top
+Version: Y-2026.03
+Date   : Tue Nov 17 12:11:23 2026
+****************************************
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[0] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[3][29] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[0]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[0]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.094929      0.094929 f
+  u_tx_gearbox_cdc/ctmi_29699/X (SAEDSLVT14_AN2_MM_2)
+                                                   0.062580      0.157509 f
+  u_tx_gearbox_cdc/HFSBUF_27903_32000/X (SAEDHVT14_BUF_3)
+                                                   0.102310      0.259819 f
+  u_tx_gearbox_cdc/ctmi_29698/X (SAEDHVT14_AN3_4)
+                                                   0.099792      0.359612 f
+  u_tx_gearbox_cdc/HFSBUF_4836_31749/X (SAEDHVT14_BUF_1P5)
+                                                   0.104160      0.463772 f
+  u_tx_gearbox_cdc/HFSBUF_2495_31744/X (SAEDLVT14_BUF_S_0P75)
+                                                   0.076790      0.540562 f
+  u_tx_gearbox_cdc/HFSBUF_1387_32408/X (SAEDHVT14_BUF_1P5)
+                                                   0.102787      0.643349 f
+  u_tx_gearbox_cdc/A19362/X (SAEDHVT14_AO32_1)     0.070019      0.713367 f
+  u_tx_gearbox_cdc/A19363/X (SAEDHVT14_AO221_0P5)
+                                                   0.040836      0.754204 f
+  u_tx_gearbox_cdc/A19364/X (SAEDRVT14_AO221_1)    0.040035      0.794239 f
+  u_tx_gearbox_cdc/A19365/X (SAEDRVT14_AO221_1)    0.039272      0.833511 f
+  u_tx_gearbox_cdc/A19366/X (SAEDHVT14_AOI21_0P75)
+                                                   0.029545      0.863056 r
+  u_tx_gearbox_cdc/A19367/X (SAEDRVT14_ND2_CDC_0P5)
+                                                   0.024643      0.887699 f
+  u_tx_gearbox_cdc/A19368/X (SAEDRVT14_AO221_0P5)
+                                                   0.088997      0.976696 f
+  u_tx_gearbox_cdc/o_data_reg[3][29]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000706      0.977402 f
+  data arrival time                                              0.977402
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[3][29]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.061106      1.145394
+  data required time                                             1.145407
+  --------------------------------------------------------------------------------
+  data required time                                             1.145407
+  data arrival time                                             -0.977402
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.168005
+
+
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[3] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[0][77] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.103874      0.103874 f
+  u_tx_gearbox_cdc/ctmi_29705/X (SAEDHVT14_AN2_MM_2)
+                                                   0.098915      0.202789 f
+  u_tx_gearbox_cdc/HFSINV_26575_32016/X (SAEDLVT14_INV_S_1)
+                                                   0.083218      0.286007 r
+  u_tx_gearbox_cdc/A30753/X (SAEDSLVT14_NR2_1P5)   0.077267      0.363274 f
+  u_tx_gearbox_cdc/HFSBUF_24421_31607/X (SAEDRVT14_BUF_UCDC_1)
+                                                   0.081081      0.444355 f
+  u_tx_gearbox_cdc/HFSBUF_13650_31583/X (SAEDHVT14_BUF_S_2)
+                                                   0.095749      0.540104 f
+  u_tx_gearbox_cdc/HFSBUF_12954_31573/X (SAEDHVT14_BUF_1P5)
+                                                   0.106030      0.646133 f
+  u_tx_gearbox_cdc/A26439/X (SAEDHVT14_AO32_1)     0.071106      0.717239 f
+  u_tx_gearbox_cdc/A26440/X (SAEDRVT14_AO221_1)    0.039749      0.756989 f
+  u_tx_gearbox_cdc/A26441/X (SAEDRVT14_AO221_1)    0.042686      0.799675 f
+  u_tx_gearbox_cdc/A26442/X (SAEDRVT14_AO221_1)    0.043221      0.842896 f
+  u_tx_gearbox_cdc/A26443/X (SAEDHVT14_AOI21_0P75)
+                                                   0.024261      0.867157 r
+  u_tx_gearbox_cdc/A26444/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.022984      0.890141 f
+  u_tx_gearbox_cdc/A26445/X (SAEDHVT14_AO221_0P5)
+                                                   0.087719      0.977859 f
+  u_tx_gearbox_cdc/o_data_reg[0][77]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000305      0.978165 f
+  data arrival time                                              0.978165
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[0][77]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.058170      1.148330
+  data required time                                             1.148342
+  --------------------------------------------------------------------------------
+  data required time                                             1.148342
+  data arrival time                                             -0.978165
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.170178
+
+
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[3] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[5][54] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.103874      0.103874 f
+  u_tx_gearbox_cdc/ctmi_29705/X (SAEDHVT14_AN2_MM_2)
+                                                   0.098915      0.202789 f
+  u_tx_gearbox_cdc/HFSINV_26575_32016/X (SAEDLVT14_INV_S_1)
+                                                   0.083218      0.286007 r
+  u_tx_gearbox_cdc/A30753/X (SAEDSLVT14_NR2_1P5)   0.077267      0.363274 f
+  u_tx_gearbox_cdc/HFSBUF_24421_31607/X (SAEDRVT14_BUF_UCDC_1)
+                                                   0.081081      0.444355 f
+  u_tx_gearbox_cdc/HFSBUF_13650_31583/X (SAEDHVT14_BUF_S_2)
+                                                   0.095749      0.540104 f
+  u_tx_gearbox_cdc/HFSBUF_12954_31573/X (SAEDHVT14_BUF_1P5)
+                                                   0.106030      0.646133 f
+  u_tx_gearbox_cdc/A25765/X (SAEDHVT14_AO32_1)     0.074883      0.721016 f
+  u_tx_gearbox_cdc/A25766/X (SAEDHVT14_AO221_0P5)
+                                                   0.044231      0.765247 f
+  u_tx_gearbox_cdc/A25767/X (SAEDHVT14_AO221_0P5)
+                                                   0.041656      0.806904 f
+  u_tx_gearbox_cdc/A25768/X (SAEDHVT14_AO221_0P5)
+                                                   0.046883      0.853786 f
+  u_tx_gearbox_cdc/A25769/X (SAEDHVT14_AOI21_0P75)
+                                                   0.025635      0.879421 r
+  u_tx_gearbox_cdc/A25770/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.024433      0.903854 f
+  u_tx_gearbox_cdc/A25771/X (SAEDLVT14_AO221_0P5)
+                                                   0.069695      0.973549 f
+  u_tx_gearbox_cdc/o_data_reg[5][54]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.001049      0.974598 f
+  data arrival time                                              0.974598
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[5][54]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.057153      1.149347
+  data required time                                             1.149360
+  --------------------------------------------------------------------------------
+  data required time                                             1.149360
+  data arrival time                                             -0.974598
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.174762
+
+
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[3] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[6][37] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.103874      0.103874 f
+  u_tx_gearbox_cdc/ctmi_29705/X (SAEDHVT14_AN2_MM_2)
+                                                   0.098915      0.202789 f
+  u_tx_gearbox_cdc/HFSINV_26575_32016/X (SAEDLVT14_INV_S_1)
+                                                   0.083218      0.286007 r
+  u_tx_gearbox_cdc/A30753/X (SAEDSLVT14_NR2_1P5)   0.077267      0.363274 f
+  u_tx_gearbox_cdc/HFSBUF_24421_31607/X (SAEDRVT14_BUF_UCDC_1)
+                                                   0.081081      0.444355 f
+  u_tx_gearbox_cdc/HFSBUF_13650_31583/X (SAEDHVT14_BUF_S_2)
+                                                   0.095749      0.540104 f
+  u_tx_gearbox_cdc/HFSBUF_10617_31579/X (SAEDSLVT14_BUF_S_0P75)
+                                                   0.070667      0.610771 f
+  u_tx_gearbox_cdc/HFSBUF_1824_32293/X (SAEDSLVT14_BUF_1P5)
+                                                   0.061398      0.672169 f
+  u_tx_gearbox_cdc/A23291/X (SAEDHVT14_AO32_1)     0.065594      0.737762 f
+  u_tx_gearbox_cdc/A23292/X (SAEDRVT14_AO221_1)    0.044308      0.782070 f
+  u_tx_gearbox_cdc/A23293/X (SAEDRVT14_AO221_1)    0.041180      0.823250 f
+  u_tx_gearbox_cdc/A23294/X (SAEDRVT14_AO221_1)    0.039749      0.862999 f
+  u_tx_gearbox_cdc/A23295/X (SAEDHVT14_AOI21_0P75)
+                                                   0.023708      0.886707 r
+  u_tx_gearbox_cdc/A23296/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.020084      0.906792 f
+  u_tx_gearbox_cdc/A23297/X (SAEDLVT14_AO221_0P5)
+                                                   0.066376      0.973167 f
+  u_tx_gearbox_cdc/o_data_reg[6][37]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.001030      0.974197 f
+  data arrival time                                              0.974197
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[6][37]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.056045      1.150455
+  data required time                                             1.150467
+  --------------------------------------------------------------------------------
+  data required time                                             1.150467
+  data arrival time                                             -0.974197
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.176270
+
+
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[3] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[1][110] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.103874      0.103874 f
+  u_tx_gearbox_cdc/ctmi_29705/X (SAEDHVT14_AN2_MM_2)
+                                                   0.098915      0.202789 f
+  u_tx_gearbox_cdc/HFSINV_26575_32016/X (SAEDLVT14_INV_S_1)
+                                                   0.083218      0.286007 r
+  u_tx_gearbox_cdc/A30754/X (SAEDRVT14_NR2_MM_4)   0.085258      0.371265 f
+  u_tx_gearbox_cdc/HFSBUF_19343_31641/X (SAEDRVT14_DEL_R2V1_2)
+                                                   0.110950      0.482216 f
+  u_tx_gearbox_cdc/HFSBUF_15856_31634/X (SAEDHVT14_BUF_3)
+                                                   0.108166      0.590382 f
+  u_tx_gearbox_cdc/A25933/X (SAEDHVT14_AO32_1)     0.072708      0.663090 f
+  u_tx_gearbox_cdc/A25934/X (SAEDHVT14_AO221_0P5)
+                                                   0.046787      0.709877 f
+  u_tx_gearbox_cdc/A25935/X (SAEDHVT14_AO221_0P5)
+                                                   0.045586      0.755463 f
+  u_tx_gearbox_cdc/A25936/X (SAEDHVT14_AO221_0P5)
+                                                   0.043201      0.798664 f
+  u_tx_gearbox_cdc/A25937/X (SAEDHVT14_AOI21_0P75)
+                                                   0.027866      0.826530 r
+  u_tx_gearbox_cdc/A25938/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.024300      0.850830 f
+  u_tx_gearbox_cdc/A25939/X (SAEDHVT14_AO221_2)    0.101490      0.952320 f
+  u_tx_gearbox_cdc/o_data_reg[1][110]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.001736      0.954056 f
+  data arrival time                                              0.954056
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[1][110]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.062171      1.144329
+  data required time                                             1.144341
+  --------------------------------------------------------------------------------
+  data required time                                             1.144341
+  data arrival time                                             -0.954056
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.190285
+
+
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[3] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[2][27] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.103874      0.103874 f
+  u_tx_gearbox_cdc/ctmi_29705/X (SAEDHVT14_AN2_MM_2)
+                                                   0.098915      0.202789 f
+  u_tx_gearbox_cdc/HFSINV_26575_32016/X (SAEDLVT14_INV_S_1)
+                                                   0.083218      0.286007 r
+  u_tx_gearbox_cdc/A30754/X (SAEDRVT14_NR2_MM_4)   0.085258      0.371265 f
+  u_tx_gearbox_cdc/HFSBUF_1508_32378/X (SAEDHVT14_BUF_S_2)
+                                                   0.097179      0.468445 f
+  u_tx_gearbox_cdc/HFSBUF_22135_31630/X (SAEDRVT14_BUF_S_2)
+                                                   0.091000      0.559444 f
+  u_tx_gearbox_cdc/A21207/X (SAEDHVT14_AO32_1)     0.072918      0.632362 f
+  u_tx_gearbox_cdc/A21208/X (SAEDHVT14_AO221_0P5)
+                                                   0.045872      0.678234 f
+  u_tx_gearbox_cdc/A21209/X (SAEDHVT14_AO221_0P5)
+                                                   0.046806      0.725040 f
+  u_tx_gearbox_cdc/A21210/X (SAEDHVT14_AO221_0P5)
+                                                   0.048771      0.773811 f
+  u_tx_gearbox_cdc/A21211/X (SAEDHVT14_AOI21_0P75)
+                                                   0.037498      0.811310 r
+  u_tx_gearbox_cdc/A21212/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.025864      0.837173 f
+  u_tx_gearbox_cdc/A21213/X (SAEDHVT14_AO221_2)    0.103321      0.940495 f
+  u_tx_gearbox_cdc/o_data_reg[2][27]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.002041      0.942535 f
+  data arrival time                                              0.942535
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[2][27]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.062719      1.143781
+  data required time                                             1.143794
+  --------------------------------------------------------------------------------
+  data required time                                             1.143794
+  data arrival time                                             -0.942535
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.201259
+
+
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[3] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[0][45] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.103874      0.103874 f
+  u_tx_gearbox_cdc/ctmi_29705/X (SAEDHVT14_AN2_MM_2)
+                                                   0.098915      0.202789 f
+  u_tx_gearbox_cdc/HFSINV_26575_32016/X (SAEDLVT14_INV_S_1)
+                                                   0.083218      0.286007 r
+  u_tx_gearbox_cdc/A30754/X (SAEDRVT14_NR2_MM_4)   0.085258      0.371265 f
+  u_tx_gearbox_cdc/HFSBUF_19343_31641/X (SAEDRVT14_DEL_R2V1_2)
+                                                   0.110950      0.482216 f
+  u_tx_gearbox_cdc/HFSBUF_14026_31635/X (SAEDHVT14_BUF_S_2)
+                                                   0.106049      0.588264 f
+  u_tx_gearbox_cdc/A26967/X (SAEDHVT14_AO32_1)     0.071697      0.659962 f
+  u_tx_gearbox_cdc/A26968/X (SAEDHVT14_AO221_0P5)
+                                                   0.039787      0.699749 f
+  u_tx_gearbox_cdc/A26969/X (SAEDHVT14_AO221_0P5)
+                                                   0.047092      0.746841 f
+  u_tx_gearbox_cdc/A26970/X (SAEDHVT14_AO221_0P5)
+                                                   0.045567      0.792408 f
+  u_tx_gearbox_cdc/A26971/X (SAEDHVT14_AOI21_0P75)
+                                                   0.027103      0.819511 r
+  u_tx_gearbox_cdc/A26972/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.022945      0.842457 f
+  u_tx_gearbox_cdc/A26973/X (SAEDHVT14_AO221_0P5)
+                                                   0.096760      0.939217 f
+  u_tx_gearbox_cdc/o_data_reg[0][45]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000496      0.939713 f
+  data arrival time                                              0.939713
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[0][45]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.063004      1.143496
+  data required time                                             1.143509
+  --------------------------------------------------------------------------------
+  data required time                                             1.143509
+  data arrival time                                             -0.939713
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.203796
+
+
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[3] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[1][99] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.103874      0.103874 f
+  u_tx_gearbox_cdc/ctmi_29705/X (SAEDHVT14_AN2_MM_2)
+                                                   0.098915      0.202789 f
+  u_tx_gearbox_cdc/HFSINV_26575_32016/X (SAEDLVT14_INV_S_1)
+                                                   0.083218      0.286007 r
+  u_tx_gearbox_cdc/A30754/X (SAEDRVT14_NR2_MM_4)   0.085258      0.371265 f
+  u_tx_gearbox_cdc/HFSBUF_1508_32378/X (SAEDHVT14_BUF_S_2)
+                                                   0.097179      0.468445 f
+  u_tx_gearbox_cdc/HFSBUF_22135_31630/X (SAEDRVT14_BUF_S_2)
+                                                   0.091000      0.559444 f
+  u_tx_gearbox_cdc/A20133/X (SAEDHVT14_AO32_1)     0.074863      0.634308 f
+  u_tx_gearbox_cdc/A20134/X (SAEDHVT14_AO221_0P5)
+                                                   0.044708      0.679016 f
+  u_tx_gearbox_cdc/A20135/X (SAEDHVT14_AO221_0P5)
+                                                   0.045605      0.724621 f
+  u_tx_gearbox_cdc/A20136/X (SAEDHVT14_AO221_0P5)
+                                                   0.049000      0.773621 f
+  u_tx_gearbox_cdc/A20137/X (SAEDHVT14_AOI21_0P75)
+                                                   0.045261      0.818882 r
+  u_tx_gearbox_cdc/A20138/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.026340      0.845222 f
+  u_tx_gearbox_cdc/A20139/X (SAEDRVT14_AO221_2)    0.092468      0.937691 f
+  u_tx_gearbox_cdc/o_data_reg[1][99]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.002136      0.939827 f
+  data arrival time                                              0.939827
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[1][99]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.060615      1.145885
+  data required time                                             1.145897
+  --------------------------------------------------------------------------------
+  data required time                                             1.145897
+  data arrival time                                             -0.939827
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.206070
+
+
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[3] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[7][68] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.103874      0.103874 f
+  u_tx_gearbox_cdc/ctmi_29705/X (SAEDHVT14_AN2_MM_2)
+                                                   0.098915      0.202789 f
+  u_tx_gearbox_cdc/HFSINV_26575_32016/X (SAEDLVT14_INV_S_1)
+                                                   0.083218      0.286007 r
+  u_tx_gearbox_cdc/A30753/X (SAEDSLVT14_NR2_1P5)   0.077267      0.363274 f
+  u_tx_gearbox_cdc/HFSBUF_24421_31607/X (SAEDRVT14_BUF_UCDC_1)
+                                                   0.081081      0.444355 f
+  u_tx_gearbox_cdc/HFSBUF_5859_31592/X (SAEDHVT14_BUF_S_2)
+                                                   0.092144      0.536499 f
+  u_tx_gearbox_cdc/HFSBUF_564_31587/X (SAEDLVT14_BUF_CDC_2)
+                                                   0.065155      0.601654 f
+  u_tx_gearbox_cdc/A22310/X (SAEDHVT14_AO32_1)     0.068569      0.670223 f
+  u_tx_gearbox_cdc/A22311/X (SAEDHVT14_AO221_0P5)
+                                                   0.041866      0.712090 f
+  u_tx_gearbox_cdc/A22312/X (SAEDHVT14_AO221_0P5)
+                                                   0.046291      0.758381 f
+  u_tx_gearbox_cdc/A22313/X (SAEDHVT14_AO221_0P5)
+                                                   0.042629      0.801010 f
+  u_tx_gearbox_cdc/A22314/X (SAEDHVT14_AOI21_0P75)
+                                                   0.026588      0.827599 r
+  u_tx_gearbox_cdc/A22315/X (SAEDHVT14_ND2_CDC_0P5)
+                                                   0.023460      0.851059 f
+  u_tx_gearbox_cdc/A22316/X (SAEDHVT14_AO221_0P5)
+                                                   0.087929      0.938988 f
+  u_tx_gearbox_cdc/o_data_reg[7][68]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000420      0.939407 f
+  data arrival time                                              0.939407
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[7][68]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.058482      1.148018
+  data required time                                             1.148030
+  --------------------------------------------------------------------------------
+  data required time                                             1.148030
+  data arrival time                                             -0.939407
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.208623
+
+
+
+  Startpoint: u_tx_gearbox_cdc/rd_ptr_r_reg[3] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Endpoint: u_tx_gearbox_cdc/o_data_reg[2][110] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_dsp
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.000000      0.000000 r
+  u_tx_gearbox_cdc/rd_ptr_r_reg[3]/QN (SAEDHVT14_FSDP_V2LP_1)
+                                                   0.103874      0.103874 f
+  u_tx_gearbox_cdc/ctmi_29705/X (SAEDHVT14_AN2_MM_2)
+                                                   0.098915      0.202789 f
+  u_tx_gearbox_cdc/HFSINV_26575_32016/X (SAEDLVT14_INV_S_1)
+                                                   0.083218      0.286007 r
+  u_tx_gearbox_cdc/A30754/X (SAEDRVT14_NR2_MM_4)   0.085258      0.371265 f
+  u_tx_gearbox_cdc/HFSBUF_19343_31641/X (SAEDRVT14_DEL_R2V1_2)
+                                                   0.110950      0.482216 f
+  u_tx_gearbox_cdc/HFSBUF_15856_31634/X (SAEDHVT14_BUF_3)
+                                                   0.108166      0.590382 f
+  u_tx_gearbox_cdc/A26583/X (SAEDHVT14_AO32_1)     0.072746      0.663128 f
+  u_tx_gearbox_cdc/A26584/X (SAEDRVT14_AO221_1)    0.040760      0.703888 f
+  u_tx_gearbox_cdc/A26585/X (SAEDRVT14_AO221_1)    0.040474      0.744362 f
+  u_tx_gearbox_cdc/A26586/X (SAEDRVT14_AO221_1)    0.040760      0.785122 f
+  u_tx_gearbox_cdc/A26587/X (SAEDHVT14_AOI21_0P75)
+                                                   0.026093      0.811214 r
+  u_tx_gearbox_cdc/A26588/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.023422      0.834637 f
+  u_tx_gearbox_cdc/A26589/X (SAEDHVT14_AO221_2)    0.099831      0.934467 f
+  u_tx_gearbox_cdc/o_data_reg[2][110]/D (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.001698      0.936165 f
+  data arrival time                                              0.936165
+
+  clock i_clk_dsp (rise edge)                      1.270000      1.270000
+  clock network delay (ideal)                      0.000000      1.270000
+  u_tx_gearbox_cdc/o_data_reg[2][110]/CK (SAEDHVT14_FSDPQ_V2LP_2)
+                                                   0.000000      1.270000 r
+  clock uncertainty                               -0.063500      1.206500
+  library setup time                              -0.061550      1.144950
+  data required time                                             1.144962
+  --------------------------------------------------------------------------------
+  data required time                                             1.144962
+  data arrival time                                             -0.936165
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.208797
+
+
+1

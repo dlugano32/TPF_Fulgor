@@ -42,6 +42,7 @@
 !*.hex
 !*.f
 !*.flist
+!*.rpt
 
 ########
 #Obsidian files

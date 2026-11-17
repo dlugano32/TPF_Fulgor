@@ -67,6 +67,7 @@ if {$TOP eq "tx_top"} {
         rx/decoder/bch_syndrome.sv \
         rx/decoder/gf127_op/gf127_log_lut.sv \
         rx/decoder/gf127_op/gf127_exp_lut.sv \
+        rx/decoder/gf127_op/gf127_cube_lut.sv \
         rx/decoder/bch_mu_calculator.sv \
         rx/decoder/bch_omega_calculator.sv \
         rx/decoder/bch_root_calculator.sv \

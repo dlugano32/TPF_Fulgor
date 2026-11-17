@@ -12,6 +12,7 @@ rtl/bch_mult_m.sv
 rtl/bch_syndrome.sv
 rtl/gf127_log_lut.sv
 rtl/gf127_exp_lut.sv
+rtl/gf127_cube_lut.sv
 rtl/bch_mu_calculator.sv
 rtl/bch_omega_calculator.sv
 rtl/bch_root_calculator.sv

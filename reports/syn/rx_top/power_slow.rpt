@@ -1,0 +1,69 @@
+****************************************
+Report : power
+        -significant_digits 2
+Design : rx_top
+Version: Y-2026.03
+Date   : Tue Nov 17 17:10:16 2026
+****************************************
+Information: Activity propagation will be performed for scenario func_slow.
+Information: Doing activity propagation for mode 'functional' and corner 'slow' with effort level 'medium'. (POW-024)
+Information: Timer-derived activity data is cached on scenario func_slow (POW-052)
+Infomation: Fast mode activity propagation power.rtl_activity_annotation setup is ignored. Always use accurate mode.
+Information: Running switching activity propagation in scalar mode!
+
+ **** Information : No. of simulation cycles = 6 ****
+Mode: functional
+Corner: slow
+Scenario: func_slow
+Voltage: 0.72
+Temperature: 125.00
+
+Voltage Unit         : 1V
+Capacitance Unit     : 1pF
+Time Unit            : 1ns
+Temperature Unit     : 1C
+Dynamic Power Unit   : 1pW
+Leakage Power Unit   : 1pW
+
+Switched supply net power scaling:
+scaling for leakage power
+
+Supply nets:
+VDD (power) probability 1.00 (default)
+VSS (ground) probability 1.00 (default)
+Warning: Power table extrapolation (extrapolation mode) for port CK on cell u_rx_gearbox_cdc/clock_gate_wr_mem_reg for parameter Tinp. Lowest table value = inf, highest table value = inf, value = 0.038100 (POW-046)
+Warning: Power table extrapolation (extrapolation mode) for port Q on cell u_rx_gearbox_cdc/clock_gate_wr_mem_reg for parameter Cout. Lowest table value = 0.001000, highest table value = 0.186300, value = 1000.000000 (POW-046)
+Warning: Power table extrapolation (extrapolation mode) for port Q on cell u_rx_gearbox_cdc/wr_mem_reg[13][7][125] for parameter Cout. Lowest table value = 0.001000, highest table value = 0.095240, value = 0.000906 (POW-046)
+Warning: Power table extrapolation (extrapolation mode) for port Q on cell u_rx_gearbox_cdc/wr_mem_reg[13][7][124] for parameter Cout. Lowest table value = 0.001000, highest table value = 0.095240, value = 0.000655 (POW-046)
+Warning: Power table extrapolation (extrapolation mode) for port Q on cell u_rx_gearbox_cdc/wr_mem_reg[13][7][121] for parameter Cout. Lowest table value = 0.001000, highest table value = 0.095240, value = 0.000552 (POW-046)
+Warning: Power table extrapolation (extrapolation mode) for port Q on cell u_rx_gearbox_cdc/wr_mem_reg[13][7][119] for parameter Cout. Lowest table value = 0.001000, highest table value = 0.095240, value = 0.000562 (POW-046)
+Warning: Power table extrapolation (extrapolation mode) for port Q on cell u_rx_gearbox_cdc/wr_mem_reg[13][7][118] for parameter Cout. Lowest table value = 0.001000, highest table value = 0.095240, value = 0.000615 (POW-046)
+Warning: Power table extrapolation (extrapolation mode) for port Q on cell u_rx_gearbox_cdc/wr_mem_reg[13][7][117] for parameter Cout. Lowest table value = 0.001000, highest table value = 0.095240, value = 0.000827 (POW-046)
+Warning: Power table extrapolation (extrapolation mode) for port Q on cell u_rx_gearbox_cdc/wr_mem_reg[13][7][116] for parameter Cout. Lowest table value = 0.001000, highest table value = 0.095240, value = 0.000787 (POW-046)
+Warning: Power table extrapolation (extrapolation mode) for port Q on cell u_rx_gearbox_cdc/wr_mem_reg[13][7][115] for parameter Cout. Lowest table value = 0.001000, highest table value = 0.095240, value = 0.000760 (POW-046)
+Note - message 'POW-046' limit (10) exceeded. Remainder will be suppressed.
+
+  Cell Internal Power    = 7.98e+09 pW (  1.6%)
+  Net Switching Power    = 4.94e+11 pW ( 98.4%)
+Total Dynamic Power      = 5.02e+11 pW (100.0%)
+
+Cell Leakage Power       = 7.41e+07 pW
+
+
+  Attributes
+  ----------
+      u  -  User defined power group
+      i  -  Includes clock pin internal power
+
+Power Group         Internal Power        Switching Power          Leakage Power            Total Power    (   %  )    Attrs
+-----------------------------------------------------------------------------------------------------------------------------
+io_pad                    0.00e+00               0.00e+00               0.00e+00               0.00e+00    (  0.0%)         
+memory                    0.00e+00               0.00e+00               0.00e+00               0.00e+00    (  0.0%)         
+black_box                 0.00e+00               0.00e+00               0.00e+00               0.00e+00    (  0.0%)         
+clock_network             6.68e+09               4.93e+11               2.00e+04               5.00e+11    ( 99.5%)        i
+register                  1.04e+09               3.51e+08               3.00e+07               1.42e+09    (  0.3%)         
+sequential                0.00e+00               0.00e+00               0.00e+00               0.00e+00    (  0.0%)         
+combinational             2.57e+08               5.65e+08               4.40e+07               8.66e+08    (  0.2%)         
+-----------------------------------------------------------------------------------------------------------------------------
+Total                     7.98e+09 pW            4.94e+11 pW            7.41e+07 pW            5.02e+11 pW
+1

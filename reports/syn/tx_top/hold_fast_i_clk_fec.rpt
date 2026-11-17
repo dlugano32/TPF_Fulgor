@@ -1,0 +1,373 @@
+****************************************
+Report : timing
+        -path_type full
+        -delay_type min
+        -max_paths 10
+        -report_by design
+        -groups i_clk_fec
+Design : tx_top
+Version: Y-2026.03
+Date   : Tue Nov 17 12:11:30 2026
+****************************************
+
+  Startpoint: u_sync_rst_n_fec/pipe_r_reg[0] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_sync_rst_n_fec/pipe_r_reg[1] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.004776     -0.004776
+
+  u_sync_rst_n_fec/pipe_r_reg[0]/CK (SAEDHVT14_FSDPRBQ_V2_0P5)
+                                                   0.000000     -0.004776 r
+  u_sync_rst_n_fec/pipe_r_reg[0]/Q (SAEDHVT14_FSDPRBQ_V2_0P5)
+                                                   0.034142      0.029366 f
+  u_sync_rst_n_fec/pipe_r_reg[1]/D (SAEDHVT14_FDPRBQ_V2LP_2)
+                                                   0.000000      0.029366 f
+  data arrival time                                              0.029366
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.004776     -0.004776
+  u_sync_rst_n_fec/pipe_r_reg[1]/CK (SAEDHVT14_FDPRBQ_V2LP_2)
+                                                   0.000000     -0.004776 r
+  clock uncertainty                                0.020000      0.015224
+  library hold time                                0.015458      0.030682
+  data required time                                             0.030691
+  --------------------------------------------------------------------------------
+  data required time                                             0.030691
+  data arrival time                                             -0.029366
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.001325
+
+
+
+  Startpoint: u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[1] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[2] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[1]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[1]/Q (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.028725      0.028725 r
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[2]/D (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.028725 r
+  data arrival time                                              0.028725
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[2]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                                0.002883      0.022883
+  data required time                                             0.022892
+  --------------------------------------------------------------------------------
+  data required time                                             0.022892
+  data arrival time                                             -0.028725
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.005833
+
+
+
+  Startpoint: u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[3]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[3]/Q (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.028973      0.028973 r
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[4]/D (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.028973 r
+  data arrival time                                              0.028973
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[4]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                                0.002755      0.022755
+  data required time                                             0.022763
+  --------------------------------------------------------------------------------
+  data required time                                             0.022763
+  data arrival time                                             -0.028973
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.006210
+
+
+
+  Startpoint: u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[2] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[2]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[2]/Q (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.029011      0.029011 r
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[3]/D (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.029011 r
+  data arrival time                                              0.029011
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[3]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                                0.002738      0.022738
+  data required time                                             0.022746
+  --------------------------------------------------------------------------------
+  data required time                                             0.022746
+  data arrival time                                             -0.029011
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.006265
+
+
+
+  Startpoint: u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[5] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[4]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[4]/Q (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.029106      0.029106 r
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[5]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.000000      0.029106 r
+  data arrival time                                              0.029106
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  u_conv_interleaver/gen_bit[855].gen_bit_delayed.history_reg[5]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                                0.002686      0.022686
+  data required time                                             0.022694
+  --------------------------------------------------------------------------------
+  data required time                                             0.022694
+  data arrival time                                             -0.029106
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.006412
+
+
+
+  Startpoint: u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[3]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[3]/Q (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.029144      0.029144 r
+  u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[4]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)
+                                                   0.000000      0.029144 r
+  data arrival time                                              0.029144
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[4]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)
+                                                   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                                0.002669      0.022669
+  data required time                                             0.022677
+  --------------------------------------------------------------------------------
+  data required time                                             0.022677
+  data arrival time                                             -0.029144
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.006467
+
+
+
+  Startpoint: u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[2] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[2]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[2]/Q (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.029697      0.029697 r
+  u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[3]/D (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000019      0.029716 r
+  data arrival time                                              0.029716
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  u_conv_interleaver/gen_bit[93].gen_bit_delayed.history_reg[3]/CK (SAEDHVT14_FSDPSYNRBQ_V2_1)
+                                                   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                                0.002378      0.022378
+  data required time                                             0.022386
+  --------------------------------------------------------------------------------
+  data required time                                             0.022386
+  data arrival time                                             -0.029716
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.007331
+
+
+
+  Startpoint: u_prbs31/lfsr_r_reg[0] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: gen_bch_encoder[0].u_bch_encoder/o_cw_reg[44] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_prbs31/lfsr_r_reg[0]/CK (SAEDHVT14_FSDP_V2_2)
+                                                   0.000000      0.000000 r
+  u_prbs31/lfsr_r_reg[0]/QN (SAEDHVT14_FSDP_V2_2)
+                                                   0.033016      0.033016 f
+  A29387/X (SAEDRVT14_NR2_MM_1)                    0.007343      0.040359 r
+  gen_bch_encoder[0].u_bch_encoder/o_cw_reg[44]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.040359 r
+  data arrival time                                              0.040359
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  gen_bch_encoder[0].u_bch_encoder/o_cw_reg[44]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                                0.007249      0.027249
+  data required time                                             0.027257
+  --------------------------------------------------------------------------------
+  data required time                                             0.027257
+  data arrival time                                             -0.040359
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.013102
+
+
+
+  Startpoint: u_conv_interleaver/gen_bit[861].gen_bit_delayed.history_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_conv_interleaver/gen_bit[861].gen_bit_delayed.history_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_conv_interleaver/gen_bit[861].gen_bit_delayed.history_reg[3]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  u_conv_interleaver/gen_bit[861].gen_bit_delayed.history_reg[3]/Q (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.035496      0.035496 r
+  u_conv_interleaver/gen_bit[861].gen_bit_delayed.history_reg[4]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)
+                                                   0.000000      0.035496 r
+  data arrival time                                              0.035496
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  u_conv_interleaver/gen_bit[861].gen_bit_delayed.history_reg[4]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)
+                                                   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                                0.001889      0.021889
+  data required time                                             0.021897
+  --------------------------------------------------------------------------------
+  data required time                                             0.021897
+  data arrival time                                             -0.035496
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.013598
+
+
+
+  Startpoint: u_conv_interleaver/gen_bit[397].gen_bit_delayed.history_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_conv_interleaver/gen_bit[397].gen_bit_delayed.history_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: i_clk_fec
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_conv_interleaver/gen_bit[397].gen_bit_delayed.history_reg[3]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  u_conv_interleaver/gen_bit[397].gen_bit_delayed.history_reg[3]/Q (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.035496      0.035496 r
+  u_conv_interleaver/gen_bit[397].gen_bit_delayed.history_reg[4]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)
+                                                   0.000000      0.035496 r
+  data arrival time                                              0.035496
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  u_conv_interleaver/gen_bit[397].gen_bit_delayed.history_reg[4]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)
+                                                   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                                0.001889      0.021889
+  data required time                                             0.021897
+  --------------------------------------------------------------------------------
+  data required time                                             0.021897
+  data arrival time                                             -0.035496
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.013598
+
+
+1

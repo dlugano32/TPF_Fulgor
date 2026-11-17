@@ -1,0 +1,671 @@
+****************************************
+Report : timing
+        -path_type full
+        -delay_type min
+        -max_paths 20
+        -report_by design
+Design : rx_top
+Version: Y-2026.03
+Date   : Tue Nov 17 17:10:27 2026
+****************************************
+
+  Startpoint: i_dsp_line[74] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[12][0][74] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[74] (in)                              0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[12][0][74]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[12][0][74]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002371      0.003269
+  data required time                                             0.003277
+  --------------------------------------------------------------------------------
+  data required time                                             0.003277
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003277
+
+
+
+  Startpoint: i_dsp_line[808] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][6][46] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[808] (in)                             0.000001      0.000001 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][6][46]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000001 r
+  data arrival time                                              0.000001
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][6][46]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002370      0.003267
+  data required time                                             0.003275
+  --------------------------------------------------------------------------------
+  data required time                                             0.003275
+  data arrival time                                             -0.000001
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003274
+
+
+
+  Startpoint: i_dsp_line[825] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][6][63] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[825] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][6][63]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][6][63]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002368      0.003266
+  data required time                                             0.003274
+  --------------------------------------------------------------------------------
+  data required time                                             0.003274
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003274
+
+
+
+  Startpoint: i_dsp_line[118] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[8][0][118] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[118] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[8][0][118]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[8][0][118]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002368      0.003266
+  data required time                                             0.003274
+  --------------------------------------------------------------------------------
+  data required time                                             0.003274
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003274
+
+
+
+  Startpoint: i_dsp_line[221] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[11][1][94] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[221] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[11][1][94]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[11][1][94]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002368      0.003266
+  data required time                                             0.003274
+  --------------------------------------------------------------------------------
+  data required time                                             0.003274
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003274
+
+
+
+  Startpoint: i_dsp_line[55] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][0][55] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[55] (in)                              0.000001      0.000001 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][0][55]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000001 r
+  data arrival time                                              0.000001
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][0][55]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002368      0.003266
+  data required time                                             0.003274
+  --------------------------------------------------------------------------------
+  data required time                                             0.003274
+  data arrival time                                             -0.000001
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003273
+
+
+
+  Startpoint: i_dsp_line[336] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][2][82] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[336] (in)                             0.000002      0.000002 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][2][82]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000002 r
+  data arrival time                                              0.000002
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][2][82]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002368      0.003266
+  data required time                                             0.003274
+  --------------------------------------------------------------------------------
+  data required time                                             0.003274
+  data arrival time                                             -0.000002
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003272
+
+
+
+  Startpoint: i_dsp_line[139] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][1][12] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[139] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][1][12]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][1][12]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002365      0.003262
+  data required time                                             0.003270
+  --------------------------------------------------------------------------------
+  data required time                                             0.003270
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003270
+
+
+
+  Startpoint: i_dsp_line[458] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][3][77] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[458] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][3][77]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][3][77]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002363      0.003261
+  data required time                                             0.003269
+  --------------------------------------------------------------------------------
+  data required time                                             0.003269
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003269
+
+
+
+  Startpoint: i_dsp_line[194] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[9][1][67] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[194] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[9][1][67]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[9][1][67]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002363      0.003261
+  data required time                                             0.003269
+  --------------------------------------------------------------------------------
+  data required time                                             0.003269
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003269
+
+
+
+  Startpoint: i_dsp_line[100] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][0][100] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[100] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][0][100]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][0][100]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002362      0.003259
+  data required time                                             0.003267
+  --------------------------------------------------------------------------------
+  data required time                                             0.003267
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003267
+
+
+
+  Startpoint: i_dsp_line[650] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][5][15] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[650] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][5][15]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][5][15]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002362      0.003259
+  data required time                                             0.003267
+  --------------------------------------------------------------------------------
+  data required time                                             0.003267
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003267
+
+
+
+  Startpoint: i_dsp_line[213] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[11][1][86] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[213] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[11][1][86]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[11][1][86]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002360      0.003257
+  data required time                                             0.003265
+  --------------------------------------------------------------------------------
+  data required time                                             0.003265
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003265
+
+
+
+  Startpoint: i_dsp_line[279] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][2][25] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[279] (in)                             0.000006      0.000006 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][2][25]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000006 r
+  data arrival time                                              0.000006
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][2][25]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002365      0.003262
+  data required time                                             0.003270
+  --------------------------------------------------------------------------------
+  data required time                                             0.003270
+  data arrival time                                             -0.000006
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003264
+
+
+
+  Startpoint: i_dsp_line[565] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][4][57] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[565] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][4][57]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][4][57]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002358      0.003256
+  data required time                                             0.003264
+  --------------------------------------------------------------------------------
+  data required time                                             0.003264
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003264
+
+
+
+  Startpoint: i_dsp_line[884] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[0][6][122] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[884] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[0][6][122]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[0][6][122]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002358      0.003256
+  data required time                                             0.003264
+  --------------------------------------------------------------------------------
+  data required time                                             0.003264
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003264
+
+
+
+  Startpoint: i_dsp_line[884] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[8][6][122] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[884] (in)                             0.000000      0.000000 r
+  u_rx_gearbox_cdc/wr_mem_reg[8][6][122]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  data arrival time                                              0.000000
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[8][6][122]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002358      0.003256
+  data required time                                             0.003264
+  --------------------------------------------------------------------------------
+  data required time                                             0.003264
+  data arrival time                                             -0.000000
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003264
+
+
+
+  Startpoint: i_dsp_line[55] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[11][0][55] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[55] (in)                              0.000001      0.000001 r
+  u_rx_gearbox_cdc/wr_mem_reg[11][0][55]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000001 r
+  data arrival time                                              0.000001
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[11][0][55]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002357      0.003254
+  data required time                                             0.003262
+  --------------------------------------------------------------------------------
+  data required time                                             0.003262
+  data arrival time                                             -0.000001
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003261
+
+
+
+  Startpoint: i_dsp_line[879] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[8][6][117] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[879] (in)                             0.000011      0.000011 r
+  u_rx_gearbox_cdc/wr_mem_reg[8][6][117]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000011 r
+  data arrival time                                              0.000011
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[8][6][117]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002365      0.003262
+  data required time                                             0.003270
+  --------------------------------------------------------------------------------
+  data required time                                             0.003270
+  data arrival time                                             -0.000011
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003260
+
+
+
+  Startpoint: i_dsp_line[879] (input port clocked by i_clk_dsp)
+  Endpoint: u_rx_gearbox_cdc/wr_mem_reg[11][6][117] (rising edge-triggered flip-flop clocked by i_clk_dsp)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_dsp_line[879] (in)                             0.000011      0.000011 r
+  u_rx_gearbox_cdc/wr_mem_reg[11][6][117]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.000011 r
+  data arrival time                                              0.000011
+
+  clock i_clk_dsp (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                     -0.019103     -0.019103
+  u_rx_gearbox_cdc/wr_mem_reg[11][6][117]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000     -0.019103 r
+  clock uncertainty                                0.020000      0.000897
+  library hold time                                0.002365      0.003262
+  data required time                                             0.003270
+  --------------------------------------------------------------------------------
+  data required time                                             0.003270
+  data arrival time                                             -0.000011
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.003260
+
+
+1

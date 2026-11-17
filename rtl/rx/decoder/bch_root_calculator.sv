@@ -12,6 +12,7 @@ module bch_root_calculator #(
     logic [M - 1 : 0] log_omega;
     logic [M     : 0] log_den_sum;
     logic [M - 1 : 0] log_den;
+    logic [M     : 0] log_root_diff;
 
     gf127_log_lut
     u_log_omega_lut (
@@ -25,7 +26,10 @@ module bch_root_calculator #(
     assign log_den = (log_den_sum >= 8'd127) ? (log_den_sum - 8'd127) : 
                                                 log_den_sum;
 
+    // Module substraction for division
     // log(root) = log(omega) - log(mu * S1) mod 127
-    assign o_log_root = (log_omega >= log_den) ? (log_omega - log_den) : 
-                                                 (7'd127 - (log_den - log_omega));
+    // Correct the wrapped difference by -1 when the subtraction borrows.
+    assign log_root_diff = {1'b0, log_omega} - {1'b0, log_den};
+    assign o_log_root = log_root_diff[M] ? (log_root_diff[M - 1 : 0] - 7'd1)
+                                         :  log_root_diff[M - 1 : 0];
 endmodule
