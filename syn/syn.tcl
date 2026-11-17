@@ -122,7 +122,7 @@ foreach {corner pvt rc} [list slow $SLOW_PVT Cmax fast $FAST_PVT Cmin] {
 ###############################################################################
 # Sintesis y reportes
 ###############################################################################
-set_app_options -name compile.flow.high_effort_timing -value 1
+#set_app_options -name compile.flow.high_effort_timing -value 1
 compile_fusion
 
 report_units > $REPORT_DIR/units.rpt
