@@ -1361,7 +1361,7 @@ Esta es también la convención utilizada para los elementos de $\mathrm{GF}(2^7
 Por ejemplo, para el polinomio primitivo
 
 \begin{equation}
-    p(x)=x^7+x^3+1 \quad\longleftrightarrow\quad \texttt{0b1001001}.
+    p(x)=x^7+x^3+1 \quad\longleftrightarrow\quad \texttt{0b10001001}.
 \end{equation}
 
 
@@ -2324,8 +2324,9 @@ y el checker PRBS31.
 La simulación contempla además la latencia introducida por el interleaver, que
 para la configuración utilizada es de siete frames, y agrega los ciclos
 necesarios para vaciar completamente sus registros antes de finalizar cada
-medición. De esta manera, todos los bits transmitidos son incluidos en el
-cálculo de BER y no se descartan datos aún almacenados en la cadena.
+medición. De esta manera, todos los frames transmitidos alcanzan la salida
+del decodificador. Para calcular la BER post-FEC se consideran únicamente
+los bits evaluados después de adquirir sincronismo en el checker.
 
 Como primera verificación funcional se transmitieron 100 frames sin canal
 de por medio, es decir, sin errores agregados. En estas condiciones, la 
@@ -2334,11 +2335,54 @@ se obtuvieron BER pre-FEC y post-FEC iguales a cero.
 
 Una vez verificado el funcionamiento sin ruido, se caracterizó el sistema
 frente al canal AWGN mediante un barrido Monte Carlo de $E_b/N_0$ entre
-3 y 8~dB, con pasos de 0,5~dB. Cada punto se simuló en lotes de
-20000 frames hasta acumular al menos 200 errores post-FEC. Este criterio
-permite mantener una cantidad mínima de eventos de error en cada punto y,
-por lo tanto, evitar estimaciones dominadas por un número demasiado reducido
-de muestras erróneas.
+3 y 8~dB, con pasos de 0,5~dB. Para cada punto se procesaron lotes de
+20\,000 frames hasta acumular al menos 200 errores post-FEC o alcanzar
+un máximo de 2\,000\,000 frames. La condición de parada se evalúa al
+finalizar cada lote, por lo que la cantidad de errores puede superar
+el umbral de 200. En todos los puntos presentados se alcanzó ese umbral
+antes del límite de frames.
+
+Cada lote reinicia el estado de la cadena y la adquisición del checker.
+Los conteos de errores y de bits efectivamente evaluados se acumulan
+entre lotes para calcular la BER de cada punto:
+
+\begin{equation}
+    \widehat{\mathrm{BER}}_{\mathrm{post}}
+    =\frac{\sum_b N_{\mathrm{errores},b}}
+           {\sum_b N_{\mathrm{bits\ evaluados},b}}.
+\end{equation}
+
+Así, la estimación utiliza el total de bits evaluados y no un promedio
+simple de las BER de los lotes. La Tabla~\ref{tab:montecarlo-python}
+presenta los frames procesados, los bits de información evaluados,
+los errores residuales y la BER post-FEC de cada punto.
+
+\begin{table}[H]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{@{}rrrrr@{}}
+        \toprule
+        \shortstack{$E_b/N_0$\\$[\mathrm{dB}]$} & Frames &
+        \shortstack{Bits evaluados\\post-FEC} &
+        \shortstack{Errores\\post-FEC} & BER post-FEC \\
+        \midrule
+        $3{,}0$ & 20\,000 & 15\,819\,608 & 503\,097 & $3{,}18\times10^{-2}$ \\
+        $3{,}5$ & 20\,000 & 15\,819\,938 & 350\,670 & $2{,}22\times10^{-2}$ \\
+        $4{,}0$ & 20\,000 & 15\,819\,860 & 218\,991 & $1{,}38\times10^{-2}$ \\
+        $4{,}5$ & 20\,000 & 15\,819\,864 & 119\,651 & $7{,}56\times10^{-3}$ \\
+        $5{,}0$ & 20\,000 & 15\,819\,938 & 55\,209 & $3{,}49\times10^{-3}$ \\
+        $5{,}5$ & 20\,000 & 15\,819\,938 & 21\,056 & $1{,}33\times10^{-3}$ \\
+        $6{,}0$ & 20\,000 & 15\,819\,938 & 6\,886 & $4{,}35\times10^{-4}$ \\
+        $6{,}5$ & 20\,000 & 15\,819\,938 & 1\,787 & $1{,}13\times10^{-4}$ \\
+        $7{,}0$ & 20\,000 & 15\,819\,938 & 406 & $2{,}57\times10^{-5}$ \\
+        $7{,}5$ & 60\,000 & 47\,459\,814 & 247 & $5{,}20\times10^{-6}$ \\
+        $8{,}0$ & 420\,000 & 332\,218\,698 & 210 & $6{,}32\times10^{-7}$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Cantidad de muestras y errores del barrido Monte Carlo en Python.}
+    \label{tab:montecarlo-python}
+\end{table}
 
 La Fig.~\ref{fig:ber-sistema-python} muestra la BER medida antes y después de
 la corrección FEC.
@@ -3705,6 +3749,39 @@ aprobación del scoreboard.
 \end{figure}
 
 
+\subsection{Actualización del presupuesto de latencia}
+
+El decodificador implementado utiliza cinco etapas registradas, frente
+a las tres consideradas en el presupuesto preliminar de la
+Tabla~\ref{tab:presupuesto-latencia}. Bajo las mismas hipótesis de
+flujo continuo y de transferencia de los gearboxes, la actualización
+consiste en agregar dos ciclos FEC.
+
+La latencia presupuestada desde la entrada del encoder hasta el payload
+recuperado en \texttt{o\_payload} pasa entonces a ser
+
+\begin{equation}
+    L_{\mathrm{payload}}
+    =24T_{\mathrm{FEC}}+10T_{\mathrm{DSP}}
+    =39{,}37\,\mathrm{ns},
+\end{equation}
+
+utilizando $T_{\mathrm{FEC}}=1{,}11125\,\mathrm{ns}$ y
+$T_{\mathrm{DSP}}=1{,}27\,\mathrm{ns}$. Una vez adquirido el
+sincronismo, las dos etapas registradas del checker agregan otros
+dos ciclos FEC hasta el conteo de errores y su validez:
+
+\begin{equation}
+    L_{\mathrm{checker}}
+    =L_{\mathrm{payload}}+2T_{\mathrm{FEC}}
+    =41{,}5925\,\mathrm{ns}.
+\end{equation}
+
+Estos valores actualizan el presupuesto arquitectónico, pero no 
+constituyen una medición extremo a extremo en simulación.
+La comprobación de la latencia en simulación queda como trabajo 
+futuro y se hará en la etapa de FPGA.
+
 % ---------------------------------------------------------------------------
 \section{Síntesis lógica}
 % ---------------------------------------------------------------------------
@@ -4022,7 +4099,32 @@ Sección pendiente para la proxima entrega.
 \section{Conclusiones}
 % ---------------------------------------------------------------------------
 
-Sección pendiente para la proxima entrega.
+En esta primera etapa se desarrolló y verificó funcionalmente una
+cadena de transmisión y recepción FEC basada en el código
+BCH(127,113), mediante una arquitectura orientada a su implementación
+VLSI. La combinación de paralelismo y segmentación mediante
+pipeline permitió satisfacer, bajo el criterio de evaluación
+adoptado para la síntesis lógica, el objetivo de frecuencia
+cercano a $900\,\mathrm{MHz}$ en el dominio FEC, necesario para
+alcanzar una tasa de línea de $800\,\mathrm{Gb/s}$.
+
+El desarrollo integró conceptos de teoría de códigos, aritmética
+en campos finitos y diseño digital, abarcando desde la construcción
+de modelos de referencia hasta la implementación RTL, la
+verificación funcional en SystemVerilog y el análisis de
+temporización, área y potencia. Entre los principales desafíos
+se destacaron la adaptación de los algoritmos de FEC a arquitecturas
+altamente paralelas, la segmentación de los caminos combinacionales
+y la integración de los distintos dominios de reloj, junto con las
+estrategias de CDC.
+
+Como continuación del trabajo, se prevé implementar y verificar
+la cadena completa en FPGA, con el objetivo de obtener curvas
+de BER medidas en hardware y caracterizar la latencia del sistema.
+Estos resultados permitirán contrastar el comportamiento de la
+implementación con los modelos de referencia y verificar el
+presupuesto de latencia establecido durante el dimensionamiento
+inicial.
 
 \clearpage
 \phantomsection
