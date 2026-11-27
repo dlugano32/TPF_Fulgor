@@ -2,35 +2,42 @@
 
 ```text
 TPF_Fulgor/
-|-- docs/                    Enunciado y documentacion de arquitectura
-|-- planning/                Gates, trazabilidad, cronograma y decisiones
+|-- docs/
+|   |-- DAMIAN_LUGANO_TP.pdf     Enunciado del trabajo
+|   `-- informe/                 Informe en LaTeX (main.tex) y figuras (pics/)
 |-- model/
-|   |-- python/              Oraculo inicial y herramientas de analisis
-|   `-- c/                   Modelo bit-exacto para regresion y DPI-C
-|-- vectors/
-|   |-- smoke/               Casos pequenos versionados
-|   `-- generated/           Vectores reproducibles generados localmente
+|   |-- python/
+|   |   |-- src/                 Oraculo: BCH, PRBS31, canal AWGN, interleaver,
+|   |   |                        permutacion, Monte Carlo y dimensionamiento
+|   |   |-- tests/               Tests de GF(2^7), encoder y decoder BCH
+|   |   `-- tools/               Aritmetica GF(2^m), polinomios y matrices
+|   `-- c/
+|       |-- include/             Cabeceras de los modelos bit-exactos
+|       `-- src/                 GF(2^7), BCH encoder/decoder, PRBS31 y checker
 |-- rtl/
-|   |-- common/              Tipos y bloques compartidos
-|   |-- tx/                  Camino transmisor
-|   `-- rx/                  Camino receptor
+|   |-- common/                  gearbox_cdc y sincronizadores (nivel y reset)
+|   |-- tx/
+|   |   |-- tx_top.sv            Top del transmisor
+|   |   |-- prbs31/              Generador PRBS31 paralelo
+|   |   |-- encoder/             Codificador BCH(127,113)
+|   |   |-- lane_permuter/       Permutacion de lanes
+|   |   `-- conv_interleaver/    Interleaver convolucional (Forney)
+|   |-- rx/
+|   |   |-- rx_top.sv            Top del receptor
+|   |   |-- conv_deinterleaver/  Deinterleaver convolucional
+|   |   |-- lane_depermuter/     Permutacion inversa de lanes
+|   |   |-- decoder/             Decodificador BCH (search-less)
+|   |   |   `-- gf127_op/        Operadores y LUTs sobre GF(2^7)
+|   |   `-- prbs31_checker/      Checker PRBS31 y contador de errores
+|   `-- _deprecated/             Version anterior del CDC (FIFO asincronica + gearbox)
 |-- tb/
-|   |-- common/              Transacciones, interfaces y utilidades
-|   |-- unit/                Bancos por bloque
-|   |-- integration/         Banco end-to-end
-|   |-- dpi/                 Adaptadores SystemVerilog/C
-|   `-- tests/               Tests dirigidos y aleatorios
-|-- synth/
-|   |-- dc/                  Scripts de Design Compiler
-|   `-- constraints/         Relojes, I/O, CDC y excepciones
-|-- fpga/
-|   |-- rtl/                 Wrapper y logica exclusiva de FPGA
-|   |-- constraints/         XDC de la FPGA
-|   |-- scripts/             Creacion y ejecucion del proyecto
-|   `-- software/            Control y captura de mediciones
-|-- scripts/                 Automatizacion comun
+|   |-- dpi/                     Adaptadores SystemVerilog/C (DPI-C)
+|   |-- unit/                    Bancos por bloque: prbs31, bch_encoder, bch_decoder
+|   `-- integration/             Bancos de integracion: bch_codec, prbs31_checker,
+|                                tx_rx_top, tx_rx_cdc (+ _deprecated/)
+|-- syn/                         Scripts de Fusion Compiler (TCL) y restricciones (SDC)
 `-- reports/
-    |-- stages/              Evidencia de cierre por etapa
-    |-- figures/             Figuras reproducibles del informe
-    `-- results/             Resumenes versionables de mediciones
+    |-- figures/                 Figuras reproducibles del informe
+    |-- results/                 Resumenes versionables de simulaciones
+    `-- syn/                     Reportes de sintesis por bloque y por top
 ```
