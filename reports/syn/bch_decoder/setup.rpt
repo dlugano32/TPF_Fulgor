@@ -1,0 +1,1183 @@
+****************************************
+Report : timing
+        -path_type full
+        -delay_type max
+        -max_paths 20
+        -report_by design
+Design : bch_decoder
+Version: Y-2026.03
+Date   : Thu Nov 26 16:59:10 2026
+****************************************
+
+  Startpoint: syn1_r0_reg[0] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_bch_mu_calculator/log_syn1_cubed_r1_reg[6] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  syn1_r0_reg[0]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  syn1_r0_reg[0]/Q (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.137806      0.137806 r
+  A1359/X (SAEDRVT14_ND2_CDC_0P5)                  0.046787      0.184593 f
+  phfnr_buf_4768/X (SAEDRVT14_INV_S_1)             0.024891      0.209484 r
+  A4340/X (SAEDLVT14_ND2_CDC_1)                    0.026340      0.235825 f
+  A3775/X (SAEDLVT14_NR2_1)                        0.032711      0.268536 r
+  A1401/X (SAEDRVT14_ND2_CDC_1)                    0.043087      0.311623 f
+  phfnr_buf_4822/X (SAEDHVT14_INV_0P75)            0.043583      0.355206 r
+  A3791/X (SAEDRVT14_OR3_1)                        0.039444      0.394650 r
+  ctmi_3599/X (SAEDHVT14_OR4_1)                    0.029907      0.424557 r
+  A3825/X (SAEDHVT14_OA33_1)                       0.041466      0.466022 r
+  A2107/X (SAEDHVT14_OA22_U_0P5)                   0.073929      0.539951 r
+  A4580/CO (SAEDRVT14_ADDF_V1_1)                   0.058670      0.598621 r
+  A4592/CO (SAEDHVT14_ADDF_V1_1)                   0.045013      0.643635 r
+  A4593/CO (SAEDHVT14_ADDF_V1_1)                   0.046406      0.690041 r
+  A4590/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.736504 r
+  A4591/CO (SAEDHVT14_ADDF_V1_1)                   0.046978      0.783482 r
+  ctmi_4871/X (SAEDRVT14_EO2_0P5)                  0.046120      0.829601 f
+  A4401/X (SAEDRVT14_AO21B_0P5)                    0.020027      0.849628 r
+  A4402/X (SAEDRVT14_NR2_MM_1)                     0.021725      0.871353 f
+  A4449/X (SAEDRVT14_AN2B_MM_1)                    0.034275      0.905628 r
+  A4450/X (SAEDRVT14_ND2_CDC_1)                    0.016651      0.922279 f
+  A4451/X (SAEDHVT14_AN2B_MM_1)                    0.035133      0.957413 r
+  A4452/X (SAEDRVT14_AN3_0P75)                     0.032558      0.989971 r
+  A4453/X (SAEDRVT14_ND2_CDC_1)                    0.015659      1.005630 f
+  A4305/X (SAEDRVT14_MUXI2_U_0P5)                  0.028744      1.034374 f
+  u_bch_mu_calculator/log_syn1_cubed_r1_reg[6]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.034374 f
+  data arrival time                                              1.034374
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.014000      1.125250
+  u_bch_mu_calculator/log_syn1_cubed_r1_reg[6]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.125250 r
+  clock uncertainty                               -0.055562      1.069688
+  library setup time                              -0.035026      1.034662
+  data required time                                             1.034673
+  --------------------------------------------------------------------------------
+  data required time                                             1.034673
+  data arrival time                                             -1.034374
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.000299
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root1_r3_reg[2] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  phfnr_buf_4743/X (SAEDRVT14_INV_S_1)             0.070114      0.220490 f
+  A3978/X (SAEDHVT14_NR2_1)                        0.079918      0.300407 r
+  A1682/X (SAEDRVT14_ND2_CDC_1)                    0.045681      0.346088 f
+  phfnr_buf_4817/X (SAEDRVT14_INV_S_1)             0.019875      0.365963 r
+  A3981/X (SAEDRVT14_OR2_MM_1)                     0.030651      0.396614 r
+  A1712/X (SAEDRVT14_NR2_MM_1)                     0.018787      0.415401 f
+  A3997/X (SAEDRVT14_ND2_CDC_0P5)                  0.022392      0.437794 r
+  A2081/X (SAEDHVT14_OA33_1)                       0.039730      0.477524 r
+  ctmTdsLR_1_9340/X (SAEDHVT14_OR2_MM_0P75)        0.024529      0.502052 r
+  ctmTdsLR_2_9341/X (SAEDHVT14_AOI222_0P5)         0.059967      0.562019 f
+  A4011/X (SAEDRVT14_ND2_CDC_1)                    0.022202      0.584221 r
+  A4585/CO (SAEDHVT14_ADDF_V1_1)                   0.051994      0.636215 r
+  A4583/CO (SAEDHVT14_ADDF_V1_1)                   0.050106      0.686321 r
+  A4588/CO (SAEDHVT14_ADDF_V1_1)                   0.049362      0.735683 r
+  A4589/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.782146 r
+  DP_OP_157_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.048275      0.830421 r
+  A4581/CO (SAEDHVT14_ADDF_V1_1)                   0.048504      0.878925 r
+  A4501/X (SAEDRVT14_ND2_CDC_0P5)                  0.025902      0.904827 f
+  phfnr_buf_4848/X (SAEDRVT14_INV_S_1)             0.028439      0.933266 r
+  A4552/X (SAEDRVT14_OR3_1)                        0.029507      0.962772 r
+  A4553/X (SAEDHVT14_EO2_0P5)                      0.046921      1.009693 f
+  A4320/X (SAEDRVT14_NR2_MM_1)                     0.013123      1.022816 r
+  log_root1_r3_reg[2]/D (SAEDHVT14_FSDP_V2LP_1)    0.000000      1.022816 r
+  data arrival time                                              1.022816
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root1_r3_reg[2]/CK (SAEDHVT14_FSDP_V2LP_1)   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.031775      1.023913
+  data required time                                             1.023924
+  --------------------------------------------------------------------------------
+  data required time                                             1.023924
+  data arrival time                                             -1.022816
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.001108
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root2_r3_reg[5] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  A1278/X (SAEDHVT14_NR2_1)                        0.081959      0.232334 f
+  A1282/X (SAEDHVT14_AN2_MM_0P5)                   0.088367      0.320702 f
+  ctmTdsLR_1_9354/X (SAEDHVT14_AN2B_MM_1)          0.050125      0.370827 f
+  ctmi_4870/X (SAEDHVT14_AO221_0P5)                0.044689      0.415516 f
+  A1298/X (SAEDHVT14_NR2_1)                        0.047436      0.462952 r
+  A1299/X (SAEDRVT14_ND2_CDC_0P5)                  0.036507      0.499458 f
+  A2639/X (SAEDRVT14_AN4_1)                        0.030098      0.529556 f
+  A2640/X (SAEDHVT14_OAI22_0P75)                   0.024109      0.553665 r
+  A2644/X (SAEDRVT14_NR2_MM_1)                     0.019283      0.572948 f
+  ctmi_3661/X (SAEDHVT14_OA21_1)                   0.022011      0.594959 f
+  DP_OP_158_34701_62535_J1/ctmi_14986/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.018826      0.613785 r
+  A4604/CO (SAEDLVT14_ADDF_V1_1)                   0.031891      0.645676 r
+  A4586/CO (SAEDHVT14_ADDF_V1_1)                   0.046234      0.691910 r
+  A4584/CO (SAEDHVT14_ADDF_V1_1)                   0.048847      0.740757 r
+  A4582/CO (SAEDHVT14_ADDF_V1_1)                   0.045872      0.786629 r
+  DP_OP_158_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.045338      0.831966 r
+  A4587/CO (SAEDHVT14_ADDF_V1_1)                   0.046158      0.878124 r
+  A4529/X (SAEDHVT14_ND2_CDC_1)                    0.032310      0.910435 f
+  phfnr_buf_4844/X (SAEDRVT14_INV_S_1)             0.026245      0.936680 r
+  A4572/X (SAEDHVT14_NR2_1)                        0.021820      0.958500 f
+  A4573/X (SAEDHVT14_EN2_1)                        0.044765      1.003265 r
+  A4327/X (SAEDHVT14_NR2_1)                        0.013523      1.016788 f
+  log_root2_r3_reg[5]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.016788 f
+  data arrival time                                              1.016788
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root2_r3_reg[5]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.037652      1.018035
+  data required time                                             1.018046
+  --------------------------------------------------------------------------------
+  data required time                                             1.018046
+  data arrival time                                             -1.016788
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.001257
+
+
+
+  Startpoint: u_bch_mu_calculator/num_r1_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: omega1_r2_reg[1] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_bch_mu_calculator/num_r1_reg[3]/CK (SAEDHVT14_FSDP_V2_2)
+                                                   0.000000      0.000000 r
+  u_bch_mu_calculator/num_r1_reg[3]/Q (SAEDHVT14_FSDP_V2_2)
+                                                   0.104427      0.104427 f
+  ctmi_3650/X (SAEDRVT14_AN2_MM_1)                 0.037098      0.141525 f
+  ctmi_3652/X (SAEDLVT14_ND2_CDC_1)                0.021152      0.162678 r
+  phfnr_buf_4791/X (SAEDHVT14_INV_1)               0.019913      0.182590 f
+  A4417/X (SAEDHVT14_AN2_MM_1)                     0.030899      0.213490 f
+  ctmi_4867/X (SAEDRVT14_AO221_1)                  0.050163      0.263653 f
+  phfnr_buf_4828/X (SAEDHVT14_INV_S_1)             0.028362      0.292015 r
+  A3882/X (SAEDRVT14_AN4_1)                        0.038567      0.330582 r
+  A2372/X (SAEDRVT14_OA221_U_0P5)                  0.037842      0.368423 r
+  A2373/X (SAEDRVT14_OAI21_0P5)                    0.026760      0.395184 f
+  A4602/CO (SAEDSLVT14_ADDF_V1_2)                  0.023937      0.419121 f
+  A4596/CO (SAEDRVT14_ADDF_V1_1)                   0.037785      0.456905 f
+  A4600/CO (SAEDRVT14_ADDF_V1_1)                   0.043144      0.500050 f
+  A4598/CO (SAEDSLVT14_ADDF_V1_2)                  0.021706      0.521755 f
+  DP_OP_159_34701_62535_J1/U_20/S (SAEDRVT14_ADDF_V1_1)
+                                                   0.073643      0.595398 r
+  DP_OP_159_34701_62535_J1/ctmi_15015/X (SAEDHVT14_NR2_MM_1)
+                                                   0.015926      0.611324 f
+  A4302/X (SAEDLVT14_AO21B_0P5)                    0.030594      0.641918 f
+  phfnr_buf_4847/X (SAEDRVT14_INV_S_1)             0.028744      0.670662 r
+  A4433/X (SAEDSLVT14_ND2_1)                       0.010490      0.681152 f
+  phfnr_buf_4851/X (SAEDHVT14_INV_1)               0.016060      0.697212 r
+  A4436/X (SAEDRVT14_ND2_CDC_0P5)                  0.019798      0.717010 f
+  A3910/X (SAEDSLVT14_AO31_1)                      0.019474      0.736485 f
+  A3912/X (SAEDRVT14_NR2_MM_1)                     0.017471      0.753956 r
+  A1116/X (SAEDRVT14_OA21B_1)                      0.037365      0.791321 r
+  A1123/X (SAEDSLVT14_OAI21_0P5)                   0.018120      0.809441 f
+  A4546/X (SAEDRVT14_NR2_MM_1)                     0.018444      0.827885 r
+  A4547/X (SAEDRVT14_MUXI2_U_0P5)                  0.044022      0.871906 r
+  A4548/X (SAEDSLVT14_OAI22_1)                     0.023232      0.895138 f
+  A4114/X (SAEDRVT14_AOI21_0P75)                   0.027370      0.922508 r
+  A2135/X (SAEDLVT14_OA2BB2_V1_1)                  0.019073      0.941582 f
+  A2136/X (SAEDRVT14_AN2_1)                        0.021954      0.963535 f
+  A2519/X (SAEDRVT14_MUX2_MM_0P5)                  0.038223      1.001759 f
+  A4578/X (SAEDRVT14_NR2_MM_1)                     0.017681      1.019440 r
+  A4330/X (SAEDLVT14_MUX2_MM_0P5)                  0.023518      1.042957 r
+  omega1_r2_reg[1]/D (SAEDHVT14_FSDP_V2LP_1)       0.000019      1.042976 r
+  data arrival time                                              1.042976
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.014000      1.125250
+  omega1_r2_reg[1]/CK (SAEDHVT14_FSDP_V2LP_1)      0.000000      1.125250 r
+  clock uncertainty                               -0.055562      1.069688
+  library setup time                              -0.025031      1.044657
+  data required time                                             1.044668
+  --------------------------------------------------------------------------------
+  data required time                                             1.044668
+  data arrival time                                             -1.042976
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.001691
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root2_r3_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  A1278/X (SAEDHVT14_NR2_1)                        0.081959      0.232334 f
+  A1282/X (SAEDHVT14_AN2_MM_0P5)                   0.088367      0.320702 f
+  A4018/X (SAEDHVT14_ND2_CDC_1)                    0.061493      0.382195 r
+  A1315/X (SAEDHVT14_AN3_0P5)                      0.053902      0.436096 r
+  A4035/X (SAEDHVT14_OA21_1)                       0.037842      0.473938 r
+  A4047/X (SAEDHVT14_AN4_1)                        0.045204      0.519142 r
+  A2640/X (SAEDHVT14_OAI22_0P75)                   0.023651      0.542793 f
+  A2644/X (SAEDRVT14_NR2_MM_1)                     0.018101      0.560894 r
+  ctmi_3661/X (SAEDHVT14_OA21_1)                   0.031090      0.591984 r
+  DP_OP_158_34701_62535_J1/ctmi_14986/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.021534      0.613518 f
+  A4604/CO (SAEDLVT14_ADDF_V1_1)                   0.031052      0.644569 f
+  A4586/CO (SAEDHVT14_ADDF_V1_1)                   0.047417      0.691986 f
+  A4584/CO (SAEDHVT14_ADDF_V1_1)                   0.049648      0.741634 f
+  A4582/CO (SAEDHVT14_ADDF_V1_1)                   0.046120      0.787754 f
+  DP_OP_158_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.045586      0.833340 f
+  A4587/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.879803 f
+  A4529/X (SAEDHVT14_ND2_CDC_1)                    0.026722      0.906525 r
+  phfnr_buf_4844/X (SAEDRVT14_INV_S_1)             0.026264      0.932789 f
+  A4531/X (SAEDRVT14_NR2_MM_1)                     0.017796      0.950584 r
+  A4532/X (SAEDHVT14_EN2_1)                        0.045471      0.996056 f
+  A4313/X (SAEDHVT14_NR2_1)                        0.022011      1.018066 r
+  log_root2_r3_reg[3]/D (SAEDHVT14_FSDP_V2LP_1)    0.000019      1.018085 r
+  data arrival time                                              1.018085
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root2_r3_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.035916      1.019772
+  data required time                                             1.019783
+  --------------------------------------------------------------------------------
+  data required time                                             1.019783
+  data arrival time                                             -1.018085
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.001697
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root1_r3_reg[5] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  phfnr_buf_4743/X (SAEDRVT14_INV_S_1)             0.070114      0.220490 f
+  A3978/X (SAEDHVT14_NR2_1)                        0.079918      0.300407 r
+  A1682/X (SAEDRVT14_ND2_CDC_1)                    0.045681      0.346088 f
+  phfnr_buf_4817/X (SAEDRVT14_INV_S_1)             0.019875      0.365963 r
+  A3981/X (SAEDRVT14_OR2_MM_1)                     0.030651      0.396614 r
+  A1712/X (SAEDRVT14_NR2_MM_1)                     0.018787      0.415401 f
+  A3997/X (SAEDRVT14_ND2_CDC_0P5)                  0.022392      0.437794 r
+  A2081/X (SAEDHVT14_OA33_1)                       0.039730      0.477524 r
+  ctmTdsLR_1_9340/X (SAEDHVT14_OR2_MM_0P75)        0.024529      0.502052 r
+  ctmTdsLR_2_9341/X (SAEDHVT14_AOI222_0P5)         0.059967      0.562019 f
+  A4011/X (SAEDRVT14_ND2_CDC_1)                    0.022202      0.584221 r
+  A4585/CO (SAEDHVT14_ADDF_V1_1)                   0.051994      0.636215 r
+  A4583/CO (SAEDHVT14_ADDF_V1_1)                   0.050106      0.686321 r
+  A4588/CO (SAEDHVT14_ADDF_V1_1)                   0.049362      0.735683 r
+  A4589/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.782146 r
+  DP_OP_157_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.048275      0.830421 r
+  A4581/CO (SAEDHVT14_ADDF_V1_1)                   0.048504      0.878925 r
+  A4501/X (SAEDRVT14_ND2_CDC_0P5)                  0.025902      0.904827 f
+  phfnr_buf_4848/X (SAEDRVT14_INV_S_1)             0.028439      0.933266 r
+  A4559/X (SAEDHVT14_NR2_1)                        0.022964      0.956230 f
+  A4560/X (SAEDHVT14_EN2_1)                        0.044594      1.000824 r
+  A4324/X (SAEDHVT14_NR2_1)                        0.013313      1.014137 f
+  log_root1_r3_reg[5]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.014137 f
+  data arrival time                                              1.014137
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root1_r3_reg[5]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.037029      1.018659
+  data required time                                             1.018669
+  --------------------------------------------------------------------------------
+  data required time                                             1.018669
+  data arrival time                                             -1.014137
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.004532
+
+
+
+  Startpoint: u_bch_mu_calculator/num_r1_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: omega1_r2_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_bch_mu_calculator/num_r1_reg[3]/CK (SAEDHVT14_FSDP_V2_2)
+                                                   0.000000      0.000000 r
+  u_bch_mu_calculator/num_r1_reg[3]/Q (SAEDHVT14_FSDP_V2_2)
+                                                   0.104427      0.104427 f
+  ctmi_3650/X (SAEDRVT14_AN2_MM_1)                 0.037098      0.141525 f
+  ctmi_3652/X (SAEDLVT14_ND2_CDC_1)                0.021152      0.162678 r
+  phfnr_buf_4791/X (SAEDHVT14_INV_1)               0.019913      0.182590 f
+  A4417/X (SAEDHVT14_AN2_MM_1)                     0.030899      0.213490 f
+  ctmi_4867/X (SAEDRVT14_AO221_1)                  0.050163      0.263653 f
+  phfnr_buf_4828/X (SAEDHVT14_INV_S_1)             0.028362      0.292015 r
+  A3882/X (SAEDRVT14_AN4_1)                        0.038567      0.330582 r
+  A2372/X (SAEDRVT14_OA221_U_0P5)                  0.037842      0.368423 r
+  A2373/X (SAEDRVT14_OAI21_0P5)                    0.026760      0.395184 f
+  A4602/CO (SAEDSLVT14_ADDF_V1_2)                  0.023937      0.419121 f
+  A4596/CO (SAEDRVT14_ADDF_V1_1)                   0.037785      0.456905 f
+  A4600/CO (SAEDRVT14_ADDF_V1_1)                   0.043144      0.500050 f
+  A4598/CO (SAEDSLVT14_ADDF_V1_2)                  0.021706      0.521755 f
+  DP_OP_159_34701_62535_J1/U_20/S (SAEDRVT14_ADDF_V1_1)
+                                                   0.073643      0.595398 r
+  DP_OP_159_34701_62535_J1/ctmi_15015/X (SAEDHVT14_NR2_MM_1)
+                                                   0.015926      0.611324 f
+  A4302/X (SAEDLVT14_AO21B_0P5)                    0.030594      0.641918 f
+  phfnr_buf_4847/X (SAEDRVT14_INV_S_1)             0.028744      0.670662 r
+  A4433/X (SAEDSLVT14_ND2_1)                       0.010490      0.681152 f
+  phfnr_buf_4851/X (SAEDHVT14_INV_1)               0.016060      0.697212 r
+  A4436/X (SAEDRVT14_ND2_CDC_0P5)                  0.019798      0.717010 f
+  A3910/X (SAEDSLVT14_AO31_1)                      0.019474      0.736485 f
+  A3912/X (SAEDRVT14_NR2_MM_1)                     0.017471      0.753956 r
+  A1116/X (SAEDRVT14_OA21B_1)                      0.037365      0.791321 r
+  A1123/X (SAEDSLVT14_OAI21_0P5)                   0.018120      0.809441 f
+  A4546/X (SAEDRVT14_NR2_MM_1)                     0.018444      0.827885 r
+  A4547/X (SAEDRVT14_MUXI2_U_0P5)                  0.044022      0.871906 r
+  A4566/X (SAEDSLVT14_EO2_0P5)                     0.028629      0.900536 f
+  A4196/X (SAEDHVT14_OAI22_0P75)                   0.028057      0.928593 r
+  A2486/X (SAEDSLVT14_EO2_0P5)                     0.024281      0.952873 r
+  A4568/X (SAEDRVT14_MUX2_MM_0P5)                  0.031700      0.984573 r
+  A4571/X (SAEDSLVT14_EO2_0P5)                     0.023956      1.008530 f
+  A4326/X (SAEDHVT14_NR2_1)                        0.014210      1.022739 r
+  omega1_r2_reg[4]/D (SAEDHVT14_FSDP_V2LP_1)       0.000000      1.022739 r
+  data arrival time                                              1.022739
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  omega1_r2_reg[4]/CK (SAEDHVT14_FSDP_V2LP_1)      0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.026482      1.029206
+  data required time                                             1.029217
+  --------------------------------------------------------------------------------
+  data required time                                             1.029217
+  data arrival time                                             -1.022739
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.006477
+
+
+
+  Startpoint: u_bch_mu_calculator/num_r1_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_bch_mu_calculator/num_r1_reg[3]/CK (SAEDHVT14_FSDP_V2_2)
+                                                   0.000000      0.000000 r
+  u_bch_mu_calculator/num_r1_reg[3]/Q (SAEDHVT14_FSDP_V2_2)
+                                                   0.104427      0.104427 f
+  ctmi_3650/X (SAEDRVT14_AN2_MM_1)                 0.037098      0.141525 f
+  ctmi_3652/X (SAEDLVT14_ND2_CDC_1)                0.021152      0.162678 r
+  phfnr_buf_4791/X (SAEDHVT14_INV_1)               0.019913      0.182590 f
+  A4417/X (SAEDHVT14_AN2_MM_1)                     0.030899      0.213490 f
+  ctmi_4867/X (SAEDRVT14_AO221_1)                  0.050163      0.263653 f
+  phfnr_buf_4828/X (SAEDHVT14_INV_S_1)             0.028362      0.292015 r
+  A3882/X (SAEDRVT14_AN4_1)                        0.038567      0.330582 r
+  A2372/X (SAEDRVT14_OA221_U_0P5)                  0.037842      0.368423 r
+  A2373/X (SAEDRVT14_OAI21_0P5)                    0.026760      0.395184 f
+  A4602/CO (SAEDSLVT14_ADDF_V1_2)                  0.023937      0.419121 f
+  A4596/CO (SAEDRVT14_ADDF_V1_1)                   0.037785      0.456905 f
+  A4600/CO (SAEDRVT14_ADDF_V1_1)                   0.043144      0.500050 f
+  A4598/CO (SAEDSLVT14_ADDF_V1_2)                  0.021706      0.521755 f
+  DP_OP_159_34701_62535_J1/U_20/CO (SAEDRVT14_ADDF_V1_1)
+                                                   0.037460      0.559216 f
+  A4594/CO (SAEDLVT14_ADDF_V1_1)                   0.036945      0.596161 f
+  phfnr_buf_4839/X (SAEDLVT14_INV_1)               0.017776      0.613937 r
+  A4302/X (SAEDLVT14_AO21B_0P5)                    0.033474      0.647411 r
+  phfnr_buf_4847/X (SAEDRVT14_INV_S_1)             0.025177      0.672588 f
+  A4433/X (SAEDSLVT14_ND2_1)                       0.009270      0.681858 r
+  A4438/X (SAEDRVT14_OAI21_0P5)                    0.023499      0.705357 f
+  A4856/X (SAEDHVT14_NR2_MM_1)                     0.027237      0.732594 r
+  A3917/X (SAEDRVT14_AOI21_0P75)                   0.027771      0.760365 f
+  A3918/X (SAEDRVT14_ND2B_U_0P5)                   0.036087      0.796452 f
+  A1123/X (SAEDSLVT14_OAI21_0P5)                   0.016022      0.812473 r
+  A1124/X (SAEDRVT14_ND2_CDC_1)                    0.020542      0.833015 f
+  A1353/X (SAEDRVT14_OAI21_0P5)                    0.021172      0.854187 r
+  A3938/X (SAEDRVT14_OAI22_1)                      0.031719      0.885906 f
+  A3939/X (SAEDHVT14_OAI22_0P5)                    0.050049      0.935955 r
+  A1356/X (SAEDHVT14_EO2_0P5)                      0.063610      0.999565 f
+  A3940/X (SAEDHVT14_NR2_1)                        0.020580      1.020145 r
+  omega1_r2_reg[3]/D (SAEDRVT14_FSDP_V2LP_1)       0.000019      1.020164 r
+  data arrival time                                              1.020164
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.029031      1.026656
+  data required time                                             1.026667
+  --------------------------------------------------------------------------------
+  data required time                                             1.026667
+  data arrival time                                             -1.020164
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.006503
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root2_r3_reg[1] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  A1278/X (SAEDHVT14_NR2_1)                        0.081959      0.232334 f
+  A1282/X (SAEDHVT14_AN2_MM_0P5)                   0.088367      0.320702 f
+  ctmTdsLR_1_9354/X (SAEDHVT14_AN2B_MM_1)          0.050125      0.370827 f
+  ctmi_4870/X (SAEDHVT14_AO221_0P5)                0.044689      0.415516 f
+  A1298/X (SAEDHVT14_NR2_1)                        0.047436      0.462952 r
+  A1299/X (SAEDRVT14_ND2_CDC_0P5)                  0.036507      0.499458 f
+  A2639/X (SAEDRVT14_AN4_1)                        0.030098      0.529556 f
+  A2640/X (SAEDHVT14_OAI22_0P75)                   0.024109      0.553665 r
+  A2644/X (SAEDRVT14_NR2_MM_1)                     0.019283      0.572948 f
+  ctmi_3661/X (SAEDHVT14_OA21_1)                   0.022011      0.594959 f
+  DP_OP_158_34701_62535_J1/ctmi_14986/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.018826      0.613785 r
+  A4604/CO (SAEDLVT14_ADDF_V1_1)                   0.031891      0.645676 r
+  A4586/CO (SAEDHVT14_ADDF_V1_1)                   0.046234      0.691910 r
+  A4584/CO (SAEDHVT14_ADDF_V1_1)                   0.048847      0.740757 r
+  A4582/CO (SAEDHVT14_ADDF_V1_1)                   0.045872      0.786629 r
+  DP_OP_158_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.045338      0.831966 r
+  A4587/CO (SAEDHVT14_ADDF_V1_1)                   0.046158      0.878124 r
+  A4529/X (SAEDHVT14_ND2_CDC_1)                    0.032310      0.910435 f
+  A4575/X (SAEDRVT14_ND2_CDC_1)                    0.021954      0.932388 r
+  A4576/X (SAEDHVT14_EO2_0P5)                      0.053501      0.985889 f
+  A4328/X (SAEDHVT14_NR2_1)                        0.024452      1.010342 r
+  log_root2_r3_reg[1]/D (SAEDHVT14_FSDP_V2LP_1)    0.000019      1.010361 r
+  data arrival time                                              1.010361
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root2_r3_reg[1]/CK (SAEDHVT14_FSDP_V2LP_1)   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.035596      1.020092
+  data required time                                             1.020102
+  --------------------------------------------------------------------------------
+  data required time                                             1.020102
+  data arrival time                                             -1.010361
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.009742
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root2_r3_reg[2] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  A1278/X (SAEDHVT14_NR2_1)                        0.081959      0.232334 f
+  A1282/X (SAEDHVT14_AN2_MM_0P5)                   0.088367      0.320702 f
+  A4018/X (SAEDHVT14_ND2_CDC_1)                    0.061493      0.382195 r
+  A1315/X (SAEDHVT14_AN3_0P5)                      0.053902      0.436096 r
+  A4035/X (SAEDHVT14_OA21_1)                       0.037842      0.473938 r
+  A4047/X (SAEDHVT14_AN4_1)                        0.045204      0.519142 r
+  A2640/X (SAEDHVT14_OAI22_0P75)                   0.023651      0.542793 f
+  A2644/X (SAEDRVT14_NR2_MM_1)                     0.018101      0.560894 r
+  ctmi_3661/X (SAEDHVT14_OA21_1)                   0.031090      0.591984 r
+  DP_OP_158_34701_62535_J1/ctmi_14986/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.021534      0.613518 f
+  A4604/CO (SAEDLVT14_ADDF_V1_1)                   0.031052      0.644569 f
+  A4586/CO (SAEDHVT14_ADDF_V1_1)                   0.047417      0.691986 f
+  A4584/CO (SAEDHVT14_ADDF_V1_1)                   0.049648      0.741634 f
+  A4582/CO (SAEDHVT14_ADDF_V1_1)                   0.046120      0.787754 f
+  DP_OP_158_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.045586      0.833340 f
+  A4587/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.879803 f
+  A4529/X (SAEDHVT14_ND2_CDC_1)                    0.026722      0.906525 r
+  A4539/X (SAEDRVT14_ND2_CDC_1)                    0.022202      0.928726 f
+  A4540/X (SAEDHVT14_EO2_0P5)                      0.053825      0.982552 r
+  A4316/X (SAEDHVT14_NR2_1)                        0.020046      1.002598 f
+  log_root2_r3_reg[2]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.002598 f
+  data arrival time                                              1.002598
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root2_r3_reg[2]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.038151      1.017536
+  data required time                                             1.017547
+  --------------------------------------------------------------------------------
+  data required time                                             1.017547
+  data arrival time                                             -1.002598
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.014949
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root2_r3_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  A1278/X (SAEDHVT14_NR2_1)                        0.081959      0.232334 f
+  A1282/X (SAEDHVT14_AN2_MM_0P5)                   0.088367      0.320702 f
+  ctmTdsLR_1_9354/X (SAEDHVT14_AN2B_MM_1)          0.050125      0.370827 f
+  ctmi_4870/X (SAEDHVT14_AO221_0P5)                0.044689      0.415516 f
+  A1298/X (SAEDHVT14_NR2_1)                        0.047436      0.462952 r
+  A1299/X (SAEDRVT14_ND2_CDC_0P5)                  0.036507      0.499458 f
+  A2639/X (SAEDRVT14_AN4_1)                        0.030098      0.529556 f
+  A2640/X (SAEDHVT14_OAI22_0P75)                   0.024109      0.553665 r
+  A2644/X (SAEDRVT14_NR2_MM_1)                     0.019283      0.572948 f
+  ctmi_3661/X (SAEDHVT14_OA21_1)                   0.022011      0.594959 f
+  DP_OP_158_34701_62535_J1/ctmi_14986/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.018826      0.613785 r
+  A4604/CO (SAEDLVT14_ADDF_V1_1)                   0.031891      0.645676 r
+  A4586/CO (SAEDHVT14_ADDF_V1_1)                   0.046234      0.691910 r
+  A4584/CO (SAEDHVT14_ADDF_V1_1)                   0.048847      0.740757 r
+  A4582/CO (SAEDHVT14_ADDF_V1_1)                   0.045872      0.786629 r
+  DP_OP_158_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.045338      0.831966 r
+  A4587/CO (SAEDHVT14_ADDF_V1_1)                   0.046158      0.878124 r
+  A4529/X (SAEDHVT14_ND2_CDC_1)                    0.032310      0.910435 f
+  A4557/X (SAEDRVT14_ND2_CDC_1)                    0.022125      0.932560 r
+  A4558/X (SAEDHVT14_EO2_0P5)                      0.050030      0.982590 f
+  A4323/X (SAEDHVT14_NR2_1)                        0.019398      1.001987 r
+  log_root2_r3_reg[4]/D (SAEDHVT14_FSDP_V2LP_1)    0.000000      1.001987 r
+  data arrival time                                              1.001987
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root2_r3_reg[4]/CK (SAEDHVT14_FSDP_V2LP_1)   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.034652      1.021036
+  data required time                                             1.021047
+  --------------------------------------------------------------------------------
+  data required time                                             1.021047
+  data arrival time                                             -1.001987
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.019059
+
+
+
+  Startpoint: syn1_r0_reg[5] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_bch_mu_calculator/log_syn1_cubed_r1_reg[5] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  syn1_r0_reg[5]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  syn1_r0_reg[5]/Q (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.154018      0.154018 r
+  phfnr_buf_4739/X (SAEDLVT14_INV_1)               0.062351      0.216370 f
+  A3777/X (SAEDRVT14_ND2_CDC_1)                    0.029144      0.245514 r
+  A1444/X (SAEDLVT14_NR2_MM_1)                     0.052567      0.298080 f
+  A3778/X (SAEDRVT14_ND2_CDC_1)                    0.056000      0.354080 r
+  ctmi_3646/X (SAEDHVT14_AN2B_MM_1)                0.039501      0.393581 r
+  phfnr_buf_4821/X (SAEDHVT14_INV_S_1)             0.018730      0.412312 f
+  A4372/X (SAEDRVT14_OR4_1)                        0.040779      0.453091 f
+  A3828/X (SAEDHVT14_AO21_1)                       0.026035      0.479126 f
+  A2107/X (SAEDHVT14_OA22_U_0P5)                   0.067139      0.546265 f
+  A4580/CO (SAEDRVT14_ADDF_V1_1)                   0.058556      0.604820 f
+  A4592/CO (SAEDHVT14_ADDF_V1_1)                   0.045242      0.650063 f
+  A4593/CO (SAEDHVT14_ADDF_V1_1)                   0.046711      0.696774 f
+  A4590/CO (SAEDHVT14_ADDF_V1_1)                   0.046768      0.743542 f
+  A4591/CO (SAEDHVT14_ADDF_V1_1)                   0.047112      0.790653 f
+  ctmi_4871/X (SAEDRVT14_EO2_0P5)                  0.044193      0.834846 r
+  A4401/X (SAEDRVT14_AO21B_0P5)                    0.021172      0.856018 f
+  A4402/X (SAEDRVT14_NR2_MM_1)                     0.025845      0.881863 r
+  A4449/X (SAEDRVT14_AN2B_MM_1)                    0.031528      0.913391 f
+  A4450/X (SAEDRVT14_ND2_CDC_1)                    0.014706      0.928097 r
+  A4451/X (SAEDHVT14_AN2B_MM_1)                    0.028152      0.956249 f
+  A4452/X (SAEDRVT14_AN3_0P75)                     0.025082      0.981331 f
+  A4321/X (SAEDRVT14_MUXI2_U_0P5)                  0.029678      1.011009 f
+  u_bch_mu_calculator/log_syn1_cubed_r1_reg[5]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.011009 f
+  data arrival time                                              1.011009
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.014000      1.125250
+  u_bch_mu_calculator/log_syn1_cubed_r1_reg[5]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.125250 r
+  clock uncertainty                               -0.055562      1.069688
+  library setup time                              -0.034733      1.034954
+  data required time                                             1.034965
+  --------------------------------------------------------------------------------
+  data required time                                             1.034965
+  data arrival time                                             -1.011009
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.023956
+
+
+
+  Startpoint: u_bch_mu_calculator/num_r1_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: omega1_r2_reg[5] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_bch_mu_calculator/num_r1_reg[3]/CK (SAEDHVT14_FSDP_V2_2)
+                                                   0.000000      0.000000 r
+  u_bch_mu_calculator/num_r1_reg[3]/Q (SAEDHVT14_FSDP_V2_2)
+                                                   0.104427      0.104427 f
+  ctmi_3650/X (SAEDRVT14_AN2_MM_1)                 0.037098      0.141525 f
+  ctmi_3652/X (SAEDLVT14_ND2_CDC_1)                0.021152      0.162678 r
+  phfnr_buf_4791/X (SAEDHVT14_INV_1)               0.019913      0.182590 f
+  A4417/X (SAEDHVT14_AN2_MM_1)                     0.030899      0.213490 f
+  ctmi_4867/X (SAEDRVT14_AO221_1)                  0.050163      0.263653 f
+  phfnr_buf_4828/X (SAEDHVT14_INV_S_1)             0.028362      0.292015 r
+  A3882/X (SAEDRVT14_AN4_1)                        0.038567      0.330582 r
+  A2372/X (SAEDRVT14_OA221_U_0P5)                  0.037842      0.368423 r
+  A2373/X (SAEDRVT14_OAI21_0P5)                    0.026760      0.395184 f
+  A4602/CO (SAEDSLVT14_ADDF_V1_2)                  0.023937      0.419121 f
+  A4596/CO (SAEDRVT14_ADDF_V1_1)                   0.037785      0.456905 f
+  A4600/CO (SAEDRVT14_ADDF_V1_1)                   0.043144      0.500050 f
+  A4598/CO (SAEDSLVT14_ADDF_V1_2)                  0.021706      0.521755 f
+  DP_OP_159_34701_62535_J1/U_20/S (SAEDRVT14_ADDF_V1_1)
+                                                   0.073643      0.595398 r
+  DP_OP_159_34701_62535_J1/ctmi_15015/X (SAEDHVT14_NR2_MM_1)
+                                                   0.015926      0.611324 f
+  A4302/X (SAEDLVT14_AO21B_0P5)                    0.030594      0.641918 f
+  phfnr_buf_4847/X (SAEDRVT14_INV_S_1)             0.028744      0.670662 r
+  A4433/X (SAEDSLVT14_ND2_1)                       0.010490      0.681152 f
+  phfnr_buf_4851/X (SAEDHVT14_INV_1)               0.016060      0.697212 r
+  A4436/X (SAEDRVT14_ND2_CDC_0P5)                  0.019798      0.717010 f
+  A3910/X (SAEDSLVT14_AO31_1)                      0.019474      0.736485 f
+  A1128/X (SAEDRVT14_OR3_1)                        0.034637      0.771122 f
+  ctmi_3720/X (SAEDHVT14_OR2_1)                    0.033684      0.804806 f
+  A3936/X (SAEDHVT14_OAI22_1)                      0.019436      0.824242 r
+  A1348/X (SAEDRVT14_NR2_MM_1)                     0.018845      0.843086 f
+  A3937/X (SAEDHVT14_OAI22_0P5)                    0.037079      0.880165 r
+  A1350/X (SAEDRVT14_ND2_CDC_0P5)                  0.023212      0.903378 f
+  A1351/X (SAEDLVT14_OAI21_0P5)                    0.021076      0.924454 r
+  A2135/X (SAEDLVT14_OA2BB2_V1_1)                  0.021439      0.945892 r
+  A2136/X (SAEDRVT14_AN2_1)                        0.024662      0.970554 r
+  A2138/X (SAEDHVT14_MUX2_MM_0P5)                  0.033932      1.004486 r
+  omega1_r2_reg[5]/D (SAEDHVT14_FSDP_V2LP_1)       0.000000      1.004486 r
+  data arrival time                                              1.004486
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  omega1_r2_reg[5]/CK (SAEDHVT14_FSDP_V2LP_1)      0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.026718      1.028970
+  data required time                                             1.028980
+  --------------------------------------------------------------------------------
+  data required time                                             1.028980
+  data arrival time                                             -1.004486
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.024494
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root1_r3_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  phfnr_buf_4743/X (SAEDRVT14_INV_S_1)             0.070114      0.220490 f
+  A3978/X (SAEDHVT14_NR2_1)                        0.079918      0.300407 r
+  A1682/X (SAEDRVT14_ND2_CDC_1)                    0.045681      0.346088 f
+  phfnr_buf_4817/X (SAEDRVT14_INV_S_1)             0.019875      0.365963 r
+  A3981/X (SAEDRVT14_OR2_MM_1)                     0.030651      0.396614 r
+  A1712/X (SAEDRVT14_NR2_MM_1)                     0.018787      0.415401 f
+  A3997/X (SAEDRVT14_ND2_CDC_0P5)                  0.022392      0.437794 r
+  A2081/X (SAEDHVT14_OA33_1)                       0.039730      0.477524 r
+  ctmTdsLR_1_9340/X (SAEDHVT14_OR2_MM_0P75)        0.024529      0.502052 r
+  ctmTdsLR_2_9341/X (SAEDHVT14_AOI222_0P5)         0.059967      0.562019 f
+  A4011/X (SAEDRVT14_ND2_CDC_1)                    0.022202      0.584221 r
+  A4585/CO (SAEDHVT14_ADDF_V1_1)                   0.051994      0.636215 r
+  A4583/CO (SAEDHVT14_ADDF_V1_1)                   0.050106      0.686321 r
+  A4588/CO (SAEDHVT14_ADDF_V1_1)                   0.049362      0.735683 r
+  A4589/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.782146 r
+  DP_OP_157_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.048275      0.830421 r
+  A4581/CO (SAEDHVT14_ADDF_V1_1)                   0.048504      0.878925 r
+  A4501/X (SAEDRVT14_ND2_CDC_0P5)                  0.025902      0.904827 f
+  A4536/X (SAEDRVT14_ND2_CDC_0P5)                  0.023403      0.928230 r
+  A4537/X (SAEDHVT14_EO2_0P5)                      0.050201      0.978432 f
+  A4315/X (SAEDHVT14_NR2_1)                        0.018139      0.996571 r
+  log_root1_r3_reg[4]/D (SAEDHVT14_FSDP_V2LP_1)    0.000000      0.996571 r
+  data arrival time                                              0.996571
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root1_r3_reg[4]/CK (SAEDHVT14_FSDP_V2LP_1)   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.034317      1.021370
+  data required time                                             1.021381
+  --------------------------------------------------------------------------------
+  data required time                                             1.021381
+  data arrival time                                             -0.996571
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.024811
+
+
+
+  Startpoint: u_bch_mu_calculator/num_r1_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: omega1_r2_reg[2] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  u_bch_mu_calculator/num_r1_reg[3]/CK (SAEDHVT14_FSDP_V2_2)
+                                                   0.000000      0.000000 r
+  u_bch_mu_calculator/num_r1_reg[3]/Q (SAEDHVT14_FSDP_V2_2)
+                                                   0.104427      0.104427 f
+  ctmi_3650/X (SAEDRVT14_AN2_MM_1)                 0.037098      0.141525 f
+  ctmi_3652/X (SAEDLVT14_ND2_CDC_1)                0.021152      0.162678 r
+  phfnr_buf_4791/X (SAEDHVT14_INV_1)               0.019913      0.182590 f
+  A4417/X (SAEDHVT14_AN2_MM_1)                     0.030899      0.213490 f
+  ctmi_4867/X (SAEDRVT14_AO221_1)                  0.050163      0.263653 f
+  phfnr_buf_4828/X (SAEDHVT14_INV_S_1)             0.028362      0.292015 r
+  A3882/X (SAEDRVT14_AN4_1)                        0.038567      0.330582 r
+  A2372/X (SAEDRVT14_OA221_U_0P5)                  0.037842      0.368423 r
+  A2373/X (SAEDRVT14_OAI21_0P5)                    0.026760      0.395184 f
+  A4602/CO (SAEDSLVT14_ADDF_V1_2)                  0.023937      0.419121 f
+  A4596/CO (SAEDRVT14_ADDF_V1_1)                   0.037785      0.456905 f
+  A4600/CO (SAEDRVT14_ADDF_V1_1)                   0.043144      0.500050 f
+  A4598/CO (SAEDSLVT14_ADDF_V1_2)                  0.021706      0.521755 f
+  DP_OP_159_34701_62535_J1/U_20/S (SAEDRVT14_ADDF_V1_1)
+                                                   0.073643      0.595398 r
+  DP_OP_159_34701_62535_J1/ctmi_15015/X (SAEDHVT14_NR2_MM_1)
+                                                   0.015926      0.611324 f
+  A4302/X (SAEDLVT14_AO21B_0P5)                    0.030594      0.641918 f
+  phfnr_buf_4847/X (SAEDRVT14_INV_S_1)             0.028744      0.670662 r
+  A4433/X (SAEDSLVT14_ND2_1)                       0.010490      0.681152 f
+  phfnr_buf_4851/X (SAEDHVT14_INV_1)               0.016060      0.697212 r
+  A4436/X (SAEDRVT14_ND2_CDC_0P5)                  0.019798      0.717010 f
+  A3910/X (SAEDSLVT14_AO31_1)                      0.019474      0.736485 f
+  A1128/X (SAEDRVT14_OR3_1)                        0.034637      0.771122 f
+  ctmi_3720/X (SAEDHVT14_OR2_1)                    0.033684      0.804806 f
+  A3936/X (SAEDHVT14_OAI22_1)                      0.019436      0.824242 r
+  A1348/X (SAEDRVT14_NR2_MM_1)                     0.018845      0.843086 f
+  A3937/X (SAEDHVT14_OAI22_0P5)                    0.037079      0.880165 r
+  A1350/X (SAEDRVT14_ND2_CDC_0P5)                  0.023212      0.903378 f
+  A1351/X (SAEDLVT14_OAI21_0P5)                    0.021076      0.924454 r
+  A2135/X (SAEDLVT14_OA2BB2_V1_1)                  0.021439      0.945892 r
+  A2136/X (SAEDRVT14_AN2_1)                        0.024662      0.970554 r
+  A2519/X (SAEDRVT14_MUX2_MM_0P5)                  0.039043      1.009598 r
+  omega1_r2_reg[2]/D (SAEDHVT14_FSDP_V2LP_1)       0.000019      1.009617 r
+  data arrival time                                              1.009617
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.014000      1.125250
+  omega1_r2_reg[2]/CK (SAEDHVT14_FSDP_V2LP_1)      0.000000      1.125250 r
+  clock uncertainty                               -0.055562      1.069688
+  library setup time                              -0.031091      1.038597
+  data required time                                             1.038608
+  --------------------------------------------------------------------------------
+  data required time                                             1.038608
+  data arrival time                                             -1.009617
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.028991
+
+
+
+  Startpoint: syn1_r0_reg[0] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: u_bch_mu_calculator/log_syn1_cubed_r1_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  syn1_r0_reg[0]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.000000      0.000000 r
+  syn1_r0_reg[0]/Q (SAEDHVT14_FSDPSYNRBQ_V2LP_0P5)
+                                                   0.137806      0.137806 r
+  A1359/X (SAEDRVT14_ND2_CDC_0P5)                  0.046787      0.184593 f
+  phfnr_buf_4768/X (SAEDRVT14_INV_S_1)             0.024891      0.209484 r
+  A4340/X (SAEDLVT14_ND2_CDC_1)                    0.026340      0.235825 f
+  A3775/X (SAEDLVT14_NR2_1)                        0.032711      0.268536 r
+  A1401/X (SAEDRVT14_ND2_CDC_1)                    0.043087      0.311623 f
+  phfnr_buf_4822/X (SAEDHVT14_INV_0P75)            0.043583      0.355206 r
+  A3791/X (SAEDRVT14_OR3_1)                        0.039444      0.394650 r
+  ctmi_3599/X (SAEDHVT14_OR4_1)                    0.029907      0.424557 r
+  A3825/X (SAEDHVT14_OA33_1)                       0.041466      0.466022 r
+  A2107/X (SAEDHVT14_OA22_U_0P5)                   0.073929      0.539951 r
+  A4580/CO (SAEDRVT14_ADDF_V1_1)                   0.058670      0.598621 r
+  A4592/CO (SAEDHVT14_ADDF_V1_1)                   0.045013      0.643635 r
+  A4593/CO (SAEDHVT14_ADDF_V1_1)                   0.046406      0.690041 r
+  A4590/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.736504 r
+  A4591/CO (SAEDHVT14_ADDF_V1_1)                   0.046978      0.783482 r
+  ctmi_4871/X (SAEDRVT14_EO2_0P5)                  0.046120      0.829601 f
+  A4401/X (SAEDRVT14_AO21B_0P5)                    0.020027      0.849628 r
+  A4402/X (SAEDRVT14_NR2_MM_1)                     0.021725      0.871353 f
+  A4449/X (SAEDRVT14_AN2B_MM_1)                    0.034275      0.905628 r
+  A4450/X (SAEDRVT14_ND2_CDC_1)                    0.016651      0.922279 f
+  A4451/X (SAEDHVT14_AN2B_MM_1)                    0.035133      0.957413 r
+  A4545/X (SAEDRVT14_ND2_CDC_1)                    0.015316      0.972729 f
+  A4318/X (SAEDRVT14_MUXI2_U_0P5)                  0.027714      1.000443 f
+  u_bch_mu_calculator/log_syn1_cubed_r1_reg[4]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.000443 f
+  data arrival time                                              1.000443
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.014000      1.125250
+  u_bch_mu_calculator/log_syn1_cubed_r1_reg[4]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.125250 r
+  clock uncertainty                               -0.055562      1.069688
+  library setup time                              -0.033130      1.036557
+  data required time                                             1.036568
+  --------------------------------------------------------------------------------
+  data required time                                             1.036568
+  data arrival time                                             -1.000443
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.036126
+
+
+
+  Startpoint: omega1_r2_reg[5] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root1_r3_reg[1] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[5]/CK (SAEDHVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[5]/Q (SAEDHVT14_FSDP_V2LP_1)       0.148182      0.148182 f
+  A1250/X (SAEDRVT14_ND2_CDC_0P5)                  0.068874      0.217056 r
+  A1287/X (SAEDRVT14_NR2_MM_1)                     0.058441      0.275497 f
+  phfnr_buf_4803/X (SAEDHVT14_INV_0P75)            0.033035      0.308533 r
+  A3971/X (SAEDHVT14_ND2_CDC_0P5)                  0.041275      0.349808 f
+  A1708/X (SAEDHVT14_OR3_1)                        0.058174      0.407982 f
+  A2081/X (SAEDHVT14_OA33_1)                       0.044823      0.452805 f
+  ctmTdsLR_1_9340/X (SAEDHVT14_OR2_MM_0P75)        0.029907      0.482712 f
+  ctmTdsLR_2_9341/X (SAEDHVT14_AOI222_0P5)         0.077419      0.560131 r
+  A4011/X (SAEDRVT14_ND2_CDC_1)                    0.024281      0.584412 f
+  A4585/CO (SAEDHVT14_ADDF_V1_1)                   0.053082      0.637493 f
+  A4583/CO (SAEDHVT14_ADDF_V1_1)                   0.050888      0.688381 f
+  A4588/CO (SAEDHVT14_ADDF_V1_1)                   0.050163      0.738544 f
+  A4589/CO (SAEDHVT14_ADDF_V1_1)                   0.046654      0.785198 f
+  DP_OP_157_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.048389      0.833588 f
+  A4581/CO (SAEDHVT14_ADDF_V1_1)                   0.049458      0.883045 f
+  A4501/X (SAEDRVT14_ND2_CDC_0P5)                  0.022354      0.905399 r
+  phfnr_buf_4848/X (SAEDRVT14_INV_S_1)             0.029221      0.934620 f
+  A4552/X (SAEDRVT14_OR3_1)                        0.034695      0.969315 f
+  A4329/X (SAEDRVT14_AOI21_0P75)                   0.016212      0.985527 r
+  log_root1_r3_reg[1]/D (SAEDHVT14_FSDP_V2LP_1)    0.000000      0.985527 r
+  data arrival time                                              0.985527
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root1_r3_reg[1]/CK (SAEDHVT14_FSDP_V2LP_1)   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.033373      1.022315
+  data required time                                             1.022325
+  --------------------------------------------------------------------------------
+  data required time                                             1.022325
+  data arrival time                                             -0.985527
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.036798
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root1_r3_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  phfnr_buf_4743/X (SAEDRVT14_INV_S_1)             0.070114      0.220490 f
+  A3978/X (SAEDHVT14_NR2_1)                        0.079918      0.300407 r
+  A1682/X (SAEDRVT14_ND2_CDC_1)                    0.045681      0.346088 f
+  phfnr_buf_4817/X (SAEDRVT14_INV_S_1)             0.019875      0.365963 r
+  A3981/X (SAEDRVT14_OR2_MM_1)                     0.030651      0.396614 r
+  A1712/X (SAEDRVT14_NR2_MM_1)                     0.018787      0.415401 f
+  A3997/X (SAEDRVT14_ND2_CDC_0P5)                  0.022392      0.437794 r
+  A2081/X (SAEDHVT14_OA33_1)                       0.039730      0.477524 r
+  ctmTdsLR_1_9340/X (SAEDHVT14_OR2_MM_0P75)        0.024529      0.502052 r
+  ctmTdsLR_2_9341/X (SAEDHVT14_AOI222_0P5)         0.059967      0.562019 f
+  A4011/X (SAEDRVT14_ND2_CDC_1)                    0.022202      0.584221 r
+  A4585/CO (SAEDHVT14_ADDF_V1_1)                   0.051994      0.636215 r
+  A4583/CO (SAEDHVT14_ADDF_V1_1)                   0.050106      0.686321 r
+  A4588/CO (SAEDHVT14_ADDF_V1_1)                   0.049362      0.735683 r
+  A4589/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.782146 r
+  DP_OP_157_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.048275      0.830421 r
+  A4581/CO (SAEDHVT14_ADDF_V1_1)                   0.048504      0.878925 r
+  A4501/X (SAEDRVT14_ND2_CDC_0P5)                  0.025902      0.904827 f
+  phfnr_buf_4848/X (SAEDRVT14_INV_S_1)             0.028439      0.933266 r
+  A4534/X (SAEDRVT14_OAI21_0P5)                    0.022564      0.955830 f
+  A4861/X (SAEDHVT14_AOI21_0P75)                   0.023575      0.979404 r
+  log_root1_r3_reg[3]/D (SAEDHVT14_FSDP_V2LP_1)    0.000000      0.979404 r
+  data arrival time                                              0.979404
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root1_r3_reg[3]/CK (SAEDHVT14_FSDP_V2LP_1)   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.035276      1.020411
+  data required time                                             1.020422
+  --------------------------------------------------------------------------------
+  data required time                                             1.020422
+  data arrival time                                             -0.979404
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.041018
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root1_r3_reg[0] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  phfnr_buf_4743/X (SAEDRVT14_INV_S_1)             0.070114      0.220490 f
+  A3978/X (SAEDHVT14_NR2_1)                        0.079918      0.300407 r
+  A1682/X (SAEDRVT14_ND2_CDC_1)                    0.045681      0.346088 f
+  phfnr_buf_4817/X (SAEDRVT14_INV_S_1)             0.019875      0.365963 r
+  A3981/X (SAEDRVT14_OR2_MM_1)                     0.030651      0.396614 r
+  A1712/X (SAEDRVT14_NR2_MM_1)                     0.018787      0.415401 f
+  A3997/X (SAEDRVT14_ND2_CDC_0P5)                  0.022392      0.437794 r
+  A2081/X (SAEDHVT14_OA33_1)                       0.039730      0.477524 r
+  ctmTdsLR_1_9340/X (SAEDHVT14_OR2_MM_0P75)        0.024529      0.502052 r
+  ctmTdsLR_2_9341/X (SAEDHVT14_AOI222_0P5)         0.059967      0.562019 f
+  A4011/X (SAEDRVT14_ND2_CDC_1)                    0.022202      0.584221 r
+  A4585/CO (SAEDHVT14_ADDF_V1_1)                   0.051994      0.636215 r
+  A4583/CO (SAEDHVT14_ADDF_V1_1)                   0.050106      0.686321 r
+  A4588/CO (SAEDHVT14_ADDF_V1_1)                   0.049362      0.735683 r
+  A4589/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.782146 r
+  DP_OP_157_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.048275      0.830421 r
+  A4581/CO (SAEDHVT14_ADDF_V1_1)                   0.048504      0.878925 r
+  A4501/X (SAEDRVT14_ND2_CDC_0P5)                  0.025902      0.904827 f
+  phfnr_buf_4848/X (SAEDRVT14_INV_S_1)             0.028439      0.933266 r
+  A4199/X (SAEDHVT14_MUX2_MM_0P5)                  0.045052      0.978317 r
+  log_root1_r3_reg[0]/D (SAEDHVT14_FSDP_V2LP_1)    0.000019      0.978336 r
+  data arrival time                                              0.978336
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root1_r3_reg[0]/CK (SAEDHVT14_FSDP_V2LP_1)   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.029012      1.026675
+  data required time                                             1.026686
+  --------------------------------------------------------------------------------
+  data required time                                             1.026686
+  data arrival time                                             -0.978336
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.048350
+
+
+
+  Startpoint: omega1_r2_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Endpoint: log_root2_r3_reg[0] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: i_clk_fec
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+
+  omega1_r2_reg[3]/CK (SAEDRVT14_FSDP_V2LP_1)      0.000000      0.000000 r
+  omega1_r2_reg[3]/QN (SAEDRVT14_FSDP_V2LP_1)      0.150375      0.150375 r
+  A1278/X (SAEDHVT14_NR2_1)                        0.081959      0.232334 f
+  A1282/X (SAEDHVT14_AN2_MM_0P5)                   0.088367      0.320702 f
+  A4018/X (SAEDHVT14_ND2_CDC_1)                    0.061493      0.382195 r
+  A1315/X (SAEDHVT14_AN3_0P5)                      0.053902      0.436096 r
+  A4035/X (SAEDHVT14_OA21_1)                       0.037842      0.473938 r
+  A4047/X (SAEDHVT14_AN4_1)                        0.045204      0.519142 r
+  A2640/X (SAEDHVT14_OAI22_0P75)                   0.023651      0.542793 f
+  A2644/X (SAEDRVT14_NR2_MM_1)                     0.018101      0.560894 r
+  ctmi_3661/X (SAEDHVT14_OA21_1)                   0.031090      0.591984 r
+  DP_OP_158_34701_62535_J1/ctmi_14986/X (SAEDRVT14_ND2_CDC_1)
+                                                   0.021534      0.613518 f
+  A4604/CO (SAEDLVT14_ADDF_V1_1)                   0.031052      0.644569 f
+  A4586/CO (SAEDHVT14_ADDF_V1_1)                   0.047417      0.691986 f
+  A4584/CO (SAEDHVT14_ADDF_V1_1)                   0.049648      0.741634 f
+  A4582/CO (SAEDHVT14_ADDF_V1_1)                   0.046120      0.787754 f
+  DP_OP_158_34701_62535_J1/U_20/CO (SAEDHVT14_ADDF_V1_1)
+                                                   0.045586      0.833340 f
+  A4587/CO (SAEDHVT14_ADDF_V1_1)                   0.046463      0.879803 f
+  A4529/X (SAEDHVT14_ND2_CDC_1)                    0.026722      0.906525 r
+  phfnr_buf_4844/X (SAEDRVT14_INV_S_1)             0.026264      0.932789 f
+  A4283/X (SAEDHVT14_AO32_1)                       0.040932      0.973721 f
+  log_root2_r3_reg[0]/D (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      0.973721 f
+  data arrival time                                              0.973721
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  log_root2_r3_reg[0]/CK (SAEDHVT14_FSDPQ_V2LP_0P5)
+                                                   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.029281      1.026406
+  data required time                                             1.026417
+  --------------------------------------------------------------------------------
+  data required time                                             1.026417
+  data arrival time                                             -0.973721
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.052697
+
+
+1

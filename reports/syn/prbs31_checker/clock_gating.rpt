@@ -1,0 +1,39 @@
+Information: The stitching and editing of coupling caps is turned OFF for design 'prbs31_checker.nlib:prbs31_checker.design'. (TIM-125)
+Information: The RC mode used is RDE for design 'prbs31_checker'. (NEX-022)
+Information: Design Average RC for design prbs31_checker  (NEX-011)
+Information: r = 2.636355 ohm/um, via_r = 0.893507 ohm/cut, c = 0.149415 ff/um, cc = 0.000000 ff/um (X dir) (NEX-017)
+Information: r = 2.045109 ohm/um, via_r = 1.176629 ohm/cut, c = 0.152687 ff/um, cc = 0.000000 ff/um (Y dir) (NEX-017)
+Information: Update timing completed net estimation for all the timing graph nets (TIM-111)
+Information: Net estimation statistics: timing graph nets = 6220, routed nets = 0, across physical hierarchy nets = 0, parasitics cached nets = 6219, delay annotated nets = 0, parasitics annotated nets = 0, multi-voltage nets = 0. (TIM-112)
+
+****************************************
+Report : clock_gating
+Design : prbs31_checker
+Version: Y-2026.03
+Date   : Thu Nov 26 17:12:40 2026
+****************************************
+
+
+                             Clock Gating Summary
+          ------------------------------------------------------------------
+          |  Number of Clock gating elements         |             3       |
+          |                                          |                     |
+          |  Number of Tool-Inserted Clock gates     |         3 (100.00%) |
+          |                                          |                     |
+          |  Number of Pre-Existing Clock gates      |         0   (0.00%) |
+          |                                          |                     |
+          |  Number of Gated registers               |       833  (99.76%) |
+          |                                          |                     |
+          |  Number of Tool-Inserted Gated registers |       833  (99.76%) |
+          |                                          |                     |
+          |  Number of Pre-Existing Gated registers  |         0   (0.00%) |
+          |                                          |                     |
+          |  Number of Ungated registers             |         2   (0.24%) |
+          |                                          |                     |
+          |  Total number of registers               |           835       |
+          |                                          |                     |
+          |  Max number of Clock Gate Levels         |             1       |
+          ------------------------------------------------------------------
+
+
+1

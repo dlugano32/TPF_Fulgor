@@ -1,0 +1,14 @@
+****************************************
+Report : scenario
+Design : prbs31
+Version: Y-2026.03
+Date   : Thu Nov 26 16:48:34 2026
+****************************************
+
+                                                                     Leakage  Dynamic                              Cell  Signal
+Name            Mode            Corner          Active  Setup  Hold  Power    Power    Max_tran  Max_cap  Min_cap  EM    EM
+----------------------------------------------------------------------------------------------------------------------------------
+func_fast *     functional      fast            true    true   true  true     true     true      true     true     false false
+func_slow *     functional      slow            true    true   true  true     true     true      true     true     false false
+
+1

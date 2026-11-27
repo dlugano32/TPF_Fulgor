@@ -1,0 +1,53 @@
+****************************************
+Report : power
+        -significant_digits 2
+Design : prbs31
+Version: Y-2026.03
+Date   : Thu Nov 26 16:48:35 2026
+****************************************
+Information: Propagated activity on scenario func_fast identical to that on func_slow (POW-006)
+Information: Timer-derived activity data is cached on scenario func_fast (POW-052)
+Mode: functional
+Corner: fast
+Scenario: func_fast
+Voltage: 0.88
+Temperature: -40.00
+
+Voltage Unit         : 1V
+Capacitance Unit     : 1pF
+Time Unit            : 1ns
+Temperature Unit     : 1C
+Dynamic Power Unit   : 1pW
+Leakage Power Unit   : 1pW
+
+Switched supply net power scaling:
+scaling for leakage power
+
+Supply nets:
+VDD (power) probability 1.00 (default)
+VSS (ground) probability 1.00 (default)
+
+  Cell Internal Power    = 1.57e+09 pW ( 48.3%)
+  Net Switching Power    = 1.68e+09 pW ( 51.7%)
+Total Dynamic Power      = 3.26e+09 pW (100.0%)
+
+Cell Leakage Power       = 4.04e+05 pW
+
+
+  Attributes
+  ----------
+      u  -  User defined power group
+      i  -  Includes clock pin internal power
+
+Power Group         Internal Power        Switching Power          Leakage Power            Total Power    (   %  )    Attrs
+-----------------------------------------------------------------------------------------------------------------------------
+io_pad                    0.00e+00               0.00e+00               0.00e+00               0.00e+00    (  0.0%)         
+memory                    0.00e+00               0.00e+00               0.00e+00               0.00e+00    (  0.0%)         
+black_box                 0.00e+00               0.00e+00               0.00e+00               0.00e+00    (  0.0%)         
+clock_network             1.12e+09               3.21e+08               2.11e+02               1.44e+09    ( 44.3%)        i
+register                  2.87e+08               9.28e+08               2.93e+05               1.22e+09    ( 37.3%)         
+sequential                0.00e+00               0.00e+00               0.00e+00               0.00e+00    (  0.0%)         
+combinational             1.66e+08               4.33e+08               1.11e+05               6.00e+08    ( 18.4%)         
+-----------------------------------------------------------------------------------------------------------------------------
+Total                     1.57e+09 pW            1.68e+09 pW            4.04e+05 pW            3.26e+09 pW
+1

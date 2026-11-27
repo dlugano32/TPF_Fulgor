@@ -1,0 +1,631 @@
+****************************************
+Report : timing
+        -path_type full
+        -delay_type min
+        -max_paths 20
+        -report_by design
+Design : bch_encoder
+Version: Y-2026.03
+Date   : Thu Nov 26 16:34:52 2026
+****************************************
+
+  Startpoint: i_msg[106] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[120] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[106] (in)                                  0.000000      0.000000 r
+  o_cw_reg[120]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[120]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)   0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[1] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[15] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[1] (in)                                    0.000000      0.000000 r
+  o_cw_reg[15]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[15]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[2] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[16] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[2] (in)                                    0.000000      0.000000 r
+  o_cw_reg[16]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[16]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[4] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[18] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[4] (in)                                    0.000000      0.000000 r
+  o_cw_reg[18]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[18]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[5] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[19] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[5] (in)                                    0.000000      0.000000 r
+  o_cw_reg[19]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[19]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[10] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[24] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[10] (in)                                   0.000000      0.000000 r
+  o_cw_reg[24]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[24]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[11] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[25] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[11] (in)                                   0.000000      0.000000 r
+  o_cw_reg[25]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[25]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[12] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[26] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[12] (in)                                   0.000000      0.000000 r
+  o_cw_reg[26]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[26]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[13] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[27] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[13] (in)                                   0.000000      0.000000 r
+  o_cw_reg[27]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[27]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[17] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[31] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[17] (in)                                   0.000000      0.000000 r
+  o_cw_reg[31]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[31]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[19] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[33] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[19] (in)                                   0.000000      0.000000 r
+  o_cw_reg[33]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[33]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[22] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[36] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[22] (in)                                   0.000000      0.000000 r
+  o_cw_reg[36]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[36]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[28] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[42] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[28] (in)                                   0.000000      0.000000 r
+  o_cw_reg[42]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[42]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[30] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[44] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[30] (in)                                   0.000000      0.000000 r
+  o_cw_reg[44]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[44]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[31] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[45] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[31] (in)                                   0.000000      0.000000 r
+  o_cw_reg[45]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[45]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[32] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[46] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[32] (in)                                   0.000000      0.000000 r
+  o_cw_reg[46]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[46]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[34] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[48] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[34] (in)                                   0.000000      0.000000 r
+  o_cw_reg[48]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[48]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[35] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[49] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[35] (in)                                   0.000000      0.000000 r
+  o_cw_reg[49]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[49]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[39] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[53] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[39] (in)                                   0.000000      0.000000 r
+  o_cw_reg[53]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[53]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+
+  Startpoint: i_msg[51] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[65] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: fast
+  Scenario: func_fast
+  Path Group: **in2reg_default**
+  Path Type: min
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.000000      0.000000 r
+  i_msg[51] (in)                                   0.000000      0.000000 r
+  o_cw_reg[65]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.000019 r
+  data arrival time                                              0.000019
+
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  o_cw_reg[65]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      0.000000 r
+  clock uncertainty                                0.020000      0.020000
+  library hold time                               -0.005647      0.014353
+  data required time                                             0.014361
+  --------------------------------------------------------------------------------
+  data required time                                             0.014361
+  data arrival time                                             -0.000019
+  --------------------------------------------------------------------------------
+  slack (VIOLATED)                                              -0.014342
+
+
+1

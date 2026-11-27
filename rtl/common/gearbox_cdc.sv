@@ -4,7 +4,7 @@ module gearbox_cdc #(
     parameter int PAR_IN  = 7,
     parameter int PAR_OUT = 8,
     parameter int DEPTH = 112, // Must be a multiple of LCM(PAR_IN, PAR_OUT)
-    parameter type DATA_T = logic [126 : 0]
+    parameter type DATA_T = logic [126 : 0] // N_BITS of DATA_T is the GCD(889, 1016)
 ) (
     input  logic                    i_rd_clk,
     input  logic                    i_wr_clk,

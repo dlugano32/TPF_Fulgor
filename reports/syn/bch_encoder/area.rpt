@@ -1,0 +1,23 @@
+****************************************
+Report : area
+Design : bch_encoder
+Version: Y-2026.03
+Date   : Thu Nov 26 16:34:52 2026
+****************************************
+
+Number of ports:                          374
+Number of nets:                           592
+Number of cells:                          345
+Number of combinational cells:            217
+Number of sequential cells:               128
+Number of macros/black boxes:               0
+Number of buf/inv:                          3
+Number of references:                      13
+
+Combinational area:                    164.55
+Buf/Inv area:                            0.84
+Noncombinational area:                 164.32
+Macro/Black Box area:                    0.00
+
+Total cell area:                       328.87
+1

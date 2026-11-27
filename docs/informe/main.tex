@@ -140,8 +140,8 @@ La Tabla~\ref{tab:parametros-sistema} resume los parámetros fijos definidos por
         Encoders en paralelo & 7 &  \\
         Bus dominio FEC & 791 b entrada / 889 b salida & \\
         Frecuencia FEC  & $899,89$ MHz & Objetivo de síntesis: cerrar > 800MHz\\
-        Bus dominio DSP & 1024 b &  \\
-        Frecuencia DSP & 781,25 MHz & Ratio exacto 889:1024, gcd=1\\
+        Bus dominio DSP & 1016 b &  \\
+        Frecuencia DSP & 787,40 MHz & Ratio exacto 889:1016, gcd=127\\
         Tasa de línea & 800 Gb/s & Medida a la salida del DSP\\
         Tasa de payload & 711,811 Gb/s & \\
         Interleaver & Convolucional (Forney) & $B=8$, $D=1$ \\
@@ -151,10 +151,8 @@ La Tabla~\ref{tab:parametros-sistema} resume los parámetros fijos definidos por
 \end{table}
 
 
-\section{Desarrollo}
-
 % ---------------------------------------------------------------------------
-\subsection{Análisis y dimensionamiento del sistema}
+\section{Análisis y dimensionamiento del sistema}
 \label{sec:etapa-0}
 
 En esta primera etapa se realizará un análisis global del sistema con el objetivo de
@@ -164,7 +162,7 @@ datos, los anchos de bus, los mecanismos de adaptación entre dominios y las lat
 de cada bloque de la cadena.
 % ---------------------------------------------------------------------------
 
-\subsubsection{Dimensionamiento del paralelismo y la tasa de datos}
+\subsection{Dimensionamiento del paralelismo y la tasa de datos}
 
 La tasa codificada producida por $N$ codificadores BCH de longitud 127
 operando en paralelo está dada por
@@ -261,7 +259,7 @@ Finalmente, debido a la tasa del código BCH$(127,113)$, la tasa de información
     \label{eq:tasa-util}
 \end{equation}
 
-\subsubsection{Familia de códigos BCH}
+\subsection{Familia de códigos BCH}
 
 Los códigos BCH forman una familia de códigos cíclicos cuya construcción parte
 de especificar la capacidad de corrección deseada, en lugar de seleccionar
@@ -427,7 +425,7 @@ frecuencia de operación del sistema. Para la arquitectura desarrollada en este
 trabajo se adopta el valor especificado $t=2$ y, en consecuencia, el código
 BCH$(127,113)$.
 
-\subsubsection{Construcción del código BCH(127,113)}
+\subsection{Construcción del código BCH(127,113)}
 
 A partir de la construcción general presentada anteriormente, se particulariza
 ahora el caso correspondiente al código BCH$(127,113)$ utilizado en el sistema.
@@ -538,265 +536,199 @@ sus representaciones polinómica y binaria, lo que permite verificar las
 relaciones entre los elementos del campo, las clases ciclotómicas empleadas y
 los polinomios mínimos obtenidos.
 
-\subsubsection{Dimensionamiento del gearbox y la FIFO}
+\subsection{Dimensionamiento del gearbox CDC}
 
-El cambio entre el dominio FEC y el dominio DSP requiere adaptar tanto el ancho
-de palabra como la frecuencia de operación. El dominio FEC entrega palabras de
-889 bits a $f_{\mathrm{FEC}}=899{,}89$ MHz, mientras que el dominio DSP procesa
-palabras de 1024 bits a $f_{\mathrm{DSP}}=781{,}25$ MHz. Aunque ambos dominios
-transportan la misma tasa media de $800$ Gb/s, la conversión entre anchos genera
-un patrón de transferencias no uniforme que debe ser tenido en cuenta para
-dimensionar correctamente el gearbox y la FIFO CDC.
-
-El gearbox resuelve esta diferencia de formato reagrupando el flujo continuo de
-bits en palabras del ancho requerido por el dominio de destino, sin alterar su
-orden ni su contenido. Para ello, acumula los datos recibidos y emite una nueva
-palabra cada vez que dispone de al menos 1024 bits, conservando internamente los
-bits restantes para completar transferencias posteriores. Luego de $n$ ciclos FEC,
-la cantidad acumulada de palabras completas y el número de bits que permanecen
-almacenados internamente en el gearbox pueden expresarse correspondientemente como
-
-\begin{align}
-    W(n)
-    &=
-    \left\lfloor
-        \frac{889n}{1024}
-    \right\rfloor,
-    \label{eq:gearbox-palabras}
-    \\
-    r(n)
-    &=
-    889n \bmod 1024.
-    \label{eq:gearbox-residuo}
-\end{align}
-
-El estado interno del gearbox se repite cuando el residuo vuelve a cero. Como
-$\gcd(889,1024)=1$, es decir son coprimos, el menor valor de
-$n\neq0$ para el cual se cumple $r(n)=0$ es $n=1024$.
-
-Durante este período de 1024 ciclos del dominio FEC se reciben
-$1024\times 889$ bits, equivalentes exactamente a 889 palabras de 1024 bits.
-Por lo tanto, el patrón completo del gearbox comprende 889 transferencias hacia
-la FIFO antes de que su estado interno vuelva a repetirse.
-
-Este resultado es consistente con la relación entre las frecuencias de ambos
-dominios,
+El cambio entre el dominio FEC y el dominio DSP requiere adaptar tanto el
+ancho de palabra como la frecuencia de operación. El dominio FEC entrega
+palabras de 889 bits a $f_{\mathrm{FEC}}=899{,}89$ MHz, mientras que el
+dominio DSP procesa palabras de 1016 bits a
+$f_{\mathrm{DSP}}=787{,}40$ MHz manteniendo la misma tasa media
+de 800 Gb/s.
 
 \begin{equation}
     \frac{f_{\mathrm{DSP}}}{f_{\mathrm{FEC}}}
     =
-    \frac{889}{1024},
+    \frac{889}{1016},
     \qquad
     889f_{\mathrm{FEC}}
     =
-    1024f_{\mathrm{DSP}}
+    1016f_{\mathrm{DSP}}
     =
     800\text{ Gb/s}.
     \label{eq:relacion-clocks-gearbox}
 \end{equation}
 
-Sin embargo, la igualdad de tasas medias no implica que el gearbox produzca
-una nueva palabra en cada ciclo FEC. Para describir el patrón instantáneo de
-escrituras se define
+Para realizar simultáneamente la adaptación del ancho de palabra y el
+cruce entre dominios de reloj (CDC), se adoptó una arquitectura de
+tipo gearbox basada en un buffer circular, con un esquema de
+funcionamiento similar al de una memoria ping-pong.
+
+Esta arquitectura permite escribir palabras de $n$ bits a la frecuencia
+del dominio de entrada y leer palabras de $m$ bits a la frecuencia del
+dominio de salida. Para evitar la pérdida o sobrescritura de datos, es
+necesario mantener una separación entre las posiciones de escritura y
+lectura, de manera que cada región sea leída únicamente después de
+haber sido escrita y antes de volver a sobrescribirse.
+
+Una propiedad importante de este esquema es que la longitud del
+patrón periódico de empaquetado está determinada por el mínimo
+común múltiplo de los anchos de entrada y salida:
 
 \begin{equation}
-    \Delta W(n)=W(n)-W(n-1),
-    \label{eq:gearbox-write-valid}
-\end{equation}
-
-donde $\Delta W(n)=1$ indica que durante el ciclo $n$ se completó una nueva
-palabra de 1024 bits, mientras que $\Delta W(n)=0$ representa un ciclo sin
-escritura hacia la FIFO.
-
-Como en un período completo existen 1024 ciclos FEC y sólo se generan 889
-palabras, el número total de ciclos sin escritura resulta
-
-\begin{equation}
-    N_{\mathrm{gap}}
+    L_{\mathrm{periodo}}
     =
-    1024-889
-    =
-    135.
-    \label{eq:gearbox-gaps}
+    \operatorname{mcm}(n,m)
 \end{equation}
 
-La Tabla~\ref{tab:gearbox-primer-gap} muestra la evolución inicial del gearbox
-hasta el primer ciclo sin salida posterior al llenado inicial.
-
-\begin{table}[H]
-    \centering
-    \caption{Evolución inicial del gearbox hasta el primer hueco no inicial.}
-    \label{tab:gearbox-primer-gap}
-    \begin{tabular}{@{}rrrrl@{}}
-        \toprule
-        Ciclo FEC $n$ & Bits ingresados & $W(n)$ & $r(n)$ & $\Delta W(n)$ \\
-        \midrule
-        1 &  889 & 0 & 889 & 0 \\
-        2 & 1778 & 1 & 754 & 1 \\
-        3 & 2667 & 2 & 619 & 1 \\
-        4 & 3556 & 3 & 484 & 1 \\
-        5 & 4445 & 4 & 349 & 1 \\
-        6 & 5334 & 5 & 214 & 1 \\
-        7 & 6223 & 6 &  79 & 1 \\
-        8 & 7112 & 6 & 968 & 0 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-El primer ciclo corresponde a la latencia inevitable de llenado del gearbox.
-Sin embargo, en el ciclo 8 aparece un nuevo ciclo sin escritura aun cuando la
-producción de palabras ya se encuentra en régimen. Este comportamiento se repite
-a lo largo de todo el período de 1024 ciclos.
-
-La FIFO desacopla el patrón irregular de escrituras generado por el gearbox del
-patrón de lecturas del dominio DSP. Su ocupación física puede expresarse como
+Inicialmente, la consigna proponía una conversión de 889 a 1024 bits.
+Sin embargo, al tratarse de números coprimos, el patrón completo
+de empaquetado requiere:
 
 \begin{equation}
-    Q(t)
-    =
-    N_W(t)-N_R(t),
-    \label{eq:fifo-ocupacion}
-\end{equation}
-
-donde $N_W(t)$ y $N_R(t)$ representan, respectivamente, la cantidad acumulada
-de escrituras y lecturas hasta el instante $t$. Para evitar condiciones de
-underflow y overflow debe cumplirse
-
-\begin{equation}
-    0\leq Q(t)\leq D,
-    \label{eq:fifo-limites-ocupacion}
-\end{equation}
-
-siendo $D$ la profundidad de la FIFO.
-
-Aunque las tasas medias de escritura y lectura son idénticas, sus eventos
-instantáneos no se encuentran necesariamente alineados. La relación de fase
-entre ambos relojes es desconocida y, para determinadas fases, un flanco de
-lectura puede ocurrir antes de que el gearbox haya generado la siguiente
-palabra. Por lo tanto, comenzar a leer apenas se dispone de la primera palabra
-puede producir huecos transitorios en la transferencia.
-
-Si bien la propia FIFO impide realizar una lectura físicamente inválida, dicho
-ciclo no transferiría información y reduciría la tasa efectiva sostenida. Para
-evitarlo se introduce un nivel de arranque, de modo que el dominio DSP comienza
-a consumir datos únicamente después de acumular una cantidad mínima de palabras.
-
-A este efecto se suma la latencia propia del cruce de dominio de los punteros.
-En particular, el puntero de escritura generado en el dominio FEC atraviesa un
-sincronizador de dos etapas antes de ser observado en el dominio DSP. Por este
-motivo, la ocupación visible desde el lector puede diferir transitoriamente de
-la ocupación física,
-
-\begin{equation}
-    Q_{\mathrm{visible,DSP}}(t)
-    \neq
-    Q_{\mathrm{real}}(t).
-\end{equation}
-
-Para determinar conjuntamente la profundidad de la FIFO y el nivel de arranque
-se implementó un modelo temporal en Python que reproduce el gearbox, las
-escrituras y lecturas de la FIFO y la sincronización de punteros. Los períodos
-de reloj se representaron mediante unidades enteras,
-
-\begin{equation}
-    T_{\mathrm{FEC}}=889,
-    \qquad
-    T_{\mathrm{DSP}}=1024,
-\end{equation}
-
-de manera de conservar exactamente la relación entre ambos dominios. Como los
-períodos son coprimos, todas las relaciones de fase se recorren dentro del
-superperíodo
-
-\begin{equation}
-    T_{\mathrm{super}}
+    L_{\mathrm{periodo,original}}
     =
     \operatorname{mcm}(889,1024)
     =
-    889\times1024.
-    \label{eq:superperiodo-fifo}
+    889 \cdot 1024
+    =
+    910k\text{ bits}.
 \end{equation}
 
-Tomando un flanco FEC como referencia en $t=0$, se analizaron las 1024 posiciones
-posibles del primer flanco DSP dentro de su período. Para cada fase inicial se
-simuló el funcionamiento completo y se consideró fallida una configuración si,
-una vez habilitada la lectura, aparecía al menos un ciclo DSP sin una palabra
-visible o se producía overflow.
+Por lo tanto, una implementación basada en dos regiones de memoria,
+cada una capaz de almacenar un período completo, requeriría
+1.82M bits. Este requerimiento resultaba excesivo para la
+arquitectura propuesta, especialmente considerando su posterior
+implementación en FPGA.
 
-Se evaluó inicialmente una FIFO de profundidad 8. La elección de una profundidad
-potencia de dos permite la implementación de los punteros de escritura/lectura 
-en código Gray y proporciona margen suficiente para analizar distintos
-niveles de arranque. La configuración utilizada se resume en la
-Tabla~\ref{tab:fifo-configuracion}.
+A partir de esta limitación, se propuso junto a los tutores modificar
+el ancho de palabra del dominio DSP de 1024 a 1016 bits, compensada 
+mediante un incremento de la frecuencia del dominio DSP, de 781,25 
+MHz a 787,40 MHz, manteniendo la tasa de linea de 800Gb/s
 
-\begin{table}[H]
-    \centering
-    \caption{Configuración utilizada para dimensionar la FIFO CDC.}
-    \label{tab:fifo-configuracion}
-    \begin{tabular}{@{}lr@{}}
-        \toprule
-        Parámetro & Valor \\
-        \midrule
-        Ancho & 1024 bits \\
-        Etapas de sincronización & 2 \\
-        Profundidad evaluada & 8 palabras \\
-        Umbrales de arranque analizados & 1 a 4 palabras \\
-        Fases iniciales analizadas & 1024 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-Los resultados del barrido se presentan en la
-Tabla~\ref{tab:fifo-barrido}.
-
-\begin{table}[H]
-    \centering
-    \caption{Barrido del umbral de arranque para una FIFO de ocho palabras.}
-    \label{tab:fifo-barrido}
-    \begin{tabular}{@{}rrrrr@{}}
-        \toprule
-        Umbral & Fases fallidas & Huecos & Overflow & Ocup. máxima \\
-        \midrule
-        1 & 134 & 134 & 0 & 3 \\
-        2 &   0 &   0 & 0 & 4 \\
-        3 &   0 &   0 & 0 & 5 \\
-        4 &   0 &   0 & 0 & 6 \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-El barrido muestra que un nivel de arranque de una sola palabra no constituye
-un margen suficiente, ya que 134 de las 1024 relaciones de fase analizadas
-producen al menos un hueco luego de habilitar la lectura.
-
-A partir de dos palabras no se observan underflows ni overflows para ninguna de
-las fases analizadas, por lo que, en principio, este valor representa el mínimo
-funcional. No obstante, para incorporar margen frente a efectos no contemplados
-por el modelo nominal, se adopta
+La ventaja fundamental de esta modificación es que ambos anchos
+pasan a compartir un máximo común divisor de 127:
 
 \begin{equation}
-    \texttt{START\_LEVEL}=4.
+    \operatorname{mcd}(889,1016)=127,
+    \qquad
+    889=7\cdot127,
+    \qquad
+    1016=8\cdot127.
 \end{equation}
 
-Con este umbral, la ocupación máxima observada es de seis palabras. Una FIFO de
-ocho posiciones conserva así un margen de dos entradas respecto del máximo
-alcanzado, sin presentar underflow ni overflow en ninguna de las relaciones de
-fase simuladas.
-
-La configuración final adoptada para el cruce entre los dominios FEC y DSP es
+De esta manera, la conversión puede interpretarse como una
+adaptación de 7 a 8 unidades de 127 bits, reduciendo
+considerablemente el período de empaquetado:
 
 \begin{equation}
-    \boxed{
-    \begin{aligned}
-        Depth &= 8\text{ palabras},\\
-        W_{\mathrm{FIFO}} &= 1024\text{ bits},\\
-        N_{\mathrm{sync}} &= 2,\\
-        \texttt{START\_LEVEL} &= 4.
-    \end{aligned}}
-    \label{eq:fifo-configuracion-final}
+    L_{\mathrm{periodo}}
+    =
+    \operatorname{mcm}(7,8)\cdot127
+    =
+    56\cdot127
+    =
+    7112\text{ bits}.
 \end{equation}
 
-\subsubsection{Análisis del sistema de entrelazado}
+Cada período comprende exactamente 8 escrituras de 889 bits
+y 7 lecturas de 1016 bits, por lo que se cumple:
+
+\begin{equation}
+    8\cdot889=7\cdot1016=7112\text{ bits}.
+\end{equation}
+
+Además, debido a la relación entre las frecuencias de ambos
+dominios, los tiempos necesarios para completar estas operaciones
+son iguales:
+
+\begin{equation}
+    \frac{8}{f_{\mathrm{FEC}}}
+    =
+    \frac{7}{f_{\mathrm{DSP}}}
+    \approx 8{,}89\text{ ns}.
+\end{equation}
+
+Esta propiedad permite adoptar un esquema de doble capacidad,
+equivalente a dos regiones lógicas de 56 unidades de 127 bits.
+Mientras se avanza en la escritura y lectura de la memoria,
+el desfase inicial entre ambas operaciones evita que se acceda
+a una misma posición antes de que los datos correspondientes
+se encuentren disponibles.
+
+La capacidad total seleccionada resulta:
+
+\begin{equation}
+    D_{\mathrm{mem}}
+    =
+    2\cdot\operatorname{mcm}(7,8)
+    =
+    112\text{ unidades},
+\end{equation}
+
+\begin{equation}
+    M_{\mathrm{total}}
+    =
+    112\cdot127
+    =
+    14224\text{ bits}.
+    \label{eq:memoria-gearbox}
+\end{equation}
+
+En la implementación RTL, esta memoria se organiza mediante dos
+interpretaciones del mismo almacenamiento. Desde el dominio de
+escritura, se dispone de 16 posiciones de 889 bits, mientras que
+desde el dominio de lectura se dispone de 14 posiciones de
+1016 bits:
+
+\begin{equation}
+    D_{\mathrm{WR}}
+    =
+    \frac{112}{7}=16,
+    \qquad
+    D_{\mathrm{RD}}
+    =
+    \frac{112}{8}=14.
+\end{equation}
+
+La Figura~\ref{fig:gearbox-cdc} muestra ambas interpretaciones de la memoria
+y la separación inicial entre los punteros de escritura y lectura.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.75\textwidth]{gearbox_cdc.png}
+    \caption{Organización de la memoria del gearbox CDC para la conversión
+    de 889 a 1016 bits.}
+    \label{fig:gearbox-cdc}
+\end{figure}
+
+Ambos dominios utilizan punteros locales que recorren
+circularmente sus respectivas posiciones de memoria. El puntero
+de escritura avanza con cada operación habilitada, mientras
+que el de lectura comienza a avanzar luego de recibir una señal
+de arranque sincronizada.
+
+Para establecer la separación inicial entre ambos accesos,
+la lectura se habilita una vez completadas las primeras
+8 escrituras, equivalentes a 56 unidades de 127 bits,
+es decir, la mitad de la capacidad total. La señal de arranque
+se transfiere al dominio de lectura mediante un sincronizador
+de dos etapas.
+
+De esta forma, bajo la condición de que ambas tasas se mantengan
+iguales y el flujo de datos sea continuo, la separación inicial
+permite realizar la transferencia sin necesidad de sincronizar
+los punteros entre dominios, evitando que la metaestabilidad 
+pueda generar problemas en la lectura o escritura de memoria. 
+El único control que atraviesa el CDC es la señal de 
+habilitación inicial de lectura.
+
+La principal ventaja de esta solución es la reducción de la
+complejidad del control CDC y de la cantidad de almacenamiento
+requerido. En comparación con el esquema original de dos
+regiones de memoria, la capacidad se reduce en un factor
+de 128, equivalente a una disminución del 99,22\%.
+
+\subsection{Análisis del sistema de entrelazado}
 
 El sistema utiliza dos mecanismos consecutivos de entrelazado con el objetivo
 de aumentar la protección frente a errores en ráfaga de duración prolongada. 
@@ -1296,7 +1228,7 @@ convolucional. La arquitectura proporciona la separación requerida con menor
 almacenamiento y una estructura de control más simple que la alternativa de
 bloque considerada.
 
-\subsubsection{Presupuesto de latencia}
+\subsection{Presupuesto de latencia}
 
 El presupuesto de latencia se plantea de manera preliminar, ya que la latencia
 final de algunos bloques dependerá de la arquitectura adoptada y del grado
@@ -1318,11 +1250,16 @@ se implementan como un reordenamiento puramente combinacional de las señales.
 Por su parte, el interleaver y el de-interleaver presentan una latencia conjunta
 de siete ciclos FEC.
 
-El gearbox introduce aproximadamente un ciclo asociado al rearmado de las 
-palabras entre ambos anchos de bus. En la FIFO, la latencia depende de su 
-ocupación en régimen, como aproximación se considera una ocupación del orden 
-de cuatro palabras, consistente con el nivel de arranque adoptado, 
-lo que equivale a aproximadamente cuatro ciclos del dominio DSP por cruce. 
+Cada gearbox integra la adaptación de ancho y el cruce entre dominios. En TX, 
+el llenado inicial de media memoria requiere 8 escrituras de 889 bits, 
+equivalentes a $8T_{\mathrm{FEC}}$. En RX, la misma cantidad de datos 
+se acumulan mediante 7 escrituras de 1016 bits, equivalentes a $7T_{\mathrm{DSP}}$.
+
+En ambos sentidos se presupuestan, además, dos ciclos del dominio de lectura
+para sincronizar la señal de arranque y un ciclo adicional para la lectura
+registrada de la memoria. De esta manera, se estiman
+$8T_{\mathrm{FEC}}+3T_{\mathrm{DSP}}$ para el gearbox TX y
+$7T_{\mathrm{DSP}}+3T_{\mathrm{FEC}}$ para el gearbox RX.
 
 A partir de estas hipótesis, el presupuesto preliminar de latencia se resume en
 la Tabla~\ref{tab:presupuesto-latencia}.
@@ -1340,7 +1277,7 @@ la Tabla~\ref{tab:presupuesto-latencia}.
 Encoder BCH
 & FEC
 & $1T_{\mathrm{FEC}}$
-& $1.11$ \\
+& $1{,}11$ \\
 
 Permutación de lanes
 & FEC
@@ -1350,27 +1287,17 @@ Permutación de lanes
 Interleaver + de-interleaver
 & FEC
 & $7T_{\mathrm{FEC}}$
-& $7.78$ \\
+& $7{,}78$ \\
 
-Gearbox TX
-& FEC
-& $1T_{\mathrm{FEC}}$
-& $1.11$ \\
+Gearbox CDC TX
+& FEC/DSP
+& $8T_{\mathrm{FEC}}+3T_{\mathrm{DSP}}$
+& $12{,}70$ \\
 
-FIFO CDC TX
-& DSP
-& $4T_{\mathrm{DSP}}$
-& $5.12$ \\
-
-FIFO CDC RX
-& DSP
-& $4T_{\mathrm{DSP}}$
-& $5.12$ \\
-
-Gearbox RX
-& DSP
-& $1T_{\mathrm{DSP}}$
-& $1.28$ \\
+Gearbox CDC RX
+& DSP/FEC
+& $7T_{\mathrm{DSP}}+3T_{\mathrm{FEC}}$
+& $12{,}22$ \\
 
 De-permutación de lanes
 & FEC
@@ -1380,38 +1307,38 @@ De-permutación de lanes
 Decoder BCH
 & FEC
 & $3T_{\mathrm{FEC}}$
-& $3.33$ \\
+& $3{,}33$ \\
 
 \hline
 \textbf{Total}
 & --
-& $12T_{\mathrm{FEC}}+9T_{\mathrm{DSP}}$
-& $\mathbf{24.85}$ \\
+& $22T_{\mathrm{FEC}}+10T_{\mathrm{DSP}}$
+& $\mathbf{37{,}15}$ \\
 \hline
 \end{tabular}
 \caption{Presupuesto preliminar de latencia end-to-end}
 \label{tab:presupuesto-latencia}
 \end{table}
 
-Para $f_{\mathrm{FEC}}=899.89\,\mathrm{MHz}$ se tiene
-$T_{\mathrm{FEC}}\approx1.11\,\mathrm{ns}$, mientras que para
-$f_{\mathrm{DSP}}=781.25\,\mathrm{MHz}$ resulta
-$T_{\mathrm{DSP}}=1.28\,\mathrm{ns}$. Bajo las hipótesis anteriores, la
-latencia end-to-end estimada sin considerar el canal es de
-$24.85\,\mathrm{ns}$. Este valor resulta de sumar
-$12T_{\mathrm{FEC}}+9T_{\mathrm{DSP}}$ y equivale a aproximadamente
-$22.37T_{\mathrm{FEC}}$.
+Para $f_{\mathrm{FEC}}=899{,}89\,\mathrm{MHz}$ se tiene
+$T_{\mathrm{FEC}}\approx1{,}111\,\mathrm{ns}$, mientras que para
+$f_{\mathrm{DSP}}=787{,}40\,\mathrm{MHz}$ resulta
+$T_{\mathrm{DSP}}\approx1{,}270\,\mathrm{ns}$. Bajo las hipótesis anteriores, la
+latencia end-to-end presupuestada sin considerar el canal es de
+$37{,}15\,\mathrm{ns}$. Este valor resulta de sumar
+$22T_{\mathrm{FEC}}+10T_{\mathrm{DSP}}$ y equivale a aproximadamente
+$33{,}43T_{\mathrm{FEC}}$.
 
 % ---------------------------------------------------------------------------
-\subsection{Modelos de referencia en Python}
+\section{Modelos de referencia en Python}
 % ---------------------------------------------------------------------------
 En esta etapa se modela en Python el comportamiento de los distintos bloques de
 la cadena antes de avanzar con su implementación en RTL. El objetivo es contar
 con una referencia funcional y bit-exacta que permita verificar los algoritmos,
-generar resultados esperados y comparar posteriormente el comportamiento del
-diseño RTL y de su implementación en FPGA.
+generar resultados esperados y comparar posteriormente el con comportamiento 
+del diseño RTL y de su implementación en FPGA.
 
-\subsubsection{Convenciones de representación}
+\subsection{Convenciones de representación}
 
 Con el objetivo de garantizar que los modelos en Python y la posterior
 implementación RTL utilicen la misma representación de bits, se adopta una 
@@ -1471,7 +1398,7 @@ operación XOR. La correspondencia entre el polinomio y el vector de 127 bits es
     \label{eq:convencion-mapeo-codeword}
 \end{equation}
 
-\subsubsection{Aritmética de \texorpdfstring{$\mathrm{GF}(2^7)$}{GF(2 elevado a 7)}}
+\subsection{Aritmética de \texorpdfstring{$\mathrm{GF}(2^7)$}{GF(2 elevado a 7)}}
 
 Para realizar las operaciones necesarias sobre campos finitos se desarrolló
 en Python un par de clases que implementa la aritmética de $\mathrm{GF}(2^m)$ 
@@ -1499,7 +1426,7 @@ La tabla completa de elementos del campo, incluyendo su representación como
 potencia de $\alpha$, su forma polinómica y su representación binaria, se
 presenta en la Tabla~\ref{tab:elementos-gf27} del Anexo A.
 
-\subsubsection{Polinomio generador y matriz de codificación}
+\subsection{Polinomio generador y matriz de codificación}
 
 A partir del análisis realizado en la etapa anterior, el código BCH(127,113)
 queda definido por el polinomio generador
@@ -1574,7 +1501,7 @@ los 113 vectores de la base canónica y 1000 mensajes aleatorios. En todos los
 casos, se obtuvo la misma palabra codificada mediante ambos métodos y resto nulo 
 al dividir el resultado por $g(x)$.
 
-\subsubsection{Codificación y decodificación BCH}
+\subsection{Codificación y decodificación BCH}
 
 \paragraph{Codificador.}
 La codificación sistemática se realiza mediante la matriz de paridad obtenida
@@ -1616,13 +1543,16 @@ $14\leq i<127$. Por lo tanto, la codificación queda completamente definida por
 la transformación lineal $\mathbf{r}=\mathbf{m}P$ y por la inserción de sus 14
 coeficientes en los términos de menor grado de $c(x)$.
 
+
 \paragraph{Decodificador.}
-La decodificación del código BCH, con capacidad de corrección $t=2$, se
-realiza mediante el algoritmo \textit{search-less} propuesto por Yoo y
-Park~\cite{yoo2014}. A diferencia de una búsqueda de Chien, en la que las
-raíces del polinomio localizador se determinan evaluándolo sobre todos los 
-elementos del campo posibles, este método aprovecha que para $t=2$ el 
-polinomio localizador es cuadrático y tiene una solución cerrada.
+
+La decodificación del código BCH, con capacidad de corrección $t=2$,
+se realiza mediante el algoritmo \textit{search-less} propuesto por
+Yoo y Park~\cite{yoo2014}. A diferencia de la búsqueda de Chien,
+que determina las raíces del polinomio localizador mediante su
+evaluación en los elementos no nulos del campo, este método
+aprovecha que, para $t=2$, dicho polinomio es cuadrático y admite
+una solución cerrada.
 
 Sea la palabra recibida
 
@@ -1630,61 +1560,111 @@ Sea la palabra recibida
     y(x)=c(x)+e(x),
 \end{equation}
 
-donde $c(x)$ es una palabra de código válida y $e(x)$ representa el patrón de
-errores. Los síndromes se obtienen evaluando la palabra recibida en las raíces
-del código BCH:
+donde $c(x)$ es una palabra de código válida y $e(x)$ representa
+el patrón de errores. Los síndromes se calculan evaluando la palabra
+recibida en las raíces del código BCH:
 
 \begin{equation}
     S_i=y(\alpha^i)
-    =
-    y_0+y_1\alpha^i+\cdots+y_{n-1}\alpha^{(n-1)i},
+    =y_0+y_1\alpha^i+\cdots+y_{n-1}\alpha^{(n-1)i},
 \end{equation}
 
-donde $\alpha$ es un elemento primitivo de $\mathrm{GF}(2^m)$. Como
-$c(\alpha^i)=0$ para las raíces utilizadas en la construcción del código,
+donde $\alpha$ es un elemento primitivo de $\mathrm{GF}(2^m)$.
+Dado que $c(\alpha^i)=0$ para las raíces utilizadas en la
+construcción del código, los síndromes dependen únicamente
+del patrón de errores:
 
 \begin{equation}
     S_i=e(\alpha^i).
 \end{equation}
 
-Para un BCH binario con $t=2$ es suficiente trabajar con los síndromes impares
-$S_1$ y $S_3$, ya que los síndromes pares pueden obtenerse a partir de ellos
-mediante la característica de Frobenius.
+Para un código BCH binario con $t=2$, basta con calcular
+los síndromes impares $S_1$ y $S_3$, ya que los síndromes
+pares se obtienen a partir de ellos mediante la propiedad
+de Frobenius.
 
-El algoritmo distingue los casos de cero, uno y dos errores antes de
-resolver el polinomio localizador:
+Con el objetivo de expresar este cálculo como una operación
+binaria paralela, se construye en Python una matriz $M$
+de dimensiones $127\times14$. Para cada posición $j$ de
+la palabra recibida se calculan los elementos $\alpha^j$
+y $\alpha^{3j}$ en $\mathrm{GF}(2^7)$, cuyas representaciones
+binarias de siete bits se concatenan para formar una fila
+de la matriz:
+
+\begin{equation}
+    M_{j,:}=
+    \left[
+        \operatorname{bits}_{0\rightarrow6}(\alpha^j)
+        \;\middle|\;
+        \operatorname{bits}_{0\rightarrow6}(\alpha^{3j})
+    \right],
+    \qquad j=0,\ldots,126.
+    \label{eq:construccion-matriz-sindromes}
+\end{equation}
+
+En ambos elementos, los bits se ordenan desde el coeficiente
+de menor grado hasta el de mayor grado. De esta manera, cada
+fila representa la contribución del bit recibido $y_j$ al
+cálculo de los dos síndromes.
+
+El producto del vector de bits recibidos por $M$, realizado
+sobre $\mathrm{GF}(2)$, produce un vector de 14 bits cuyos
+primeros siete corresponden a $S_1$ y los restantes a $S_3$.
+Para implementar esta operación de manera eficiente, el modelo
+de Python utiliza la matriz transpuesta $M_{\mathrm{T}}$,
+de dimensiones $14\times127$, cuyas filas se representan
+mediante máscaras binarias. Cada máscara selecciona los bits
+de la palabra recibida que intervienen en el cálculo de un
+determinado bit de síndrome, permitiendo obtenerlo mediante
+una operación de enmascaramiento seguida de una reducción XOR.
+
+La matriz transpuesta se presenta en representación hexadecimal
+en el Anexo~\ref{anexo:matriz-sindromes-bch}. Las filas 0 a 6
+corresponden a los bits de $S_1$, mientras que las filas 7 a 13
+corresponden a los de $S_3$, respetando en ambos casos el orden
+de coeficientes definido previamente. Esta representación
+permite trasladar directamente el cálculo de los síndromes
+a una red combinacional de operaciones XOR.
+
+Una vez calculados los síndromes, el algoritmo distingue
+entre los casos de cero, uno y dos errores, y determina
+el procedimiento necesario para localizar sus posiciones:
 
 \begin{itemize}
     \item Si $S_1=0$, entonces, bajo la hipótesis de hasta dos errores,
     $S_3=0$ y la palabra se considera libre de errores.
 
-    \item Si $S_1\neq0$ y $S_1^3=S_3$, existe un único error. En este caso
-    $\sigma(x)=1+S_1x$, su raíz es $x_1=S_1^{-1}$ y la posición del error es
+    \item Si $S_1\neq0$ y $S_1^3=S_3$, existe un único error. En este
+    caso, $\sigma(x)=1+S_1x$, cuya raíz es $x_1=S_1^{-1}$. La posición
+    del error se obtiene mediante
     $j_1=-\log_{\alpha}(x_1)\bmod127$.
 
     \item En caso contrario, se considera que existen dos errores y se aplica
     la solución cuadrática \textit{search-less}.
 \end{itemize}
 
-La Fig.~\ref{fig:searchless-flow} resume esta secuencia de decisión y las
-operaciones efectuadas en cada caso.
+La Fig.~\ref{fig:searchless-flow} resume esta secuencia de decisión y
+las operaciones efectuadas en cada caso.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.34\linewidth]{search-less.png}
-    \caption{Flujo del algoritmo de decodificación \textit{search-less} para
-    un BCH con $t=2$, adaptado de~\cite{yoo2014}.}
+    \caption{Flujo del algoritmo de decodificación
+    \textit{search-less} para un BCH con $t=2$, adaptado
+    de~\cite{yoo2014}.}
     \label{fig:searchless-flow}
 \end{figure}
 
-Para el caso de dos errores, el polinomio localizador puede expresarse como
+
+Para el caso de dos errores, el polinomio localizador puede
+expresarse como
 
 \begin{equation}
     \sigma(x)=1+\sigma_1x+\sigma_2x^2,
     \label{eq:bch-locator-t2}
 \end{equation}
 
-con
+cuyos coeficientes se obtienen a partir de los síndromes:
 
 \begin{equation}
     \sigma_1=S_1,
@@ -1693,9 +1673,11 @@ con
     \label{eq:sigma}
 \end{equation}
 
-El algoritmo \textit{search-less} transforma la búsqueda de las raíces
-de~\eqref{eq:bch-locator-t2} en la resolución de una ecuación cuadrática
-estándar. Para ello se definen
+Dado que el polinomio localizador es de segundo grado, sus
+raíces pueden determinarse algebraicamente sin necesidad de
+evaluarlo sobre todos los elementos del campo. Para ello,
+el algoritmo \textit{search-less} introduce el siguiente
+cambio de variables:
 
 \begin{equation}
     \omega
@@ -1708,40 +1690,57 @@ estándar. Para ello se definen
     \label{eq:bch-omega-mu}
 \end{equation}
 
-Sustituyendo estas expresiones en \eqref{eq:bch-locator-t2}, se obtiene
+Sustituyendo estas expresiones en~\eqref{eq:bch-locator-t2},
+se obtiene
 
 \begin{equation}
     1+\frac{\omega}{\mu}
       +\frac{\omega^2}{\mu}=0,
 \end{equation}
 
-y, multiplicando por $\mu$,
+que, al multiplicar por $\mu$, se reduce a
 
 \begin{equation}
     \omega^2+\omega=\mu.
     \label{eq:bch-quadratic}
 \end{equation}
 
-De esta manera, la determinación de las dos raíces del polinomio localizador
-se reduce a resolver una única ecuación sobre $\mathrm{GF}(2^7)$.
+Por lo tanto, el problema de determinar las raíces del
+polinomio localizador queda reducido a resolver una ecuación
+cuadrática de la forma~\eqref{eq:bch-quadratic} sobre
+$\mathrm{GF}(2^m)$.
 
-La resolución de \eqref{eq:bch-quadratic} se basa en la traza absoluta de
+La existencia de soluciones para esta ecuación está
+determinada por las propiedades de la traza absoluta de
 $\mathrm{GF}(2^m)$ sobre $\mathrm{GF}(2)$, definida como
 
 \begin{equation}
     \operatorname{Tr}(a)
     =
     \sum_{k=0}^{m-1}a^{2^k}.
+    \label{eq:bch-trace}
 \end{equation}
 
-La ecuación $\omega^2+\omega=\mu$ posee soluciones en
-$\mathrm{GF}(2^m)$ si y sólo si $\operatorname{Tr}(\mu)=0$.
-Para obtener directamente una de estas soluciones, el algoritmo selecciona
-previamente un elemento $\theta\in\mathrm{GF}(2^m)$ que satisfaga
-$\operatorname{Tr}(\theta)=1$.
+En particular, la ecuación $\omega^2+\omega=\mu$ posee
+soluciones en $\mathrm{GF}(2^m)$ si y sólo si
+$\operatorname{Tr}(\mu)=0$. Esta condición se satisface
+necesariamente para un patrón de exactamente dos errores,
+garantizando la existencia de dos soluciones distintas en
+el campo.
 
-A partir de este elemento puede construirse una solución de
-\eqref{eq:bch-quadratic} mediante
+Sobre la base de esta propiedad, Yoo y Park~\cite{yoo2014}
+proponen un procedimiento algebraico que permite calcular
+directamente dichas soluciones, válido tanto para valores
+pares como impares de $m$. El método parte de la elección
+de un elemento $\theta\in\mathrm{GF}(2^m)$ cuya traza
+sea igual a uno:
+
+\begin{equation}
+    \operatorname{Tr}(\theta)=1.
+\end{equation}
+
+Con esta elección, una de las soluciones de
+\eqref{eq:bch-quadratic} puede expresarse como
 
 \begin{equation}
 \begin{split}
@@ -1749,7 +1748,7 @@ A partir de este elemento puede construirse una solución de
     \mu\theta^2
     +(\mu+\mu^2)\theta^{2^2}
     +(\mu+\mu^2+\mu^{2^2})\theta^{2^3}
-    +\cdots \\
+    +\cdots\\
     &+
     \left(
         \mu+\mu^2+\cdots+\mu^{2^{m-2}}
@@ -1758,18 +1757,83 @@ A partir de este elemento puede construirse una solución de
 \label{eq:bch-omega1-searchless}
 \end{equation}
 
-mientras que la segunda solución se obtiene directamente como
+La segunda solución se obtiene directamente a partir
+de la primera, mediante
 
 \begin{equation}
     \omega_2=\omega_1+1.
 \end{equation}
 
-Para el código utilizado en este trabajo, $m=7$ es impar y, por lo tanto,
-$\operatorname{Tr}(1)=m\bmod2=1$. Se adopta entonces $\theta=1$, lo que
-simplifica la implementación del algoritmo.
+En el código BCH utilizado en este trabajo, el campo
+de extensión es $\mathrm{GF}(2^7)$. Como $m=7$ es impar,
+se cumple que
 
-Finalmente, deshaciendo el cambio de variable definido en
-\eqref{eq:bch-omega-mu}, las raíces del polinomio localizador resultan
+\begin{equation}
+    \operatorname{Tr}(1)=m\bmod2=1.
+\end{equation}
+
+En consecuencia, es posible adoptar $\theta=1$ en la
+formulación general de Yoo y Park. Al sustituir este
+valor y simplificar las sumas en $\mathrm{GF}(2^7)$,
+la expresión de la primera solución se reduce a
+
+\begin{equation}
+    \omega_1=\mu^2+\mu^8+\mu^{32}.
+    \label{eq:bch-omega-simplified}
+\end{equation}
+
+La elección de un campo de extensión con $m$ impar
+permite, además, obtener una solución equivalente
+mediante la función semi-traza, definida como
+
+\begin{equation}
+    \operatorname{HTr}(a)
+    =
+    \sum_{k=0}^{(m-1)/2}a^{2^{2k}}.
+    \label{eq:bch-half-trace}
+\end{equation}
+
+Esta función satisface la identidad
+
+\begin{equation}
+    \operatorname{HTr}(a)^2+\operatorname{HTr}(a)
+    =
+    a+\operatorname{Tr}(a).
+\end{equation}
+
+Por consiguiente, cuando $\operatorname{Tr}(\mu)=0$,
+la semi-traza proporciona directamente una solución
+de~\eqref{eq:bch-quadratic}:
+
+\begin{equation}
+    \omega_1=\operatorname{HTr}(\mu).
+\end{equation}
+
+Para $m=7$, esta expresión toma la forma
+
+\begin{equation}
+    \operatorname{HTr}(\mu)
+    =
+    \mu+\mu^4+\mu^{16}+\mu^{64}.
+\end{equation}
+
+Considerando nuevamente que $\operatorname{Tr}(\mu)=0$,
+se verifica que
+
+\begin{equation}
+    \mu+\mu^4+\mu^{16}+\mu^{64}
+    =
+    \mu^2+\mu^8+\mu^{32}.
+\end{equation}
+
+Así, la formulación particular de Yoo y Park y la
+semi-traza conducen a la misma solución de la ecuación
+cuadrática para el campo $\mathrm{GF}(2^7)$.
+
+Una vez determinadas las soluciones $\omega_1$ y
+$\omega_2$, se recuperan las raíces del polinomio
+localizador deshaciendo el cambio de variable
+introducido en~\eqref{eq:bch-omega-mu}:
 
 \begin{equation}
     x_i
@@ -1780,16 +1844,22 @@ Finalmente, deshaciendo el cambio de variable definido en
     \qquad i\in\{1,2\}.
 \end{equation}
 
-A partir de cada raíz se obtiene la posición del error mediante el logaritmo
-discreto respecto de $\alpha$,
+Finalmente, las posiciones de los errores se obtienen
+a partir de los logaritmos discretos de dichas raíces
+respecto del elemento primitivo $\alpha$:
 
 \begin{equation}
     j_i
     =
-    -\log_{\alpha}(x_i)\bmod 127.
+    -\log_{\alpha}(x_i)\bmod127.
 \end{equation}
 
-El modelo de referencia en Python se verificó codificando 1000 mensajes
+De este modo, el algoritmo determina las posiciones de
+los errores mediante la resolución algebraica del
+polinomio localizador, evitando la búsqueda exhaustiva
+de raíces utilizada en el procedimiento de Chien.
+
+Este algoritmo se implementó en python y se verificó codificando 1000 mensajes
 aleatorios y comprobando que las palabras válidas produjeran $S_1=S_3=0$ y
 que el decodificador no las modificara. Además, para una palabra válida se
 recorrieron exhaustivamente las 127 posiciones posibles de un único error y
@@ -1905,7 +1975,7 @@ cambian tanto la longitud del código como la extensión del campo. Sin embargo,
 muestran la ventaja arquitectónica de reemplazar la búsqueda explícita de
 raíces por su resolución algebraica.
 
-\subsubsection{Generador PRBS31 paralelo}
+\subsection{Generador PRBS31 paralelo}
 
 La secuencia de prueba del sistema se genera mediante un LFSR de 31 bits
 asociado al polinomio primitivo
@@ -2087,10 +2157,10 @@ implementación RTL utilicen exactamente las mismas ecuaciones.
 
 La validación del modelo se realizó comparando 4096 bits consecutivos
 generados por la implementación paralela contra los producidos por un LFSR
-serie inicializado con la misma semilla. Ambas secuencias coincidieron bit a
+serie inicializado con la misma seed. Ambas secuencias coincidieron bit a
 bit.
 
-\subsubsection{Modelo del canal y modulación PAM-2}
+\subsection{Modelo del canal y modulación PAM-2}
 
 Para modelar de forma simplificada el canal de transmisión se utilizó una
 modulación PAM-2 sobre un canal con ruido blanco gaussiano aditivo (AWGN),
@@ -2242,7 +2312,7 @@ $E_b/N_0$.
 \end{figure}
 
 
-\subsubsection{Simulación de la cadena completa}
+\subsection{Simulación de la cadena completa}
 
 En esta etapa se integraron los modelos desarrollados individualmente con el
 objetivo de construir una cadena bit-exacta respecto de la arquitectura RTL.
@@ -2343,96 +2413,1616 @@ Finalmente, a partir de 114 bits la corrección falla para todos los offsets
 posibles.
 
 % ---------------------------------------------------------------------------
-\subsection{RTL del transmisor}
+\section{Diseño e implementación RTL}
 % ---------------------------------------------------------------------------
+Una vez establecidos los fundamentos teóricos y los algoritmos del sistema,
+esta sección describe su implementación en RTL. El desarrollo se centra en
+la arquitectura de hardware adoptada para cada bloque, las decisiones de
+diseño y los criterios considerados para tomarlas. Se detallan la organización
+del datapath, los registros y las etapas de pipeline, la lógica de control y
+las interfaces entre bloques, teniendo en cuenta los requisitos de tasa de
+datos, temporización y uso de recursos. Finalmente, se presenta la integración
+del transmisor y el receptor con el gearbox CDC, junto con el manejo de los
+dominios de reloj, el reset y las señales de validez.
+
+\subsection{Transmisor}
 
 \subsubsection{Generador PRBS31}
-\pendiente{Documentar arquitectura paralela y reset.}
 
-\subsubsection{Banco de codificadores BCH}
-\pendiente{Documentar la arquitectura de los siete codificadores.}
+El generador PRBS31 se implementó en el módulo \texttt{prbs31} mediante un
+registro de estado de 31 bits y dos bloques combinacionales que operan en
+paralelo. Esta arquitectura permite generar los 791 bits de payload
+requeridos por el banco de siete codificadores BCH y calcular el estado
+correspondiente al siguiente grupo de bits en cada ciclo del dominio FEC.
+La Figura~\ref{fig:prbs31-rtl} presenta la arquitectura implementada.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{prbs31_rtl.png}
+    \caption{Arquitectura RTL del generador PRBS31 paralelo.}
+    \label{fig:prbs31-rtl}
+\end{figure}
+
+Las matrices de transición y generación de salida, derivadas de la
+formulación paralela, se definen como constantes \texttt{localparam} en
+el paquete \texttt{prbs31\_pkg}, junto con los parámetros
+\texttt{ORDER=31} y \texttt{P=791}. La matriz \texttt{A}, de dimensiones
+$31\times31$, se utiliza en el módulo \texttt{prbs31\_mult\_a} para
+calcular el próximo estado (\texttt{lfsr\_next}), mientras que la matriz
+\texttt{B}, de dimensiones $791\times31$, permite generar el bus de
+salida \texttt{o\_prbs} mediante \texttt{prbs31\_mult\_b}.
+Las filas de ambas matrices se presentan en representación hexadecimal
+en el Anexo~\ref{anexo:matrices-prbs31}.
+
+Ambos módulos implementan la multiplicación matricial sobre
+$\mathrm{GF}(2)$ mediante operaciones de enmascaramiento y reducción XOR.
+Para cada fila de la matriz, una máscara selecciona los bits del estado
+que intervienen en el cálculo y una reducción XOR obtiene su paridad.
+Por ejemplo, cada bit del próximo estado se calcula mediante:
+
+\begin{lstlisting}[language=Verilog]
+assign o_state_next[i] = ^(i_state & A[i]);
+\end{lstlisting}
+
+Esta operación se replica para todas las filas mediante un bloque
+\texttt{generate}, empleando la misma construcción con \texttt{B[i]}
+para los bits de salida. Dado que las matrices son constantes, la
+síntesis puede optimizar las operaciones de enmascaramiento y reducir
+cada expresión a una red de compuertas XOR sobre los bits seleccionados.
+De esta forma, las multiplicaciones matriciales se implementan como
+redes combinacionales de conexiones fijas.
+
+El estado del generador se almacena únicamente en el registro
+\texttt{lfsr\_r}. Su actualización se realiza en cada flanco ascendente
+de \texttt{i\_clk}, de acuerdo con las siguientes condiciones:
+
+\begin{itemize}
+    \item \textbf{Reset (\texttt{i\_rst\_n=0}):}
+    Se carga la seed \texttt{i\_seed} en el registro de estado,
+    independientemente de la señal de habilitación. El reset es
+    síncrono y tiene prioridad sobre las demás condiciones.
+    La seed debe ser distinta de cero para evitar el estado
+    absorbente del LFSR.
+
+    \item \textbf{Habilitado (\texttt{i\_en=1}):}
+    Se actualiza el registro con el próximo estado
+    (\texttt{lfsr\_next}), equivalente a avanzar 791 posiciones
+    en la secuencia serie.
+
+    \item \textbf{Deshabilitado (\texttt{i\_en=0}):}
+    El registro conserva su estado, deteniendo el avance de la
+    secuencia hasta que se reactive la habilitación.
+\end{itemize}
+
+El bus \texttt{o\_prbs} se obtiene combinacionalmente a partir del
+estado actual, sin registros adicionales ni una señal de validez
+propia. Por lo tanto, mientras el estado permanezca constante,
+también lo hará el bus de salida.
+
+En la integración del transmisor, los codificadores BCH capturan
+el payload utilizando la misma señal de habilitación que controla
+el avance del generador. De este modo, en cada flanco habilitado
+se captura el grupo de bits correspondiente al estado anterior,
+mientras que el registro del PRBS31 se actualiza para generar
+el siguiente grupo. Esta sincronización permite mantener la
+continuidad de la secuencia incluso ante pausas en el flujo
+de datos.
+
+La arquitectura completamente paralela permite entregar un payload
+de 791 bits por ciclo habilitado, sin recurrir a una generación
+iterativa ni incorporar etapas internas de pipeline. Sin embargo,
+el cumplimiento de la frecuencia objetivo queda condicionado por
+los caminos combinacionales asociados al cálculo del próximo estado
+y a la generación del payload. En particular, deben considerarse
+tanto el camino de realimentación a través de
+\texttt{prbs31\_mult\_a} como el camino desde el registro de estado
+hasta los registros de entrada de los codificadores, a través de
+\texttt{prbs31\_mult\_b}. Por lo tanto, la profundidad lógica y el
+fanout de las redes XOR constituyen aspectos relevantes para el
+análisis de temporización durante la síntesis.
+
+\subsubsection{Codificador BCH}
+
+El codificador BCH se implementó en el módulo \texttt{bch\_encoder}
+mediante una red combinacional de cálculo de paridad y un registro
+de salida. Cada instancia recibe un mensaje de 113 bits por
+\texttt{i\_msg} y genera una palabra de código de 127 bits por
+\texttt{o\_cw}. El mensaje se distribuye en dos ramas: una conserva
+los bits de información y la otra calcula los 14 bits de paridad
+mediante el módulo \texttt{bch\_mult\_p}. Ambas ramas se concatenan
+antes del registro de salida, permitiendo capturar el mensaje y
+su paridad en un mismo flanco de reloj.
+La Figura~\ref{fig:encoder-rtl} presenta la arquitectura implementada.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{bch-encoder_rtl.png}
+    \caption{Arquitectura RTL del codificador BCH(127,113).}
+    \label{fig:encoder-rtl}
+\end{figure}
+
+El paquete \texttt{bch\_encoder\_pkg} define los parámetros
+\texttt{N=127}, \texttt{K=113} y \texttt{R=N-K}, junto con la
+matriz transpuesta de paridad \texttt{P\_T}. Esta última se declara
+como un \texttt{localparam} de dimensiones $14\times113$,
+utilizando las máscaras presentadas en el
+Anexo~\ref{anexo:matriz-paridad-bch}. De esta manera, la
+implementación RTL emplea directamente los coeficientes
+obtenidos durante el desarrollo del modelo de referencia.
+
+El módulo \texttt{bch\_mult\_p} implementa la multiplicación
+matricial sobre $\mathrm{GF}(2)$ mediante un bloque
+\texttt{generate}, que replica la siguiente operación para
+cada bit de paridad:
+
+\begin{lstlisting}[language=Verilog]
+assign o_vec[i] = ^(i_vec & P_T[i]);
+\end{lstlisting}
+
+Cada máscara constante selecciona los bits del mensaje que
+intervienen en el cálculo de una paridad, mientras que la
+reducción XOR obtiene su suma sobre $\mathrm{GF}(2)$.
+Durante la síntesis, estas operaciones se traducen en redes
+combinacionales de compuertas XOR con conexiones fijas.
+De esta forma, los 14 bits de paridad se calculan en paralelo,
+sin procesamiento iterativo ni almacenamiento de resultados
+intermedios.
+
+La palabra de código sistemática se construye mediante
+la concatenación \texttt{\{i\_msg, parity\}}, ubicando los
+bits de información en \texttt{o\_cw[126:14]} y los de
+paridad en \texttt{o\_cw[13:0]}, de acuerdo con la convención
+adoptada previamente. La palabra resultante se almacena en
+el registro de salida, que constituye la única etapa secuencial
+del codificador e introduce una latencia de un ciclo FEC.
+
+El comportamiento secuencial está determinado por el reset
+síncrono activo en bajo y la señal de habilitación, de acuerdo
+con las siguientes condiciones:
+
+\begin{itemize}
+    \item \textbf{Reset (\texttt{i\_rst\_n=0}):}
+    Se inicializan \texttt{o\_cw} y \texttt{o\_valid} en cero,
+    independientemente del estado de la habilitación.
+
+    \item \textbf{Habilitado (\texttt{i\_en=1}):}
+    Se captura una nueva palabra de código en \texttt{o\_cw}
+    y se activa \texttt{o\_valid}, indicando que la salida
+    contiene una palabra válida.
+
+    \item \textbf{Deshabilitado (\texttt{i\_en=0}):}
+    El registro \texttt{o\_cw} conserva su contenido,
+    mientras que \texttt{o\_valid} se desactiva, indicando
+    que no se ha capturado una nueva palabra.
+\end{itemize}
+
+Esta organización permite aceptar un nuevo mensaje en cada
+ciclo habilitado, manteniendo estable el bus de datos durante
+las pausas y señalizando la validez de cada palabra registrada.
+
+En el transmisor se instancian siete codificadores en paralelo
+mediante un bloque \texttt{generate}. Cada instancia procesa
+una porción de 113 bits del payload generado por el PRBS31
+y produce una palabra de código de 127 bits. En conjunto,
+el banco transforma los 791 bits de información en un frame
+de 889 bits por ciclo habilitado. Todas las instancias
+comparten reloj, reset y habilitación, garantizando el
+alineamiento temporal de sus salidas. La validez del frame
+se obtiene mediante la conjunción de las siete señales
+\texttt{o\_valid} individuales.
+
+La arquitectura completamente paralela permite sostener
+la tasa requerida con una única etapa registrada, a costa
+de replicar la lógica de cálculo de paridad en las siete
+lanes. Si bien el registro de salida delimita el camino
+combinacional del codificador, el generador PRBS31 no posee
+un registro de salida propio. Por lo tanto, el análisis
+de temporización debe contemplar el camino completo desde
+el registro de estado del PRBS31, a través de las redes
+combinacionales de generación del payload y cálculo de
+paridad, hasta los registros de salida de los codificadores.
+La profundidad lógica, el fanout y el mapeo de estas redes
+serán factores determinantes para evaluar el cumplimiento
+de la frecuencia objetivo durante la síntesis.
 
 \subsubsection{Permutación de lanes}
-\pendiente{Documentar el mapeo de índices implementado en RTL.}
+
+El módulo \texttt{lane\_permuter} implementa la permutación de lanes
+mediante un reordenamiento combinacional de las conexiones. Recibe
+las siete palabras de código BCH de 127 bits a través del arreglo
+\texttt{i\_codewords} y genera un bus de salida \texttt{o\_line}
+de 889 bits. Los parámetros \texttt{LANES} y \texttt{CW\_W}
+determinan la cantidad de lanes y el ancho de cada palabra de
+código, respectivamente, siendo el ancho de salida el producto
+de ambos.
+
+La implementación utiliza dos bloques \texttt{generate} anidados
+que intercalan los bits de las siete palabras de código. Para
+cada posición, se agrupan consecutivamente los bits correspondientes
+de todas las lanes. El siguiente pseudocódigo resume el mapeo
+implementado:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+para bit_idx desde 0 hasta CW_W - 1:
+    para lane desde 0 hasta LANES - 1:
+        o_line[bit_idx * LANES + lane] = i_codewords[lane][bit_idx]
+\end{lstlisting}
+
+De esta manera, las primeras siete posiciones de \texttt{o\_line}
+contienen el bit 0 de cada lane, las siguientes siete contienen
+el bit 1, y así sucesivamente hasta completar los 889 bits.
+
+Los bloques \texttt{generate} se resuelven durante la elaboración
+del diseño, dando lugar a conexiones concurrentes sin procesamiento
+iterativo en tiempo de ejecución. Por lo tanto, el módulo no
+requiere registros ni lógica de control, y la permutación se
+implementa únicamente mediante cableado. En consecuencia, no
+introduce latencia en ciclos de reloj y conserva el alineamiento
+temporal de las palabras de código.
 
 \subsubsection{Interleaver convolucional}
-\pendiente{Documentar parametrización y registros.}
 
-\subsubsection{Gearbox y FIFO CDC}
-\pendiente{Documentar la implementación RTL y el mecanismo de arranque.}
+El módulo \texttt{conv\_interleaver} implementa el entrelazado mediante
+retardos fijos para cada posición del bus de entrada. Los parámetros
+\texttt{LINE\_W}, \texttt{B} y \texttt{D} definen el ancho del bus,
+la cantidad de ramas y el incremento de retardo entre ramas,
+respectivamente. En la configuración utilizada, el bloque procesa
+889 bits en paralelo, con ocho ramas y un incremento de un ciclo.
+
+Un bloque \texttt{generate} recorre las posiciones del bus y define
+para cada bit \texttt{i} la constante
+\texttt{DELAY = (i \% B) * D}. Si el retardo es cero, la salida se
+conecta directamente con la entrada. Para los demás casos se declara
+un vector \texttt{history} de \texttt{DELAY} bits que funciona como una
+cadena de registros de desplazamiento. El primer registro captura el
+bit de entrada y la salida se toma del último registro. Así, las
+posiciones que pertenecen a una misma rama tienen el mismo retardo,
+con valores de 0 a 7 ciclos habilitados en esta configuración.
+
+El siguiente pseudocódigo resume la estructura generada y su
+comportamiento secuencial:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+Durante la elaboracion, para cada posicion i:
+    retardo = (i modulo B) * D
+    si retardo == 0:
+        conectar salida[i] con entrada[i]
+    si no:
+        crear una cadena de retardo registros
+        conectar salida[i] con el ultimo registro
+
+En cada flanco ascendente, para cada cadena:
+    si reset activo:
+        limpiar todos sus registros
+    si no, si habilitacion activa:
+        primer registro <= entrada[i]
+        cada registro siguiente <= valor previo del anterior
+\end{lstlisting}
+
+El comportamiento secuencial de las cadenas de retardo está
+determinado por el reset síncrono activo en bajo y la señal de
+habilitación, de acuerdo con las siguientes condiciones:
+
+\begin{itemize}
+    \item \textbf{Reset (\texttt{i\_rst\_n=0}):}
+    Se inicializan en cero todos los registros de las cadenas
+    de retardo, independientemente de la señal de habilitación.
+
+    \item \textbf{Habilitado (\texttt{i\_en=1}):}
+    Cada cadena desplaza su contenido una posición, capturando
+    el bit de entrada en el primer registro y propagando los
+    valores anteriores hacia los registros siguientes.
+
+    \item \textbf{Deshabilitado (\texttt{i\_en=0}):}
+    Las cadenas conservan su contenido, deteniendo el avance
+    de los bits hasta que se reactive la habilitación.
+\end{itemize}
+
+La rama de retardo cero mantiene una conexión combinacional
+directa entre entrada y salida, independientemente de las señales
+de control. Por lo tanto, los retardos de las demás ramas se
+expresan en ciclos habilitados.
+
+Tanto la longitud de cada cadena como la selección entre conexión
+directa y cadena de registros quedan resueltas durante la elaboración.
+El bloque no introduce una latencia uniforme para todos los bits,
+ya que cada rama aporta su propio retardo. La latencia conjunta
+de siete ciclos FEC con el de-interleaver corresponde al
+funcionamiento con flujo continuo analizado previamente.
+
+\subsection{Receptor}
+
+\subsubsection{De-interleaver convolucional}
+
+El módulo \texttt{conv\_deinterleaver} utiliza la misma estructura de
+retardos fijos por posición que el interleaver del transmisor, con
+los retardos de las ramas en orden inverso. Los parámetros
+\texttt{LINE\_W}, \texttt{B} y \texttt{D} definen el ancho del bus,
+la cantidad de ramas y el incremento de retardo entre ramas,
+respectivamente. La configuración utilizada procesa 889 bits en
+paralelo, con ocho ramas y un incremento de un ciclo.
+
+Para cada posición \texttt{i}, un bloque \texttt{generate} define
+la constante \texttt{DELAY = (B - 1 - (i \% B)) * D}. De esta manera,
+la rama 0 recibe un retardo de siete ciclos habilitados, mientras
+que la rama 7 tiene una conexión directa entre entrada y salida.
+Las ramas intermedias incorporan cadenas de registros con retardos
+decrecientes. Para cada posición con retardo distinto de cero se
+declara un vector \texttt{history}; su primer registro captura el
+bit de entrada y el último alimenta la salida correspondiente.
+
+El siguiente pseudocódigo resume la estructura y su actualización:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+Durante la elaboracion, para cada posicion i:
+    retardo = (B - 1 - (i modulo B)) * D
+    si retardo == 0:
+        conectar salida[i] con entrada[i]
+    si no:
+        crear una cadena de retardo registros
+        conectar salida[i] con el ultimo registro
+
+En cada flanco ascendente, para cada cadena:
+    si reset activo:
+        limpiar todos sus registros
+    si no, si habilitacion activa:
+        primer registro <= entrada[i]
+        cada registro siguiente <= valor previo del anterior
+\end{lstlisting}
+
+Al igual que en el transmisor, las asignaciones no bloqueantes
+actualizan simultáneamente los registros a partir de los valores
+anteriores al flanco. El control de las cadenas responde a las
+siguientes condiciones:
+
+\begin{itemize}
+    \item \textbf{Reset (\texttt{i\_rst\_n=0}):}
+    El reset síncrono activo en bajo inicializa en cero todos los
+    registros, independientemente de la habilitación.
+
+    \item \textbf{Habilitado (\texttt{i\_en=1}):}
+    Cada cadena captura el bit de entrada y desplaza los valores
+    anteriores hacia los registros siguientes.
+
+    \item \textbf{Deshabilitado (\texttt{i\_en=0}):}
+    Las cadenas conservan su contenido hasta el siguiente avance
+    habilitado.
+\end{itemize}
+
+La rama de retardo cero permanece conectada combinacionalmente a
+la entrada, independientemente del reset y de la habilitación.
+Los retardos de las demás ramas se expresan en ciclos habilitados.
+La longitud de las cadenas y las conexiones directas se resuelven
+durante la elaboración, sin requerir direccionamiento de memoria
+ni control de punteros.
+
+La inversión de los retardos complementa los introducidos por el
+interleaver: para una rama \texttt{r}, la suma es
+$rD+(B-1-r)D=(B-1)D$. Así, bajo el funcionamiento con flujo continuo
+considerado en el análisis previo, todas las posiciones acumulan
+siete ciclos FEC entre ambos bloques y recuperan su alineamiento
+temporal. Este alineamiento corresponde al régimen posterior al
+llenado inicial de las cadenas, cuyos registros se inicializan en
+cero al aplicar el reset.
+
+\subsubsection{De-permutación de lanes}
+
+El módulo \texttt{lane\_depermuter} implementa el mapeo inverso del
+permutador mediante conexiones combinacionales fijas. Recibe el
+bus \texttt{i\_line} de 889 bits proveniente del de-interleaver y
+reconstruye las siete palabras BCH de 127 bits en el arreglo
+\texttt{o\_codewords}. Los parámetros \texttt{LANES} y
+\texttt{CW\_W} determinan la cantidad de lanes y el ancho de cada
+palabra, respectivamente; el ancho del bus de entrada es su producto.
+
+La implementación utiliza dos bloques \texttt{generate} anidados,
+uno por lane y otro por posición de bit. Cada palabra se reconstruye
+seleccionando posiciones del bus de entrada separadas por
+\texttt{LANES} bits. El siguiente pseudocódigo resume el mapeo:
+
+\begin{lstlisting}[basicstyle=\ttfamily\small]
+para lane desde 0 hasta LANES - 1:
+    para bit_idx desde 0 hasta CW_W - 1:
+        o_codewords[lane][bit_idx] = i_line[bit_idx * LANES + lane]
+\end{lstlisting}
+
+Por ejemplo, las posiciones 0, 7 y 14 de la entrada se conectan
+con los bits 0, 1 y 2 de la lane 0, mientras que las posiciones
+1, 8 y 15 se conectan con esos mismos bits de la lane 1. La misma
+regla se aplica hasta reconstruir las siete palabras completas.
+
+Los bucles se resuelven durante la elaboración y describen
+conexiones concurrentes, sin procesamiento iterativo durante la
+operación. El módulo no incorpora registros, reloj, reset ni
+señales de control. Por lo tanto, no introduce latencia en ciclos
+de reloj y conserva el alineamiento temporal recuperado por el
+de-interleaver, entregando las palabras al banco de decodificadores.
+
+\subsubsection{Decodificador BCH}
+
+El decodificador BCH se organiza en cinco etapas registradas,
+identificadas como \texttt{PIPE 0} a \texttt{PIPE 4}. La
+Figura~\ref{fig:bch-decoder-rtl} presenta el recorrido completo:
+se calculan los síndromes, se preparan y resuelven los operandos de
+$\mu$, se obtienen los valores $\omega$ y las raíces, y finalmente
+se construye la máscara de errores para corregir la palabra recibida.
+Esta última acompaña el procesamiento mediante registros de retardo,
+de modo que llegue a la corrección junto con sus resultados asociados.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{bch-decoder_rtl.png}
+    \caption{Arquitectura RTL del decodificador BCH y distribución de
+    las operaciones entre sus cinco etapas registradas.}
+    \label{fig:bch-decoder-rtl}
+\end{figure}
+
+\paragraph{PIPE 0: cálculo de síndromes.}
+La palabra recibida alimenta una red combinacional de máscaras
+constantes y reducciones XOR que obtiene los dos síndromes S1 y S3 de 
+7 bits. Estas máscaras corresponden a la matriz transpuesta construida 
+en el modelo de Python y presentada en el Anexo~\ref{anexo:matriz-sindromes-bch}.
+Al final de esta etapa se registran tanto los síndromes como la palabra
+recibida. Estos registros establecen el punto de partida para el
+procesamiento posterior y mantienen alineados los datos con la
+información necesaria para localizar sus errores.
+
+\paragraph{PIPE 1: preparación del cálculo de $\mu$.}
+A partir de los síndromes registrados se preparan, en paralelo, el
+numerador y el denominador utilizados para obtener $\mu$:
+
+\begin{equation}
+    \mathrm{num}=S_1^3+S_3,
+    \qquad
+    \mathrm{den}=S_1^3.
+\end{equation}
+
+Como muestra la Figura~\ref{fig:bch-mu-rtl}, una LUT obtiene
+el cubo del primer síndrome y con una operación XOR con el tercer síndrome
+forma el numerador. En la otra rama, una LUT obtiene el
+logaritmo del primer síndrome, luego una multiplicación por tres y una
+reducción módulo 127 producen el logaritmo del denominador.
+
+Para $S_1\neq0$, esta representación se expresa como:
+
+\begin{equation}
+    \log_{\alpha}(\mathrm{den})
+    =\log_{\alpha}(S_1^3)
+    =\left[3\log_{\alpha}(S_1)\right]\bmod127.
+\end{equation}
+
+Así, la potencia del denominador se obtiene multiplicando por tres
+el logaritmo del primer síndrome y reduciendo el resultado módulo 127.
+El numerador se conserva como elemento del campo, ya que su suma se
+resuelve mediante XOR; su conversión logarítmica se realiza en PIPE 2.
+
+El numerador y el logaritmo del denominador se registran antes de
+realizar la división. También se
+conservan el cubo del primer síndrome y su logaritmo, ya que se utilizan
+más adelante para clasificar los errores y calcular las raíces.
+Esta partición permite preparar el denominador en paralelo con el
+numerador, sin encadenar las LUT de cubo y logaritmo en ese camino.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{bch-mu-calculator_rtl.png}
+    \caption{Implementación del cálculo de $\mu$: preparación y registro
+    de operandos en PIPE 1 y división logarítmica en PIPE 2.}
+    \label{fig:bch-mu-rtl}
+\end{figure}
+
+\paragraph{PIPE 2: obtención de $\mu$ y de los valores $\omega$.}
+La segunda mitad de la Figura~\ref{fig:bch-mu-rtl} muestra cómo se
+completa el cálculo de $\mu$. Una LUT obtiene el logaritmo del
+numerador registrado y una resta módulo 127 con el logaritmo del
+denominador realiza la división en el dominio logarítmico. Para
+numerador y denominador no nulos, esta operación se expresa como:
+
+\begin{equation}
+    \log_{\alpha}(\mu)=
+    \left[
+        \log_{\alpha}(\mathrm{num})
+        -\log_{\alpha}(\mathrm{den})
+    \right]\bmod127
+    =\left[
+        \log_{\alpha}(S_1^3+S_3)-3\log_{\alpha}(S_1)
+    \right]\bmod127.
+\end{equation}
+
+La resta de logaritmos equivale a dividir los elementos del campo.
+Luego, una LUT exponencial convierte el resultado al elemento $\mu$:
+
+\begin{equation}
+    \mu=\alpha^{\log_{\alpha}(\mu)}.
+\end{equation}
+
+A continuación, dentro de la misma etapa, $\mu$ alimenta la red XOR
+fija de la Figura~\ref{fig:bch-omega-rtl}, que obtiene el primer valor
+$\omega$ a partir de la expresión analizada anteriormente:
+
+\begin{equation}
+    \omega_1=\mu^2+\mu^8+\mu^{32}.
+\end{equation}
+
+El segundo valor se obtiene como $\omega_2=\omega_1+1$ en
+$\mathrm{GF}(2^7)$, lo que equivale a invertir el bit menos significativo
+del primero.
+Así, el cálculo se implementa mediante conexiones y XOR, sin
+multiplicadores generales del campo ni un proceso iterativo. Al final
+de PIPE 2 se registran ambos valores y se conservan los logaritmos de
+$\mu$ y del primer síndrome para la etapa siguiente.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.60\linewidth]{bch-omega-calculator_rtl.png}
+    \caption{Red combinacional para obtener los dos valores $\omega$
+    dentro de PIPE 2.}
+    \label{fig:bch-omega-rtl}
+\end{figure}
+
+\paragraph{PIPE 3: cálculo de raíces y clasificación de errores.}
+En esta etapa se recuperan las raíces del polinomio localizador a
+partir de los dos valores $\omega$ calculados previamente:
+
+\begin{equation}
+    x_i=\frac{\omega_i}{\mu S_1},
+    \qquad i\in\{1,2\}.
+\end{equation}
+
+Se utilizan dos instancias paralelas del bloque mostrado en la
+Figura~\ref{fig:bch-root-rtl}, una para cada valor $\omega$. Cada una
+consulta una LUT para obtener su logaritmo. En paralelo, suma los
+logaritmos de $\mu$ y del primer síndrome, conservados desde la etapa
+anterior, y reduce el resultado módulo 127. En el dominio logarítmico,
+esta suma equivale a multiplicar los elementos no nulos del campo,
+por lo que permite representar el producto del denominador.
+
+Luego, una resta módulo 127 entre el logaritmo de $\omega_i$ y el
+del denominador equivale a realizar la división y entrega directamente
+el logaritmo de la raíz:
+
+\begin{equation}
+    \log_{\alpha}(x_i)=
+    \left[
+        \log_{\alpha}(\omega_i)
+        -\left(\log_{\alpha}(\mu)+\log_{\alpha}(S_1)\right)
+    \right]\bmod127.
+\end{equation}
+
+Se mantiene esta representación porque permite determinar las
+posiciones de error sin una conversión exponencial adicional.
+La ruta de raíces se utiliza para el caso de dos errores; la lógica
+de clasificación selecciona la corrección correspondiente a cada caso.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.70\linewidth]{bch-root-calculator_rtl.png}
+    \caption{Bloque de cálculo de una raíz en representación
+    logarítmica. Se instancian dos bloques en paralelo en PIPE 3.}
+    \label{fig:bch-root-rtl}
+\end{figure}
+
+En paralelo al cálculo de raíces, comparadores y lógica combinacional
+clasifican la palabra a partir de los síndromes y de resultados ya
+calculados. Las condiciones implementadas son las siguientes:
+
+\begin{itemize}
+    \item \textbf{Sin error detectado:} se comprueba que $S_1=0$ y
+    $S_3=0$. No se selecciona ninguna máscara de corrección.
+
+    \item \textbf{Error simple:} se comprueba que $S_1\neq0$ y que
+    $S_1^3=S_3$. Para ello se reutiliza el cubo registrado en PIPE 1,
+    se lo compara con el tercer síndrome y se combina el resultado
+    con la comparación del primer síndrome con cero.
+
+    \item \textbf{Error doble:} se comprueba que $S_1\neq0$, que
+    $S_1^3\neq S_3$ y que el bit menos significativo de $\omega_1$
+    sea cero. Este bit contiene el valor de la traza de $\mu$ para
+    la representación del campo utilizada, por lo que basta comprobar
+    un bit para habilitar la corrección doble.
+
+    \item \textbf{Condición no corregible:} se detecta si $S_1=0$
+    y $S_3\neq0$, o si $S_1\neq0$, $S_1^3\neq S_3$ y el bit menos
+    significativo de $\omega_1$ es uno. Ambas condiciones se combinan
+    mediante un OR y deshabilitan la selección de una corrección.
+\end{itemize}
+
+Al final de la etapa se registran las raíces y la clasificación, 
+junto con la palabra recibida.
+
+\paragraph{PIPE 4: máscara de errores y corrección.}
+A partir de las raíces y de la clasificación registradas en la etapa
+anterior, se construye una máscara de 127 bits con unos en las
+posiciones que deben invertirse. La generación y selección se realizan
+mediante las siguientes operaciones:
+
+\begin{itemize}
+    \item \textbf{Máscara de error simple:} la posición se obtiene
+    directamente como $p=\log_{\alpha}(S_1)$. Se desplaza una constante
+    de 127 bits con valor uno mediante \lstinline!1 << p!, obteniendo
+    una máscara con un único bit activo en la posición del error.
+
+    \item \textbf{Máscara de error doble:} para cada raíz se toma su
+    logaritmo registrado $\ell_i=\log_{\alpha}(x_i)$ y se calcula
+    $p_i=127-\ell_i$ si $\ell_i\neq0$; si $\ell_i=0$, se utiliza
+    $p_i=0$. Esta operación implementa la inversión de exponentes
+    a posiciones módulo 127. Luego se generan dos máscaras de
+    127 bits y se combinan mediante
+    \lstinline!(1 << p1) | (1 << p2)!.
+
+    \item \textbf{Selección de la máscara:} la clasificación de PIPE 3
+    selecciona la máscara simple o doble. Si no se habilita ninguna
+    de esas correcciones, se selecciona una máscara de 127 ceros,
+    tanto para el caso sin error detectado como para una condición
+    no corregible.
+\end{itemize}
+
+Finalmente, la operación XOR invierte únicamente los bits indicados 
+y conserva los restantes. Una máscara nula deja la palabra sin 
+modificación. El registro de salida captura la palabra resultante, 
+sus 113 bits de información, la máscara y los indicadores de estado. 
+Esta lógica se representa en el extremo de salida de la Figura~\ref{fig:bch-decoder-rtl}.
+
+\paragraph{Control y avance del pipeline.}
+
+Todas las etapas comparten un reset síncrono activo en bajo y una
+señal de habilitación común. El reset inicializa los registros en
+cero, mientras que la desactivación de la habilitación detiene el
+avance del pipeline, conservando los datos y resultados intermedios.
+De esta manera, las palabras en procesamiento mantienen su
+alineamiento durante las pausas.
+
+La validez de salida se controla mediante un historial de cuatro
+avances habilitados, que permite identificar cuándo la primera
+palabra alcanza el registro final, en el quinto flanco habilitado
+posterior al reset. Una vez completado el llenado del pipeline,
+el decodificador entrega una palabra válida por cada ciclo
+habilitado. Durante las pausas, la señal de validez se desactiva,
+aunque los datos de salida permanecen estables.
+
+La arquitectura implementada consta de cinco etapas de pipeline,
+frente a las tres previstas en el presupuesto preliminar de
+latencia. Los cambios realizados respecto a lo planificado 
+corresponden a optimizaciones de camino crítico para cerrar 
+timing a la frecuencia objetivo.
+
+\subsubsection{Checker PRBS31}
+
+El módulo \texttt{prbs31\_checker} compara el payload recuperado por
+el receptor con una secuencia PRBS31 generada localmente. Su salida
+es la cantidad de bits erróneos en cada frame recibido, considerando
+los 791 bits de información entregados por el banco de decodificadores
+BCH. La Figura~\ref{fig:prbs31-checker-rtl} muestra la arquitectura,
+compuesta por la generación de referencia, la FSM de adquisición de
+sincronismo y el cálculo del número de errores.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{prbs31-checker_rtl.png}
+    \caption{Arquitectura RTL del checker PRBS31, con adquisición de
+    sincronismo y conteo de errores por frame recibido.}
+    \label{fig:prbs31-checker-rtl}
+\end{figure}
+
+\paragraph{Adquisición de sincronismo.}
+El checker no recibe la seed del transmisor, sino que obtiene una
+candidata a partir de los primeros 31 bits temporales del payload.
+Estos bits se conectan en orden inverso a las posiciones del estado:
+el primer bit recibido corresponde al bit 30 del LFSR. Con esa
+candidata se genera una referencia de 791 bits mediante la misma
+matriz $B$ utilizada en el generador del transmisor. Un XOR entre
+el payload recibido y la referencia produce el patrón de diferencias.
+
+Para validar la candidata se comprueba que sea distinta de cero y
+que no existan diferencias en los bits 31 a 790. Los primeros 31 bits
+no participan de esta comprobación porque se utilizaron para construir
+la propia candidata. La FSM controla la adquisición y el seguimiento
+mediante dos estados:
+
+\begin{itemize}
+    \item \textbf{SEEDING:} es el estado inicial después del reset.
+    Se evalúa una nueva candidata por cada entrada habilitada. Si
+    cumple las condiciones de adquisición, la FSM pasa a
+    \texttt{LOCKED} y registra el estado correspondiente al comienzo
+    del siguiente bloque de 791 bits, calculado mediante la matriz $A$.
+    El frame utilizado para adquirir sincronismo se excluye del
+    conteo de errores.
+
+    \item \textbf{LOCKED:} la referencia se genera a partir del
+    estado PRBS almacenado, que avanza 791 pasos por cada nueva
+    entrada habilitada. La FSM permanece en este estado hasta el
+    reset, y la salida \texttt{o\_locked} indica que se adquirió el
+    sincronismo. Las diferencias posteriores se contabilizan como
+    errores, sin reconstruir la seed a partir de los datos recibidos.
+\end{itemize}
+
+Un multiplexor selecciona la seed candidata durante la adquisición
+y el estado registrado durante el seguimiento. De este modo se
+reutilizan los bloques combinacionales de las matrices $A$ y $B$
+para obtener tanto la referencia actual como el siguiente estado.
+
+\paragraph{Cantidad de errores por frame.}
+Una vez adquirido el sincronismo, se comparan los 791 bits de cada
+payload con la referencia mediante la operación
+\texttt{recibido XOR esperado}. Cada uno del resultado indica una
+posición errónea. Este patrón se registra antes de alimentar al
+bloque \texttt{popcount}, que suma sus bits y entrega el número de
+posiciones diferentes. El conteo se almacena en un segundo registro,
+separando la generación del patrón del cálculo de su peso.
+
+La salida \texttt{o\_error\_count} tiene 10 bits y puede representar
+valores entre 0 y 791. Cada resultado válido corresponde únicamente
+a un frame: el módulo no acumula errores entre frames ni calcula
+la BER. Para obtener esta última se deben sumar externamente los
+conteos y dividir por la cantidad de bits evaluados. En esta
+integración, al recibir los mensajes decodificados, el checker mide
+los errores residuales de información después de la corrección FEC.
+
+\subsection{Gearbox CDC}
+
+El módulo \texttt{gearbox\_cdc} integra la adaptación del ancho de
+palabra y el cruce entre dominios de reloj mediante un buffer
+circular. La Figura~\ref{fig:gearbox-cdc-rtl} presenta la arquitectura
+para el sentido TX, donde la escritura se realiza en el dominio FEC
+y la lectura en el dominio DSP. El mismo módulo se reutiliza en RX,
+intercambiando los anchos de entrada y salida y sus respectivos
+dominios de reloj.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{gearbox-cdc_rtl.png}
+    \caption{Arquitectura RTL del gearbox CDC para la conversión
+    de 889 a 1016 bits, con punteros locales y sincronización
+    del arranque de lectura.}
+    \label{fig:gearbox-cdc-rtl}
+\end{figure}
+
+La parametrización establece una unidad de almacenamiento de
+127 bits, mientras que \texttt{PAR\_IN} y \texttt{PAR\_OUT}
+determinan la cantidad de unidades transferidas en cada operación
+de escritura y lectura, respectivamente. El parámetro
+\texttt{DEPTH=112} define la capacidad total del buffer,
+equivalente a 112 unidades de 127 bits, osea 14224 bits.
+
+El almacenamiento se describe mediante dos vistas empaquetadas
+de una misma memoria, relacionadas por una asignación continua.
+De esta manera, los datos se agrupan según el ancho de entrada
+para las escrituras y se reagrupan según el ancho de salida
+para las lecturas, sin requerir una etapa adicional de
+conversión. Las configuraciones utilizadas son:
+
+\begin{itemize}
+    \item \textbf{TX:} se escriben siete unidades de 127 bits
+    por operación y se leen ocho. La memoria se organiza
+    en 16 posiciones de 889 bits para escritura y
+    14 posiciones de 1016 bits para lectura.
+
+    \item \textbf{RX:} se escriben ocho unidades de 127 bits
+    por operación y se leen siete. La memoria se organiza
+    en 14 posiciones de 1016 bits para escritura y
+    16 posiciones de 889 bits para lectura.
+\end{itemize}
+
+Cada dominio utiliza un puntero local implementado como un contador
+módulo $N$, donde $N$ corresponde a la cantidad de posiciones
+de memoria de su respectiva interfaz. El comportamiento de
+escritura y lectura se describe a continuación:
+
+\begin{itemize}
+    \item \textbf{Escritura:}
+    En cada flanco del reloj de escritura, si
+    \texttt{i\_wr\_en=1}, se almacena la palabra de entrada
+    en la posición indicada y se incrementa el puntero.
+    En caso contrario, el puntero conserva su valor y
+    no se realiza ninguna escritura.
+
+    \item \textbf{Lectura:}
+    El puntero permanece detenido hasta recibir la señal
+    de arranque sincronizada. A partir de ese momento,
+    en cada flanco del reloj de lectura se registra la
+    palabra seleccionada y se incrementa el puntero.
+\end{itemize}
+
+Para establecer una separación inicial entre los accesos de
+escritura y lectura, el módulo retrasa el inicio de las lecturas
+hasta completar la mitad de la capacidad del buffer. El dominio
+de escritura detecta esta condición mediante
+\texttt{i\_wr\_en} y la comparación del puntero con
+\texttt{WR\_DEPTH/2 - 1}. En TX, el umbral se alcanza
+en la octava escritura, mientras que en RX se alcanza
+en la séptima. En ambos casos se han almacenado 7112 bits.
+Al completar esta operación, se activa una señal de arranque
+que permanece en alto hasta el reset.
+
+La señal de arranque atraviesa un sincronizador de dos etapas,
+implementado mediante \texttt{sync\_level}, antes de habilitar
+la lectura en el dominio de destino. Al transferir un nivel
+persistente en lugar de un pulso, se asegura su detección
+en el dominio de lectura, independientemente de la relación
+de fase entre ambos relojes. Los punteros permanecen en sus
+respectivos dominios, siendo la señal de arranque el único
+control que atraviesa el CDC.
+
+El llenado inicial establece un margen de separación entre
+las posiciones de escritura y lectura que, bajo la condición
+de igualdad entre las tasas medias, se mantiene aproximadamente
+constante durante la operación. Este margen permite absorber
+las variaciones transitorias de ocupación producidas por la
+diferencia de fase entre los relojes y la incertidumbre
+temporal asociada a la sincronización del arranque, reduciendo
+el riesgo de lectura de datos no escritos o sobrescritura
+de datos pendientes.
+
+El bus de salida se registra con el reloj de lectura. En la
+primera operación se activa \texttt{o\_valid}, que permanece
+en alto durante el funcionamiento continuo, hasta aplicar
+el reset del dominio de lectura. Una vez iniciado el proceso,
+las se realiza una lectura por ciclo.
+
+Esta organización simplifica el control bajo la hipótesis de
+flujo continuo y de igualdad entre las tasas medias de
+entrada y salida. Por este motivo, el módulo no incorpora
+indicadores de lleno o vacío ni mecanismos de
+\textit{backpressure}. En consecuencia, una interrupción
+sostenida de las escrituras después del arranque, o una
+diferencia acumulada entre las tasas de ambos dominios,
+puede provocar la lectura de datos no válidos o la
+sobrescritura de información pendiente. El llenado inicial
+proporciona un margen de operación, pero no reemplaza
+un mecanismo de control de ocupación para tráfico arbitrario.
+
+\subsection{Integración del sistema}
+
+La integración de los bloques desarrollados se realiza mediante
+los módulos \texttt{tx\_top} y \texttt{rx\_top}, que implementan
+las cadenas completas de transmisión y recepción,
+respectivamente. El transmisor conecta el generador PRBS31
+con el banco de siete codificadores BCH, seguido del
+permutador de lanes, el interleaver convolucional y el
+gearbox TX. El receptor implementa la cadena inversa,
+desde el gearbox RX hasta el checker PRBS31, pasando
+por el de-interleaver, el de-permutador y el banco de
+siete decodificadores BCH. La interfaz entre ambos
+extremos utiliza palabras de 1016 bits acompañadas
+por una señal de validez.
+
+Las Figuras~\ref{fig:tx-top-rtl} y~\ref{fig:rx-top-rtl}
+muestran las conexiones de datos y control de ambas cadenas.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{tx-top_rtl.png}
+    \caption{Integración RTL del transmisor en \texttt{tx\_top}.}
+    \label{fig:tx-top-rtl}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{rx-top_rtl.png}
+    \caption{Integración RTL del receptor en \texttt{rx\_top}.}
+    \label{fig:rx-top-rtl}
+\end{figure}
+
+Los bloques de generación, codificación y entrelazado,
+junto con sus operaciones inversas, operan en el dominio
+FEC. Los gearboxes realizan la adaptación de ancho
+y el cruce entre este dominio y la interfaz DSP,
+conservando la tasa media de datos en ambos extremos.
+El reset externo asíncrono se distribuye mediante
+módulos de control de reset (RCU), que sincronizan
+su desactivación con el reloj de cada dominio.
+
+Las siete lanes comparten reloj, reset y habilitación
+para mantener el alineamiento temporal de sus datos.
+En TX, la habilitación de entrada controla el avance
+del PRBS31 y la captura de los codificadores BCH.
+La conjunción de las señales de validez del banco
+habilita el avance del interleaver y la escritura
+del gearbox TX.
+
+En RX, la señal de validez del gearbox habilita el
+de-interleaver y el banco de decodificadores BCH.
+La conjunción de las señales de validez de los
+siete decodificadores habilita el checker PRBS31,
+que entrega el estado de sincronismo, la cantidad
+de errores detectados en el frame y la validez
+del resultado.
+
+La operación integrada supone un flujo continuo
+una vez iniciada la lectura de los gearboxes.
+La propagación de las señales de habilitación
+y validez permite mantener el alineamiento de
+los datos a lo largo de ambas cadenas, mientras
+que el mecanismo de adquisición de sincronismo
+del checker establece la referencia necesaria
+para comenzar el conteo de errores sobre la
+secuencia recuperada.
+% ---------------------------------------------------------------------------
+\section{Verificación en SystemVerilog}
+% ---------------------------------------------------------------------------
+
+La verificación se organizó de forma progresiva, comenzando por los
+módulos individuales y continuando con la integración de bloques y
+la cadena completa. El objetivo fue contrastar el comportamiento del
+RTL con la funcionalidad definida en los modelos de Python, mediante
+pruebas dirigidas y aleatorias.
+
+Los entornos se implementaron mediante clases de SystemVerilog con
+las siguientes responsabilidades:
+
+\begin{itemize}
+    \item \textbf{Transacción (\texttt{txn}):} representa los estímulos
+    y los datos observados.
+    \item \textbf{Generador (\texttt{gen}):} construye los casos de prueba.
+    \item \textbf{Driver (\texttt{drv}):} aplica las entradas al
+    dispositivo bajo prueba.
+    \item \textbf{Monitor (\texttt{mon}):} captura el comportamiento
+    del dispositivo.
+    \item \textbf{Scoreboard (\texttt{scb}):} compara los resultados
+    observados con los esperados.
+    \item \textbf{Entorno (\texttt{env}):} instancia los componentes
+    y coordina su ejecución.
+\end{itemize}
+
+La comunicación entre clases utiliza
+\texttt{mailbox}, mientras que drivers y monitores acceden a las
+señales mediante interfaces virtuales.
+
+Para disponer de referencias funcionales durante la simulación se
+implementaron modelos en C del generador PRBS31, el codificador BCH,
+el decodificador BCH y el checker PRBS31, con funciones auxiliares
+para la aritmética del campo. Estos modelos se invocan desde
+SystemVerilog mediante DPI-C en los entornos correspondientes. Los
+scoreboards contrastan los datos y los indicadores observados con
+la referencia, teniendo en cuenta la validez y el orden de las
+transacciones. En las pruebas de integración se comprueba además
+la recuperación de los mensajes y los conteos de errores esperados
+según el punto de inyección y la capacidad de corrección del sistema.
+
+La Figura~\ref{fig:verificacion-sv} resume la estructura general del
+entorno y la conexión del scoreboard con el modelo de referencia.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth,height=0.78\textheight,keepaspectratio]{verificacion-sv.png}
+    \caption{Estructura general del entorno de verificación en
+    SystemVerilog y conexión con el modelo de referencia mediante DPI-C.}
+    \label{fig:verificacion-sv}
+\end{figure}
+
+\subsection{Generador PRBS31}
+
+La verificación del generador PRBS31 comprueba que cada salida
+paralela de 791 bits coincida con la secuencia esperada y que los
+bloques consecutivos mantengan su continuidad temporal. Como
+referencia se utiliza el modelo en C, que genera los bits mediante
+avances sucesivos del LFSR serie. De esta manera se contrasta la
+implementación matricial del RTL con una descripción funcional
+basada en el desplazamiento del estado.
+
+El entorno configura pruebas con los siguientes estímulos:
+
+\begin{itemize}
+    \item Una semilla aleatoria de 31 bits distinta de cero para
+    cada prueba.
+    \item Una cantidad aleatoria de ciclos habilitados por
+    prueba, generando un bloque de 791 bits en cada ciclo.
+    \item Reset antes de cada secuencia, con la semilla 
+    correspondiente y la habilitación desactivada.
+\end{itemize}
+
+El scoreboard inicializa el modelo de referencia con la misma
+semilla aplicada al DUT y obtiene un bloque esperado por cada
+salida capturada por el monitor durante la generación habilitada.
+La comparación abarca los 791 bits y utiliza desigualdad de caso,
+por lo que también detecta valores desconocidos o de alta impedancia.
+Así se comprueban el orden de los bits, el avance entre bloques
+y el reinicio con distintas semillas.
+
+El entorno contabiliza las pruebas y los ciclos comparados, e informa
+cualquier discrepancia con el índice de prueba, el ciclo y la semilla
+utilizada. La ejecución solo emite el resumen de aprobación si todas
+las comparaciones finalizan sin diferencias. Este barrido utiliza
+semillas y longitudes aleatorias, aunque no constituye un recorrido 
+completo del período de la PRBS31 ni de todas las semillas posibles.
+
+La Figura~\ref{fig:prbs31-verificacion} muestra una ejecución aprobada
+de 1000 pruebas, con 3062225 ciclos comparados sin discrepancias.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{prbs31_ver.png}
+    \caption{Resultado de la verificación del generador PRBS31.}
+    \label{fig:prbs31-verificacion}
+\end{figure}
+
+\subsection{Codificador BCH}
+
+La verificación del codificador BCH comprueba que cada mensaje de
+113 bits produzca la palabra sistemática de 127 bits esperada. Como
+referencia se utiliza el modelo de codificación en C, invocado desde
+el scoreboard mediante DPI-C.
+
+Los estímulos combinan casos dirigidos y mensajes aleatorios:
+
+\begin{itemize}
+    \item Un mensaje con todos sus bits en cero y otro con todos
+    sus bits en uno.
+    \item Los 113 mensajes con un único bit en uno, recorriendo
+    todas las posiciones de entrada.
+    \item Una cantidad configurable de mensajes aleatorios de 113 bits.
+\end{itemize}
+
+Para cada transacción observada, el scoreboard codifica el mensaje
+con el modelo de referencia y compara los 127 bits de la salida.
+De esta manera se comprueban tanto la conservación de los bits de
+información como el cálculo y la ubicación de la paridad. Los casos
+con un único bit activo permiten comprobar individualmente la
+contribución de cada posición del mensaje.
+
+La Figura~\ref{fig:bch-encoder-verificacion} muestra una ejecución aprobada
+con los 115 mensajes dirigidos y 5000 mensajes aleatorios, para un
+total de 5115 palabras comparadas.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{bch-encoder_ver.png}
+    \caption{Resultado de la verificación del codificador BCH.}
+    \label{fig:bch-encoder-verificacion}
+\end{figure}
+
+\subsection{Decodificador BCH}
+
+La verificación unitaria del decodificador comprueba la recuperación
+de una palabra BCH válida sometida a patrones de hasta dos errores.
+El scoreboard utiliza el modelo de decodificación en C para obtener
+la máscara, la palabra corregida, el mensaje y los indicadores de
+estado esperados.
+
+Sobre una palabra de código base se aplican los siguientes patrones:
+
+\begin{itemize}
+    \item La palabra original, sin inyección de errores.
+    \item Los 127 patrones de error simple, uno por cada posición.
+    \item Las 8001 combinaciones de dos posiciones distintas,
+    correspondientes a todos los patrones de error doble.
+\end{itemize}
+
+El barrido comprende 8129 palabras recibidas y es exhaustivo respecto
+de los patrones de error de peso cero, uno y dos sobre la palabra
+base. Para cada una se comparan la máscara de errores, la palabra
+resultante, los 113 bits de información y los indicadores de
+corrección y de condición no corregible. Así se comprueban las
+posiciones calculadas y su correspondencia con los bits que deben
+invertirse, además de la recuperación del mensaje.
+
+El entorno contabiliza las transacciones verificadas y registra
+cualquier diferencia respecto del modelo. La ejecución se considera aprobada solo
+si todas las salidas comparadas coinciden.
+
+La Figura~\ref{fig:bch-decoder-verificacion} muestra la ejecución
+aprobada del testbench para las 8129 palabras recibidas mencionadas.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{bch-decoder_ver.png}
+    \caption{Resultado de la verificación del decodificador BCH.}
+    \label{fig:bch-decoder-verificacion}
+\end{figure}
+
+\subsection{Codec BCH}
+
+La verificación del codec conecta una instancia del codificador
+con una del decodificador, con una máscara de inyección de errores entre 
+ambos. Su objetivo es comprobar que el mensaje original se recupere 
+después de recorrer las dos etapas, ampliando la prueba unitaria 
+del decodificador a distintos mensajes de entrada. La
+Figura~\ref{fig:bch-codec-test} muestra esta conexión y el punto de
+inyección.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.6\linewidth]{codec-test_ver.png}
+    \caption{Esquema de verificación del codec BCH (codificador y decodificador).}
+    \label{fig:bch-codec-test}
+\end{figure}
+
+El generador construye los siguientes casos:
+
+\begin{itemize}
+    \item Mensajes aleatorios sin errores; en la ejecución presentada
+    se utilizaron 1872 mensajes.
+    \item Un mensaje aleatorio para cada una de las 127 posiciones
+    de error simple.
+    \item Un mensaje aleatorio para cada uno de los 8001 patrones
+    de error doble.
+\end{itemize}
+
+El scoreboard obtiene la palabra codificada mediante el modelo en C
+y calcula la entrada esperada del decodificador aplicando la máscara
+por XOR. Luego compara la salida del codificador, la palabra recibida,
+la máscara calculada por el decodificador, la palabra corregida y el
+mensaje recuperado. También comprueba que el indicador de corrección
+corresponda a la presencia de errores y que no se active la condición
+no corregible para estos estímulos.
+
+La ejecución presentada reúne 10000 transacciones. Cada una debe recuperar
+el mensaje transmitido y coincidir con los resultados esperados en
+los puntos observados. El resumen final informa la cantidad de
+transacciones comparadas y solo indica aprobación si no existen
+discrepancias.
+
+La Figura~\ref{fig:bch-codec-verificacion} muestra la aprobación
+de las 10000 transacciones comparadas.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{codec_ver.png}
+    \caption{Resultado de la verificación del codec BCH.}
+    \label{fig:bch-codec-verificacion}
+\end{figure}
+
+\subsection{Generador y checker PRBS31}
+
+Esta prueba conecta el generador PRBS31 con el checker e incorpora
+una máscara de errores sobre el payload de 791 bits. Se verifica
+la adquisición de sincronismo y la cantidad de errores reportada
+por frame, utilizando el modelo del checker en C y la información
+de los errores inyectados.
+
+Se generan pruebas con semillas no nulas y longitudes aleatorias,
+organizadas en tres escenarios:
+
+\begin{itemize}
+    \item \textbf{Secuencia sin errores:} el primer frame debe
+    permitir adquirir sincronismo y los siguientes deben producir
+    conteos nulos.
+    \item \textbf{Fallo de adquisición:} se inyectan entre uno y
+    diez errores en los primeros 31 bits del frame inicial, utilizados
+    para reconstruir la semilla. El checker debe permanecer sin
+    sincronismo en ese frame y adquirirlo con el siguiente, sin errores.
+    \item \textbf{Errores después de la adquisición:} el primer
+    frame se transmite sin alteraciones y los siguientes reciben
+    entre uno y diez errores en posiciones aleatorias del payload.
+    Cada conteo debe coincidir con el peso de la máscara aplicada.
+\end{itemize}
+
+El scoreboard contrasta el estado de sincronismo con el modelo en C
+y con lo esperado para cada escenario. Los conteos pendientes se
+mantienen en una cola y se comparan cuando la salida indica un nuevo
+resultado válido. Así se comprueba que el frame de adquisición no
+se contabilice y que cada frame aceptado estando sincronizado
+produzca el conteo correspondiente, respetando el orden de recepción.
+
+El entorno registra la cantidad de pruebas, los frames recibidos y
+los conteos válidos comparados. Antes de cerrar cada prueba espera
+los resultados pendientes, y reporta como discrepancia un conteo
+incorrecto o una salida válida sin un frame asociado.
+
+La Figura~\ref{fig:prbs31-checker-verificacion} muestra una ejecución
+aprobada de 300 pruebas y 160230 frames comparados.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{prbs31-checker_ver.png}
+    \caption{Resultado de la verificación del generador y checker PRBS31.}
+    \label{fig:prbs31-checker-verificacion}
+\end{figure}
+
+\subsection{Integración TX/RX}
+
+La verificación de integración comprueba el recorrido completo desde
+la generación de la secuencia hasta el conteo de errores residuales.
+Se realizó primero una prueba de la cadena únicamente en el dominio
+FEC y luego otra que incorpora los gearboxes CDC y los dominios FEC
+y DSP.
+
+Para la verificación del sistema, se eligió un escenario de inyección 
+de ráfagas, ya que permite verificar conjuntamente el mecanismo
+de entrelazado y la decodificación BCH. Una ráfaga concentra los errores
+en posiciones consecutivas del flujo transmitido, por lo que al 
+reconstruir las palabras de código, la permutación y el entrelazado 
+deben distribuir esos errores entre distintas palabras y frames. 
+Cuando la distribución resultante respeta la capacidad de 
+corrección del código, los decodificadores deben recuperar la 
+información sin errores residuales. Así, comprobar el resultado 
+de extremo a extremo evalúa tanto la redistribución de los errores 
+como su localización y corrección.
+
+Además, las longitudes y alineaciones elegidas tienen resultados
+esperados a partir del análisis previo y del modelo de Python. Esto
+permite comprobar casos dentro de la protección garantizada y otros
+que superan ese límite, para los cuales se esperan errores residuales
+según la alineación. En ambos testbenches se verificaron los modos
+sin errores y con inyección de ráfagas, utilizando distintas semillas:
+
+\begin{itemize}
+    \item \textbf{Sin errores:} se transmite la secuencia durante
+    una cantidad configurada de ciclos y se requiere, después
+    de adquirir sincronismo, que los conteos de errores sean nulos.
+    \item \textbf{Con ráfagas:} se inyectan errores consecutivos
+    para comprobar la protección conjunta del entrelazado y la 
+    codificación BCH, incluyendo ráfagas que atraviesan el 
+    límite entre palabras.
+\end{itemize}
+
+\paragraph{Cadena en un único dominio.}
+La prueba inicial inyecta ráfagas sobre palabras de 889 bits y utiliza
+casos dirigidos de longitudes 98, 99, 112, 113 y 114 bits. Las 
+posiciones elegidas incluyen comienzos en el borde del frame y 
+alineaciones que distinguen casos corregibles de otros con errores 
+residuales, de acuerdo con el análisis previo. El scoreboard cuenta 
+los bits efectivamente inyectados y verifica que coincidan con la 
+longitud configurada. Luego comprueba la ausencia o presencia de 
+errores post-FEC según el caso.
+
+Además, se controla la adquisición y conservación del sincronismo,
+la ausencia de valores desconocidos en los resultados y la
+correspondencia entre las entradas aceptadas y los conteos válidos.
+
+\paragraph{Cadena con cruce de dominios.}
+El entorno con CDC conecta los tops mediante la interfaz DSP de
+1016 bits e inyecta las ráfagas sobre ese flujo. Para las mismas
+cinco longitudes se aleatorizan la posición inicial dentro de la
+palabra DSP y el instante de inyección. El scoreboard verifica que
+se alcance el sincronismo dentro del tiempo previsto y que, una vez
+iniciados los reportes, el flujo de resultados válidos sea continuo.
+
+Se exige un conteo nulo de errores sin inyección y para ráfagas de 
+98 bits, mientras que las de 114 bits deben producir errores residuales.
+Para las longitudes intermedias se registran los casos con y sin
+errores, ya que su corrección depende de la posición de inicio de
+la ráfaga respecto de las palabras FEC reconstruidas.
+
+Las Figuras~\ref{fig:tx-rx-cdc-clean-ver} y~\ref{fig:tx-rx-cdc-burst-ver}
+presentan los resultados de ambos modos en el entorno con CDC.
+En la ejecución sin errores se completaron 10 pruebas y se verificaron
+5557 reportes válidos, con un conteo acumulado de errores igual a cero.
+En el modo con ráfagas se completaron 100 pruebas, distribuidas en
+20 casos por longitud. Ninguna ráfaga de 98 bits produjo errores
+residuales, mientras que las 20 de 114 bits sí los produjeron.
+Para las longitudes de 99, 112 y 113 bits se observaron errores
+residuales en 5, 4 y 20 casos, respectivamente. Estos últimos valores
+corresponden a las alineaciones ensayadas y no a un barrido exhaustivo
+de posiciones. Ambas ejecuciones finalizaron con el resultado de
+aprobación del scoreboard.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{tx-rx-cdc_clean-test.png}
+    \caption{Verificación TX/RX con CDC en el modo sin errores:
+    10 pruebas y 5557 reportes válidos sin errores residuales.}
+    \label{fig:tx-rx-cdc-clean-ver}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\linewidth]{tx-rx-cdc_burst-test.png}
+    \caption{Verificación TX/RX con CDC e inyección de ráfagas:
+    resumen de los 100 casos y aprobación de las comprobaciones.}
+    \label{fig:tx-rx-cdc-burst-ver}
+\end{figure}
+
 
 % ---------------------------------------------------------------------------
-\subsection{RTL del receptor}
+\section{Síntesis lógica}
+% ---------------------------------------------------------------------------
+\label{sec:sintesis-logica}
+
+\subsection{Entorno y restricciones de síntesis}
+
+La síntesis lógica se realizó utilizando Synopsys Fusion Compiler,
+versión Y-2026.03, con las bibliotecas de celdas estándar SAED14 en
+tecnología de 14nm, incluyendo variantes HVT, RVT, LVT y SLVT. En 
+primer lugar se  sintetizaron individualmente los módulos PRBS31, 
+codificador BCH, decodificador BCH y checker PRBS31 para verificar 
+su timing. Una vez que los módulos individuales cerraban timing, 
+se procedió a sintetizar los sistemas completos de transmisión y 
+recepción.
+
+El análisis se realizó considerando dos escenarios de operación:
+
+\begin{itemize}
+    \item \textbf{\texttt{func\_slow}:}
+    Corner SS, tensión de $0{,}72\,\mathrm{V}$,
+    temperatura de $125\,{}^{\circ}\mathrm{C}$ y Cmax.
+
+    \item \textbf{\texttt{func\_fast}:}
+    Corner FF, tensión de $0{,}88\,\mathrm{V}$,
+    temperatura de $-40\,{}^{\circ}\mathrm{C}$ y Cmin.
+\end{itemize}
+
+A continuación se detallan las restricciones temporales y eléctricas
+aplicadas para la síntesis. Los porcentajes se refieren al período del
+reloj de cada dominio y se aplican tanto a FEC como a DSP, cuando ambos
+están presentes en el diseño.
+
+\paragraph{Restricciones temporales.}
+\begin{itemize}
+    \item \textbf{Períodos de reloj:}
+    $T_{\mathrm{FEC}}=1{,}11125\,\mathrm{ns}$ y
+    $T_{\mathrm{DSP}}=1{,}27\,\mathrm{ns}$, definidos mediante
+    \texttt{create\_clock}. Los relojes se modelan como redes ideales
+    mediante \texttt{set\_ideal\_network -no\_propagate}.
+
+    \item \textbf{Relación entre dominios:}
+    los relojes FEC y DSP se declaran asíncronos en los tops mediante
+    \texttt{set\_clock\_groups -asynchronous}.
+
+    \item \textbf{Retardos de entrada y salida:}
+    máximo del 10\,\% del período y mínimo de $0\,\mathrm{ns}$ en
+    ambos dominios, mediante \texttt{set\_input\_delay} y
+    \texttt{set\_output\_delay}.
+
+    \item \textbf{Incertidumbre de setup:}
+    5\,\% del período en ambos dominios, mediante
+    \texttt{set\_clock\_uncertainty -setup}.
+
+    \item \textbf{Incertidumbre de hold:}
+    valor fijo de $20\,\mathrm{ps}$ en ambos dominios, mediante
+    \texttt{set\_clock\_uncertainty -hold}.
+
+    \item \textbf{Reset:}
+    en los tops, el reset asíncrono se declara ideal mediante
+    \texttt{set\_ideal\_network} y se excluyen los caminos que parten
+    de él mediante \texttt{set\_false\_path -from}.
+    En los modulos individuales, el reset síncrono recibe las 
+    restricciones de las entradas de control mediante 
+    \texttt{set\_input\_delay} y \texttt{set\_input\_transition}.
+\end{itemize}
+
+\paragraph{Restricciones eléctricas.}
+\begin{itemize}
+    \item \textbf{Transición de las entradas de datos y control:}
+    3\,\% del período en ambos dominios, mediante
+    \texttt{set\_input\_transition}.
+
+    \item \textbf{Transición de reloj:}
+    3\,\% del período para ambos dominios, mediante
+    \texttt{set\_clock\_transition}.
+
+    \item \textbf{Transición máxima interna:}
+    10\,\% del período en ambos dominios, con
+    \texttt{set\_max\_transition}.
+
+    \item \textbf{Fanout máximo:}
+    límite de 16 sobre el diseño y de 32 para el puerto de reset
+    asíncrono de los tops, mediante \texttt{set\_max\_fanout}.
+
+    \item \textbf{Capacitancia máxima:}
+    límite de $0{,}050\,\mathrm{pF}$ sobre el diseño, mediante 
+    \texttt{set\_max\_capacitance}.
+
+    \item \textbf{Carga de salida:}
+    $0{,}020\,\mathrm{pF}$ en cada salida, mediante
+    \texttt{set\_load}.
+\end{itemize}
+
+Los resultados obtenidos corresponden a la etapa de síntesis 
+lógica, con relojes ideales y sin implementación del árbol 
+de reloj ni del ruteo final. Por lo tanto, las métricas de 
+área, potencia y timing obtenidas son tentativas y permiten 
+evaluar las arquitecturas bajo condiciones homogéneas, pero 
+no constituyen resultados de implementación física.
+
+\subsection{Timing}
+
+En esta sección se presentan los resultados de timing de los 
+módulos individuales y de los sistemas integrados de transmisión 
+y recepción. La Tabla~\ref{tab:sintesis-resumen} resume la 
+profundidad lógica máxima y los márgenes temporales 
+obtenidos para las seis síntesis.
+
+La profundidad lógica corresponde al mayor número de niveles
+combinacionales entre los caminos analizados en ambos escenarios,
+por lo que no necesariamente coincide con la del camino que
+presenta el menor slack. Se distingue además entre el WNS
+reportado, que toma el valor cero cuando no existen violaciones,
+y el peor slack de setup, que conserva su valor algebraico.
+Este último permite identificar tanto los márgenes positivos
+como las violaciones temporales.
+
+\begin{table}[H]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{@{}lrrrr@{}}
+        \toprule
+        Bloque & \shortstack{Niveles\\lógicos} &
+        \shortstack{WNS $[\mathrm{ns}]$} &
+        \shortstack{Worst Slack $[\mathrm{ns}]$} &
+        \shortstack{Nro. de caminos\\con violación} \\
+        \midrule
+        PRBS31 & 10 & $0{,}000000$ & $0{,}006599$ & 0 \\
+        Encoder BCH & 9 & $0{,}000000$ & $0{,}207120$ & 0 \\
+        Decoder BCH & 34 & $0{,}000000$ & $0{,}000299$ & 0 \\
+        Checker PRBS31 & 22 & $-0{,}000652$ & $-0{,}000652$ & 1 \\
+        TX completo & 17 & $0{,}000000$ & $0{,}000000$ & 0 \\
+        RX completo & 28 & $-0{,}000065$ & $-0{,}000065$ & 3 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Profundidad lógica, márgenes y cantidad de caminos con violación de setup por síntesis.}
+    \label{tab:sintesis-resumen}
+\end{table}
+
+Los resultados muestran que cuatro de las seis síntesis
+satisfacen las restricciones de setup, mientras que el checker
+PRBS31 y el RX completo presentan violaciones de
+$0{,}652\,\mathrm{ps}$ y $0{,}065\,\mathrm{ps}$,
+respectivamente. Dado que ambas son inferiores a
+$1\,\mathrm{ps}$, se consideran despreciables a efectos
+prácticos de esta evaluación, por lo que se considera
+alcanzada la frecuencia objetivo de síntesis en todos
+los bloques analizados.
+
+La Tabla~\ref{tab:sintesis-caminos} identifica los puntos
+de inicio (\textit{startpoints}) y finalización
+(\textit{endpoints}) de los caminos críticos de setup.
+En todos los casos, el escenario limitante es
+\texttt{func\_slow} y los caminos corresponden al
+dominio FEC, que presenta el período de reloj más exigente.
+
+\begin{table}[H]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{@{}>{\raggedright\arraybackslash}p{0.18\linewidth}>{\raggedright\arraybackslash}p{0.77\linewidth}@{}}
+        \toprule
+        Bloque & Camino crítico de setup \\
+        \midrule
+        PRBS31 &
+        Startpoint: \nolinkurl{lfsr_r_reg[4]}\newline
+        Endpoint: \nolinkurl{prbs_r_reg[476]} \\[0.7em]
+        Encoder BCH &
+        Startpoint: \nolinkurl{i_msg[103]}\newline
+        Endpoint: \nolinkurl{o_cw_reg[6]} \\[0.7em]
+        Decoder BCH &
+        Startpoint: \nolinkurl{syn1_r0_reg[0]}\newline
+        Endpoint: \nolinkurl{u_bch_mu_calculator/log_syn1_cubed_r1_reg[6]} \\[0.7em]
+        Checker PRBS31 &
+        Startpoint: \nolinkurl{i_data[5]}\newline
+        Endpoint: \nolinkurl{clock_gate_lfsr_r_reg} \\[0.7em]
+        TX completo &
+        Startpoint: \nolinkurl{u_prbs31/lfsr_r_reg[5]}\newline
+        Endpoint: \nolinkurl{gen_bch_encoder[4].u_bch_encoder/o_cw_reg[8]} \\[0.7em]
+        RX completo &
+        Startpoint: \nolinkurl{gen_bch_decoder[4].u_bch_decoder/u_bch_mu_calculator/num_r1_reg[5]}\newline
+        Endpoint: \nolinkurl{gen_bch_decoder[4].u_bch_decoder/mu_r2_reg[1]} \\[0.7em]
+        \bottomrule
+    \end{tabular}
+    \caption{Puntos de inicio y finalización de los caminos críticos
+    de setup por síntesis.}
+    \label{tab:sintesis-caminos}
+\end{table}
+
+\subsection{Área}
+
+La Tabla~\ref{tab:sintesis-area} presenta el área total de celdas y su
+desglose en \textit{Combinational area}, y \textit{Noncombinational area}. 
+
+\begin{table}[H]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{@{}lrrr@{}}
+        \toprule
+        & & \multicolumn{2}{c}{Desglose de área $[\mu\mathrm{m}^{2}]$} \\
+        \cmidrule(l){3-4}
+        Bloque & \shortstack{Área total\\$[\mu\mathrm{m}^{2}]$} &
+        \shortstack{Combinational\\area} &
+        \shortstack{Noncombinational\\area} \\
+        \midrule
+        PRBS31          & $1518{,}92$  & $464{,}51$   & $1054{,}41$ \\
+        Encoder BCH     & $328{,}87$   & $164{,}55$   & $164{,}32$ \\
+        Decoder BCH     & $1878{,}39$  & $792{,}54$   & $1085{,}85$ \\
+        Checker PRBS31  & $2930{,}22$  & $1995{,}87$  & $934{,}35$ \\
+        TX completo     & $27864{,}77$ & $5817{,}95$  & $22046{,}82$ \\
+        RX completo     & $38415{,}41$ & $10921{,}11$ & $27494{,}30$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Área total y desglose por tipo de celda.}
+    \label{tab:sintesis-area}
+\end{table}
+
+La Tabla~\ref{tab:sintesis-celdas-vt} complementa el área con la cantidad
+total de celdas y su distribución entre HVT, RVT, LVT y SLVT.
+Los porcentajes se refieren a la cantidad de instancias de cada variante,
+no a su participación en el área.
+
+\begin{table}[H]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.2}
+    \begin{tabular}{@{}lrrrrr@{}}
+        \toprule
+        & & \multicolumn{4}{c}{Distribución de celdas [\%]} \\
+        \cmidrule(l){3-6}
+        Bloque & Celdas & HVT & RVT & LVT & SLVT \\
+        \midrule
+        PRBS31 & 1960 & $85{,}20$ & $9{,}59$ & $4{,}49$ & $0{,}71$ \\
+        Encoder BCH & 345 & $99{,}71$ & $0{,}00$ & $0{,}00$ & $0{,}29$ \\
+        Decoder BCH & 3137 & $81{,}16$ & $14{,}98$ & $2{,}52$ & $1{,}34$ \\
+        Checker PRBS31 & 4650 & $82{,}19$ & $12{,}75$ & $4{,}54$ & $0{,}52$ \\
+        TX completo & 31428 & $88{,}03$ & $9{,}77$ & $1{,}37$ & $0{,}83$ \\
+        RX completo & 50066 & $94{,}60$ & $3{,}47$ & $0{,}86$ & $1{,}07$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Cantidad total de celdas y distribución porcentual por tensión umbral.}
+    \label{tab:sintesis-celdas-vt}
+\end{table}
+
+El área conjunta de los tops es $66\,280{,}18\,\mu\mathrm{m}^{2}$,
+con una participación del 42{,}0\,\% para TX y del 58{,}0\,\% para RX.
+Las áreas de los bloques individuales no se suman a estos valores,
+ya que sus instancias están incluidas en los tops junto con los
+interleavers, gearboxes y sincronizadores.
+
+\subsection{Potencia}
+
+La Tabla~\ref{tab:sintesis-potencia} presenta la potencia dinámica,
+el leakage y la potencia total para los corners slow y fast.
+
+\begin{table}[H]
+    \centering
+    \small
+    \renewcommand{\arraystretch}{1.15}
+    \begin{tabular}{@{}llrrr@{}}
+        \toprule
+        Bloque & Corner &
+        \shortstack{$P_{\mathrm{din}}$\\$[\mathrm{mW}]$} &
+        \shortstack{$P_{\mathrm{leakage}}$\\$[\mu\mathrm{W}]$} &
+        \shortstack{$P_{\mathrm{total}}$\\$[\mathrm{mW}]$} \\
+        \midrule
+        PRBS31 & slow & $2{,}130$ & $3{,}000$ & $2{,}133$ \\
+         & fast & $3{,}260$ & $0{,}404$ & $3{,}260$ \\
+        \addlinespace
+        Encoder BCH & slow & $0{,}329$ & $0{,}460$ & $0{,}329$ \\
+         & fast & $0{,}510$ & $0{,}083$ & $0{,}510$ \\
+        \addlinespace
+        Decoder BCH & slow & $1{,}370$ & $3{,}920$ & $1{,}374$ \\
+         & fast & $2{,}120$ & $0{,}470$ & $2{,}120$ \\
+        \addlinespace
+        Checker PRBS31 & slow & $2{,}370$ & $7{,}140$ & $2{,}377$ \\
+         & fast & $3{,}620$ & $0{,}737$ & $3{,}621$ \\
+        \addlinespace
+        TX completo & slow & $390{,}000$ & $48{,}300$ & $390{,}048$ \\
+         & fast & $583{,}000$ & $7{,}480$ & $583{,}007$ \\
+        \addlinespace
+        RX completo & slow & $502{,}000$ & $67{,}000$ & $502{,}067$ \\
+         & fast & $751{,}000$ & $9{,}840$ & $751{,}010$ \\
+        \bottomrule
+    \end{tabular}
+    \caption{Potencia estimada por síntesis y corner.}
+    \label{tab:sintesis-potencia}
+\end{table}
+
+En todos los bloques la potencia dinámica aumenta en fast, mientras que
+el leakage disminuye respecto del corner slow, que opera a mayor
+temperatura. Para los dos tops en conjunto, se obtiene
+aproximadamente $892{,}115\,\mathrm{mW}$ en slow y
+$1334{,}017\,\mathrm{mW}$ en fast.
+
+Estas cifras son estimaciones de síntesis con actividad propagada por
+la herramienta, sin actividad de simulación anotada para el sistema completo. Además, la red de reloj concentra
+aproximadamente el 99\,\% de la potencia dinámica de los tops y aparecen
+advertencias de extrapolación de las tablas de potencia. Por ello, estos
+valores deben conservarse como el resultado de las condiciones de esta
+corrida, y revisarse con actividad representativa y el árbol de reloj
+implementado antes de interpretarlos como consumo físico final.
+
+
+% ---------------------------------------------------------------------------
+\section{Implementación y medición en FPGA}
 % ---------------------------------------------------------------------------
 
-\subsubsection{FIFO CDC y gearbox inverso}
-\pendiente{Documentar el retorno al ancho de 889 bits.}
-
-\subsubsection{De-interleaver y de-permutación}
-\pendiente{Documentar las transformaciones inversas y su alineamiento.}
-
-\subsubsection{Banco de decodificadores BCH}
-\pendiente{Documentar síndromes, localizador cuadrático y corrección.}
-
-\subsubsection{Checker PRBS31 y medición de BER}
-\pendiente{Documentar los contadores pre-FEC y post-FEC.}
-
-% ---------------------------------------------------------------------------
-\subsection{Verificación en SystemVerilog}
-% ---------------------------------------------------------------------------
-
-\subsubsection{Transacciones y generación de estímulos}
-\pendiente{Documentar transacciones, semillas, tasa de error y ráfagas.}
-
-\subsubsection{Drivers y monitores}
-\pendiente{Documentar las interfaces y el seguimiento de las transacciones.}
-
-\subsubsection{Scoreboard}
-\pendiente{Documentar la integración del modelo de referencia en C mediante DPI-C.}
-
-\subsubsection{Cobertura funcional y de código}
-\pendiente{Documentar el modelo de cobertura y los resultados alcanzados.}
-
-\subsubsection{Suite de regresión}
-\pendiente{Documentar tests dirigidos, aleatorios y resultados por semilla.}
-
-% ---------------------------------------------------------------------------
-\subsection{Síntesis lógica}
-% ---------------------------------------------------------------------------
-
-\subsubsection{Scripts y restricciones}
-\pendiente{Documentar clocks, entradas, salidas, excepciones y restricciones CDC.}
-
-\subsubsection{Timing, área y potencia}
-\pendiente{Incorporar y analizar los reportes de Design Compiler.}
-
-\subsubsection{Análisis del camino crítico}
-\pendiente{Identificar el bloque limitante y discutir las alternativas de optimización.}
-
-% ---------------------------------------------------------------------------
-\subsection{Implementación y medición en FPGA}
-% ---------------------------------------------------------------------------
-
-\subsubsection{Clocking y wrapper de integración}
-\pendiente{Documentar la generación de ambos clocks a frecuencia reducida.}
-
-\subsubsection{Canal de ruido y generador de ráfagas}
-\pendiente{Documentar la implementación configurable en fabric.}
-
-\subsubsection{Interfaz de control}
-\pendiente{Documentar la configuración y lectura de contadores desde el PS.}
-
-\subsubsection{Utilización y cierre de timing}
-\pendiente{Incorporar los reportes de Vivado.}
-
-\subsubsection{Curvas de BER}
-\pendiente{Documentar las mediciones pre-FEC, post-FEC y los barridos de ráfagas.}
+Sección pendiente para la proxima entrega.
 
 % ---------------------------------------------------------------------------
 \section{Conclusiones}
 % ---------------------------------------------------------------------------
 
-\pendiente{Redactar las conclusiones una vez cerradas las siete etapas.}
+Sección pendiente para la proxima entrega.
 
 \clearpage
 \phantomsection
@@ -2694,5 +4284,383 @@ hexadecimal, con los ceros de mayor peso necesarios para conservar su ancho.
     13 & \texttt{0x1ADF818A1B4AA9516BC533C2771B0} \\
 \end{longtable}
 \endgroup
+
+
+\clearpage
+% ---------------------------------------------------------------------------
+\section{Matriz transpuesta para el cálculo de síndromes BCH}
+\label{anexo:matriz-sindromes-bch}
+% ---------------------------------------------------------------------------
+
+La matriz $M_{\mathrm{T}}$, transpuesta de la matriz binaria construida
+para evaluar los síndromes, tiene 14 filas y 127 columnas. En RTL se
+define como la constante \texttt{M\_T} del paquete
+\texttt{bch\_decoder\_pkg}. Cada fila es una máscara que selecciona los
+bits de la palabra recibida que participan en una reducción XOR.
+Las filas 0 a 6 producen los bits de $S_1$, y las filas 7 a 13, los
+de $S_3$, en orden creciente de índice de bit.
+
+La Tabla~\ref{tab:matriz-sindromes-bch} presenta las máscaras ordenadas
+por su índice RTL. Cada valor utiliza 32 dígitos hexadecimales; el
+bit más significativo de esta representación de 128 bits es un cero
+de relleno que no forma parte de la máscara de 127 bits.
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.05}
+\setlength{\LTpre}{0.5em}
+\setlength{\LTpost}{0pt}
+\begin{longtable}{@{}c c@{}}
+    \caption{Filas de la matriz transpuesta $M_{\mathrm{T}}$ para el cálculo de síndromes en RTL.}
+    \label{tab:matriz-sindromes-bch} \\
+    \toprule
+    \textbf{Fila $M_{\mathrm{T}}[i]$} & \textbf{Hexadecimal (127 bits)} \\
+    \midrule
+    \endfirsthead
+
+    \multicolumn{2}{c}{\tablename~\thetable\ (continuación)} \\
+    \toprule
+    \textbf{Fila $M_{\mathrm{T}}[i]$} & \textbf{Hexadecimal (127 bits)} \\
+    \midrule
+    \endhead
+
+    \midrule
+    \multicolumn{2}{r}{Continúa en la página siguiente} \\
+    \endfoot
+
+    \bottomrule
+    \endlastfoot
+
+    0 & \texttt{0x134F70FE3B14BEA85BCE5660DAE8C881} \\
+    1 & \texttt{0x269EE1FC76297D50B79CACC1B5D19102} \\
+    2 & \texttt{0x4D3DC3F8EC52FAA16F3959836BA32204} \\
+    3 & \texttt{0x0934F70FE3B14BEA85BCE5660DAE8C88} \\
+    4 & \texttt{0x1269EE1FC76297D50B79CACC1B5D1910} \\
+    5 & \texttt{0x24D3DC3F8EC52FAA16F3959836BA3220} \\
+    6 & \texttt{0x49A7B87F1D8A5F542DE72B306D746440} \\
+    7 & \texttt{0x7EEDE8B2F8819B1CEB84C156929E46A1} \\
+    8 & \texttt{0x2AD253C8D43FBB7A2CBE2066C73AE130} \\
+    9 & \texttt{0x0CD8E75C260AB494F2350FEEDE8B2F88} \\
+    10 & \texttt{0x033639D70982AD253C8D43FBB7A2CBE2} \\
+    11 & \texttt{0x7F76F4597C40CD8E75C260AB494F2350} \\
+    12 & \texttt{0x156929E46A1FDDBD165F1033639D7098} \\
+    13 & \texttt{0x066C73AE13055A4A791A87F76F4597C4} \\
+\end{longtable}
+\endgroup
+
+\clearpage
+% ---------------------------------------------------------------------------
+\section{Matrices de transición y generación de salida del PRBS31}
+\label{anexo:matrices-prbs31}
+% ---------------------------------------------------------------------------
+
+Las matrices $A$ y $B$ utilizadas en el generador RTL se definen en
+\texttt{prbs31\_pkg} y tienen dimensiones $31\times31$ y $791\times31$,
+respectivamente. Cada fila es una máscara de 31 bits: un bit en uno indica
+que la posición correspondiente del estado participa en la reducción XOR.
+La fila \texttt{A[i]} determina el bit \texttt{lfsr\_next[i]} del estado
+luego de 791 avances serie, mientras que \texttt{B[i]} determina el bit
+\texttt{o\_prbs[i]} de la salida paralela. En particular, \texttt{B[0]}
+corresponde a la primera muestra temporal de la secuencia.
+
+Las Tablas~\ref{tab:matriz-a-prbs31} y~\ref{tab:matriz-b-prbs31} presentan
+las filas ordenadas por su índice RTL creciente. Las máscaras se expresan
+con ocho dígitos hexadecimales, incluyendo ceros de mayor peso; el bit
+más significativo de esta representación de 32 bits es un cero de relleno
+que no forma parte de la máscara de 31 bits.
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.05}
+\setlength{\LTpre}{0.5em}
+\setlength{\LTpost}{0pt}
+\begin{longtable}{@{}c c@{}}
+    \caption{Filas de la matriz $A$ utilizada en el generador PRBS31 RTL.}
+    \label{tab:matriz-a-prbs31} \\
+    \toprule
+    \textbf{Fila $A[i]$} & \textbf{Hexadecimal (31 bits)} \\
+    \midrule
+    \endfirsthead
+
+    \multicolumn{2}{c}{\tablename~\thetable\ (continuación)} \\
+    \toprule
+    \textbf{Fila $A[i]$} & \textbf{Hexadecimal (31 bits)} \\
+    \midrule
+    \endhead
+
+    \midrule
+    \multicolumn{2}{r}{Continúa en la página siguiente} \\
+    \endfoot
+
+    \bottomrule
+    \endlastfoot
+
+    0 & \texttt{0x216BA220} \\
+    1 & \texttt{0x42D74440} \\
+    2 & \texttt{0x15AE8881} \\
+    3 & \texttt{0x2B5D1102} \\
+    4 & \texttt{0x56BA2204} \\
+    5 & \texttt{0x3D744409} \\
+    6 & \texttt{0x7AE88812} \\
+    7 & \texttt{0x65D11025} \\
+    8 & \texttt{0x5BA2204B} \\
+    9 & \texttt{0x27444097} \\
+    10 & \texttt{0x4E88812E} \\
+    11 & \texttt{0x0D11025D} \\
+    12 & \texttt{0x1A2204BA} \\
+    13 & \texttt{0x34440974} \\
+    14 & \texttt{0x688812E8} \\
+    15 & \texttt{0x411025D1} \\
+    16 & \texttt{0x12204BA3} \\
+    17 & \texttt{0x24409746} \\
+    18 & \texttt{0x48812E8C} \\
+    19 & \texttt{0x01025D19} \\
+    20 & \texttt{0x0204BA32} \\
+    21 & \texttt{0x04097464} \\
+    22 & \texttt{0x0812E8C8} \\
+    23 & \texttt{0x1025D190} \\
+    24 & \texttt{0x204BA320} \\
+    25 & \texttt{0x40974640} \\
+    26 & \texttt{0x112E8C81} \\
+    27 & \texttt{0x225D1902} \\
+    28 & \texttt{0x44BA3204} \\
+    29 & \texttt{0x19746409} \\
+    30 & \texttt{0x32E8C812} \\
+\end{longtable}
+\endgroup
+
+\clearpage
+La matriz $B$ se distribuye en cuatro grupos de columnas; los índices
+se leen de izquierda a derecha y luego de arriba hacia abajo.
+
+
+\begingroup
+\small
+\setlength{\tabcolsep}{5pt}
+\renewcommand{\arraystretch}{1.05}
+\setlength{\LTpre}{0.5em}
+\setlength{\LTpost}{0pt}
+\begin{longtable}{@{}r l@{\hspace{1em}}r l@{\hspace{1em}}r l@{\hspace{1em}}r l@{}}
+    \caption{Filas de la matriz $B$ utilizada en el generador PRBS31 RTL.}
+    \label{tab:matriz-b-prbs31} \\
+    \toprule
+    \textbf{$i$} & \textbf{$B[i]$ (hex)} & \textbf{$i$} & \textbf{$B[i]$ (hex)} & \textbf{$i$} & \textbf{$B[i]$ (hex)} & \textbf{$i$} & \textbf{$B[i]$ (hex)} \\
+    \midrule
+    \endfirsthead
+
+    \multicolumn{8}{c}{\tablename~\thetable\ (continuación)} \\
+    \toprule
+    \textbf{$i$} & \textbf{$B[i]$ (hex)} & \textbf{$i$} & \textbf{$B[i]$ (hex)} & \textbf{$i$} & \textbf{$B[i]$ (hex)} & \textbf{$i$} & \textbf{$B[i]$ (hex)} \\
+    \midrule
+    \endhead
+
+    \midrule
+    \multicolumn{8}{r}{Continúa en la página siguiente} \\
+    \endfoot
+
+    \bottomrule
+    \endlastfoot
+
+    0 & \texttt{0x40000000} & 1 & \texttt{0x20000000} & 2 & \texttt{0x10000000} & 3 & \texttt{0x08000000} \\
+    4 & \texttt{0x04000000} & 5 & \texttt{0x02000000} & 6 & \texttt{0x01000000} & 7 & \texttt{0x00800000} \\
+    8 & \texttt{0x00400000} & 9 & \texttt{0x00200000} & 10 & \texttt{0x00100000} & 11 & \texttt{0x00080000} \\
+    12 & \texttt{0x00040000} & 13 & \texttt{0x00020000} & 14 & \texttt{0x00010000} & 15 & \texttt{0x00008000} \\
+    16 & \texttt{0x00004000} & 17 & \texttt{0x00002000} & 18 & \texttt{0x00001000} & 19 & \texttt{0x00000800} \\
+    20 & \texttt{0x00000400} & 21 & \texttt{0x00000200} & 22 & \texttt{0x00000100} & 23 & \texttt{0x00000080} \\
+    24 & \texttt{0x00000040} & 25 & \texttt{0x00000020} & 26 & \texttt{0x00000010} & 27 & \texttt{0x00000008} \\
+    28 & \texttt{0x00000004} & 29 & \texttt{0x00000002} & 30 & \texttt{0x00000001} & 31 & \texttt{0x48000000} \\
+    32 & \texttt{0x24000000} & 33 & \texttt{0x12000000} & 34 & \texttt{0x09000000} & 35 & \texttt{0x04800000} \\
+    36 & \texttt{0x02400000} & 37 & \texttt{0x01200000} & 38 & \texttt{0x00900000} & 39 & \texttt{0x00480000} \\
+    40 & \texttt{0x00240000} & 41 & \texttt{0x00120000} & 42 & \texttt{0x00090000} & 43 & \texttt{0x00048000} \\
+    44 & \texttt{0x00024000} & 45 & \texttt{0x00012000} & 46 & \texttt{0x00009000} & 47 & \texttt{0x00004800} \\
+    48 & \texttt{0x00002400} & 49 & \texttt{0x00001200} & 50 & \texttt{0x00000900} & 51 & \texttt{0x00000480} \\
+    52 & \texttt{0x00000240} & 53 & \texttt{0x00000120} & 54 & \texttt{0x00000090} & 55 & \texttt{0x00000048} \\
+    56 & \texttt{0x00000024} & 57 & \texttt{0x00000012} & 58 & \texttt{0x00000009} & 59 & \texttt{0x48000004} \\
+    60 & \texttt{0x24000002} & 61 & \texttt{0x12000001} & 62 & \texttt{0x41000000} & 63 & \texttt{0x20800000} \\
+    64 & \texttt{0x10400000} & 65 & \texttt{0x08200000} & 66 & \texttt{0x04100000} & 67 & \texttt{0x02080000} \\
+    68 & \texttt{0x01040000} & 69 & \texttt{0x00820000} & 70 & \texttt{0x00410000} & 71 & \texttt{0x00208000} \\
+    72 & \texttt{0x00104000} & 73 & \texttt{0x00082000} & 74 & \texttt{0x00041000} & 75 & \texttt{0x00020800} \\
+    76 & \texttt{0x00010400} & 77 & \texttt{0x00008200} & 78 & \texttt{0x00004100} & 79 & \texttt{0x00002080} \\
+    80 & \texttt{0x00001040} & 81 & \texttt{0x00000820} & 82 & \texttt{0x00000410} & 83 & \texttt{0x00000208} \\
+    84 & \texttt{0x00000104} & 85 & \texttt{0x00000082} & 86 & \texttt{0x00000041} & 87 & \texttt{0x48000020} \\
+    88 & \texttt{0x24000010} & 89 & \texttt{0x12000008} & 90 & \texttt{0x09000004} & 91 & \texttt{0x04800002} \\
+    92 & \texttt{0x02400001} & 93 & \texttt{0x49200000} & 94 & \texttt{0x24900000} & 95 & \texttt{0x12480000} \\
+    96 & \texttt{0x09240000} & 97 & \texttt{0x04920000} & 98 & \texttt{0x02490000} & 99 & \texttt{0x01248000} \\
+    100 & \texttt{0x00924000} & 101 & \texttt{0x00492000} & 102 & \texttt{0x00249000} & 103 & \texttt{0x00124800} \\
+    104 & \texttt{0x00092400} & 105 & \texttt{0x00049200} & 106 & \texttt{0x00024900} & 107 & \texttt{0x00012480} \\
+    108 & \texttt{0x00009240} & 109 & \texttt{0x00004920} & 110 & \texttt{0x00002490} & 111 & \texttt{0x00001248} \\
+    112 & \texttt{0x00000924} & 113 & \texttt{0x00000492} & 114 & \texttt{0x00000249} & 115 & \texttt{0x48000124} \\
+    116 & \texttt{0x24000092} & 117 & \texttt{0x12000049} & 118 & \texttt{0x41000024} & 119 & \texttt{0x20800012} \\
+    120 & \texttt{0x10400009} & 121 & \texttt{0x40200004} & 122 & \texttt{0x20100002} & 123 & \texttt{0x10080001} \\
+    124 & \texttt{0x40040000} & 125 & \texttt{0x20020000} & 126 & \texttt{0x10010000} & 127 & \texttt{0x08008000} \\
+    128 & \texttt{0x04004000} & 129 & \texttt{0x02002000} & 130 & \texttt{0x01001000} & 131 & \texttt{0x00800800} \\
+    132 & \texttt{0x00400400} & 133 & \texttt{0x00200200} & 134 & \texttt{0x00100100} & 135 & \texttt{0x00080080} \\
+    136 & \texttt{0x00040040} & 137 & \texttt{0x00020020} & 138 & \texttt{0x00010010} & 139 & \texttt{0x00008008} \\
+    140 & \texttt{0x00004004} & 141 & \texttt{0x00002002} & 142 & \texttt{0x00001001} & 143 & \texttt{0x48000800} \\
+    144 & \texttt{0x24000400} & 145 & \texttt{0x12000200} & 146 & \texttt{0x09000100} & 147 & \texttt{0x04800080} \\
+    148 & \texttt{0x02400040} & 149 & \texttt{0x01200020} & 150 & \texttt{0x00900010} & 151 & \texttt{0x00480008} \\
+    152 & \texttt{0x00240004} & 153 & \texttt{0x00120002} & 154 & \texttt{0x00090001} & 155 & \texttt{0x48048000} \\
+    156 & \texttt{0x24024000} & 157 & \texttt{0x12012000} & 158 & \texttt{0x09009000} & 159 & \texttt{0x04804800} \\
+    160 & \texttt{0x02402400} & 161 & \texttt{0x01201200} & 162 & \texttt{0x00900900} & 163 & \texttt{0x00480480} \\
+    164 & \texttt{0x00240240} & 165 & \texttt{0x00120120} & 166 & \texttt{0x00090090} & 167 & \texttt{0x00048048} \\
+    168 & \texttt{0x00024024} & 169 & \texttt{0x00012012} & 170 & \texttt{0x00009009} & 171 & \texttt{0x48004804} \\
+    172 & \texttt{0x24002402} & 173 & \texttt{0x12001201} & 174 & \texttt{0x41000900} & 175 & \texttt{0x20800480} \\
+    176 & \texttt{0x10400240} & 177 & \texttt{0x08200120} & 178 & \texttt{0x04100090} & 179 & \texttt{0x02080048} \\
+    180 & \texttt{0x01040024} & 181 & \texttt{0x00820012} & 182 & \texttt{0x00410009} & 183 & \texttt{0x48208004} \\
+    184 & \texttt{0x24104002} & 185 & \texttt{0x12082001} & 186 & \texttt{0x41041000} & 187 & \texttt{0x20820800} \\
+    188 & \texttt{0x10410400} & 189 & \texttt{0x08208200} & 190 & \texttt{0x04104100} & 191 & \texttt{0x02082080} \\
+    192 & \texttt{0x01041040} & 193 & \texttt{0x00820820} & 194 & \texttt{0x00410410} & 195 & \texttt{0x00208208} \\
+    196 & \texttt{0x00104104} & 197 & \texttt{0x00082082} & 198 & \texttt{0x00041041} & 199 & \texttt{0x48020820} \\
+    200 & \texttt{0x24010410} & 201 & \texttt{0x12008208} & 202 & \texttt{0x09004104} & 203 & \texttt{0x04802082} \\
+    204 & \texttt{0x02401041} & 205 & \texttt{0x49200820} & 206 & \texttt{0x24900410} & 207 & \texttt{0x12480208} \\
+    208 & \texttt{0x09240104} & 209 & \texttt{0x04920082} & 210 & \texttt{0x02490041} & 211 & \texttt{0x49248020} \\
+    212 & \texttt{0x24924010} & 213 & \texttt{0x12492008} & 214 & \texttt{0x09249004} & 215 & \texttt{0x04924802} \\
+    216 & \texttt{0x02492401} & 217 & \texttt{0x49249200} & 218 & \texttt{0x24924900} & 219 & \texttt{0x12492480} \\
+    220 & \texttt{0x09249240} & 221 & \texttt{0x04924920} & 222 & \texttt{0x02492490} & 223 & \texttt{0x01249248} \\
+    224 & \texttt{0x00924924} & 225 & \texttt{0x00492492} & 226 & \texttt{0x00249249} & 227 & \texttt{0x48124924} \\
+    228 & \texttt{0x24092492} & 229 & \texttt{0x12049249} & 230 & \texttt{0x41024924} & 231 & \texttt{0x20812492} \\
+    232 & \texttt{0x10409249} & 233 & \texttt{0x40204924} & 234 & \texttt{0x20102492} & 235 & \texttt{0x10081249} \\
+    236 & \texttt{0x40040924} & 237 & \texttt{0x20020492} & 238 & \texttt{0x10010249} & 239 & \texttt{0x40008124} \\
+    240 & \texttt{0x20004092} & 241 & \texttt{0x10002049} & 242 & \texttt{0x40001024} & 243 & \texttt{0x20000812} \\
+    244 & \texttt{0x10000409} & 245 & \texttt{0x40000204} & 246 & \texttt{0x20000102} & 247 & \texttt{0x10000081} \\
+    248 & \texttt{0x40000040} & 249 & \texttt{0x20000020} & 250 & \texttt{0x10000010} & 251 & \texttt{0x08000008} \\
+    252 & \texttt{0x04000004} & 253 & \texttt{0x02000002} & 254 & \texttt{0x01000001} & 255 & \texttt{0x48800000} \\
+    256 & \texttt{0x24400000} & 257 & \texttt{0x12200000} & 258 & \texttt{0x09100000} & 259 & \texttt{0x04880000} \\
+    260 & \texttt{0x02440000} & 261 & \texttt{0x01220000} & 262 & \texttt{0x00910000} & 263 & \texttt{0x00488000} \\
+    264 & \texttt{0x00244000} & 265 & \texttt{0x00122000} & 266 & \texttt{0x00091000} & 267 & \texttt{0x00048800} \\
+    268 & \texttt{0x00024400} & 269 & \texttt{0x00012200} & 270 & \texttt{0x00009100} & 271 & \texttt{0x00004880} \\
+    272 & \texttt{0x00002440} & 273 & \texttt{0x00001220} & 274 & \texttt{0x00000910} & 275 & \texttt{0x00000488} \\
+    276 & \texttt{0x00000244} & 277 & \texttt{0x00000122} & 278 & \texttt{0x00000091} & 279 & \texttt{0x48000048} \\
+    280 & \texttt{0x24000024} & 281 & \texttt{0x12000012} & 282 & \texttt{0x09000009} & 283 & \texttt{0x4C800004} \\
+    284 & \texttt{0x26400002} & 285 & \texttt{0x13200001} & 286 & \texttt{0x41900000} & 287 & \texttt{0x20C80000} \\
+    288 & \texttt{0x10640000} & 289 & \texttt{0x08320000} & 290 & \texttt{0x04190000} & 291 & \texttt{0x020C8000} \\
+    292 & \texttt{0x01064000} & 293 & \texttt{0x00832000} & 294 & \texttt{0x00419000} & 295 & \texttt{0x0020C800} \\
+    296 & \texttt{0x00106400} & 297 & \texttt{0x00083200} & 298 & \texttt{0x00041900} & 299 & \texttt{0x00020C80} \\
+    300 & \texttt{0x00010640} & 301 & \texttt{0x00008320} & 302 & \texttt{0x00004190} & 303 & \texttt{0x000020C8} \\
+    304 & \texttt{0x00001064} & 305 & \texttt{0x00000832} & 306 & \texttt{0x00000419} & 307 & \texttt{0x4800020C} \\
+    308 & \texttt{0x24000106} & 309 & \texttt{0x12000083} & 310 & \texttt{0x41000041} & 311 & \texttt{0x68800020} \\
+    312 & \texttt{0x34400010} & 313 & \texttt{0x1A200008} & 314 & \texttt{0x0D100004} & 315 & \texttt{0x06880002} \\
+    316 & \texttt{0x03440001} & 317 & \texttt{0x49A20000} & 318 & \texttt{0x24D10000} & 319 & \texttt{0x12688000} \\
+    320 & \texttt{0x09344000} & 321 & \texttt{0x049A2000} & 322 & \texttt{0x024D1000} & 323 & \texttt{0x01268800} \\
+    324 & \texttt{0x00934400} & 325 & \texttt{0x0049A200} & 326 & \texttt{0x0024D100} & 327 & \texttt{0x00126880} \\
+    328 & \texttt{0x00093440} & 329 & \texttt{0x00049A20} & 330 & \texttt{0x00024D10} & 331 & \texttt{0x00012688} \\
+    332 & \texttt{0x00009344} & 333 & \texttt{0x000049A2} & 334 & \texttt{0x000024D1} & 335 & \texttt{0x48001268} \\
+    336 & \texttt{0x24000934} & 337 & \texttt{0x1200049A} & 338 & \texttt{0x0900024D} & 339 & \texttt{0x4C800126} \\
+    340 & \texttt{0x26400093} & 341 & \texttt{0x5B200049} & 342 & \texttt{0x65900024} & 343 & \texttt{0x32C80012} \\
+    344 & \texttt{0x19640009} & 345 & \texttt{0x44B20004} & 346 & \texttt{0x22590002} & 347 & \texttt{0x112C8001} \\
+    348 & \texttt{0x40964000} & 349 & \texttt{0x204B2000} & 350 & \texttt{0x10259000} & 351 & \texttt{0x0812C800} \\
+    352 & \texttt{0x04096400} & 353 & \texttt{0x0204B200} & 354 & \texttt{0x01025900} & 355 & \texttt{0x00812C80} \\
+    356 & \texttt{0x00409640} & 357 & \texttt{0x00204B20} & 358 & \texttt{0x00102590} & 359 & \texttt{0x000812C8} \\
+    360 & \texttt{0x00040964} & 361 & \texttt{0x000204B2} & 362 & \texttt{0x00010259} & 363 & \texttt{0x4800812C} \\
+    364 & \texttt{0x24004096} & 365 & \texttt{0x1200204B} & 366 & \texttt{0x41001025} & 367 & \texttt{0x68800812} \\
+    368 & \texttt{0x34400409} & 369 & \texttt{0x52200204} & 370 & \texttt{0x29100102} & 371 & \texttt{0x14880081} \\
+    372 & \texttt{0x42440040} & 373 & \texttt{0x21220020} & 374 & \texttt{0x10910010} & 375 & \texttt{0x08488008} \\
+    376 & \texttt{0x04244004} & 377 & \texttt{0x02122002} & 378 & \texttt{0x01091001} & 379 & \texttt{0x48848800} \\
+    380 & \texttt{0x24424400} & 381 & \texttt{0x12212200} & 382 & \texttt{0x09109100} & 383 & \texttt{0x04884880} \\
+    384 & \texttt{0x02442440} & 385 & \texttt{0x01221220} & 386 & \texttt{0x00910910} & 387 & \texttt{0x00488488} \\
+    388 & \texttt{0x00244244} & 389 & \texttt{0x00122122} & 390 & \texttt{0x00091091} & 391 & \texttt{0x48048848} \\
+    392 & \texttt{0x24024424} & 393 & \texttt{0x12012212} & 394 & \texttt{0x09009109} & 395 & \texttt{0x4C804884} \\
+    396 & \texttt{0x26402442} & 397 & \texttt{0x13201221} & 398 & \texttt{0x41900910} & 399 & \texttt{0x20C80488} \\
+    400 & \texttt{0x10640244} & 401 & \texttt{0x08320122} & 402 & \texttt{0x04190091} & 403 & \texttt{0x4A0C8048} \\
+    404 & \texttt{0x25064024} & 405 & \texttt{0x12832012} & 406 & \texttt{0x09419009} & 407 & \texttt{0x4CA0C804} \\
+    408 & \texttt{0x26506402} & 409 & \texttt{0x13283201} & 410 & \texttt{0x41941900} & 411 & \texttt{0x20CA0C80} \\
+    412 & \texttt{0x10650640} & 413 & \texttt{0x08328320} & 414 & \texttt{0x04194190} & 415 & \texttt{0x020CA0C8} \\
+    416 & \texttt{0x01065064} & 417 & \texttt{0x00832832} & 418 & \texttt{0x00419419} & 419 & \texttt{0x4820CA0C} \\
+    420 & \texttt{0x24106506} & 421 & \texttt{0x12083283} & 422 & \texttt{0x41041941} & 423 & \texttt{0x68820CA0} \\
+    424 & \texttt{0x34410650} & 425 & \texttt{0x1A208328} & 426 & \texttt{0x0D104194} & 427 & \texttt{0x068820CA} \\
+    428 & \texttt{0x03441065} & 429 & \texttt{0x49A20832} & 430 & \texttt{0x24D10419} & 431 & \texttt{0x5A68820C} \\
+    432 & \texttt{0x2D344106} & 433 & \texttt{0x169A2083} & 434 & \texttt{0x434D1041} & 435 & \texttt{0x69A68820} \\
+    436 & \texttt{0x34D34410} & 437 & \texttt{0x1A69A208} & 438 & \texttt{0x0D34D104} & 439 & \texttt{0x069A6882} \\
+    440 & \texttt{0x034D3441} & 441 & \texttt{0x49A69A20} & 442 & \texttt{0x24D34D10} & 443 & \texttt{0x1269A688} \\
+    444 & \texttt{0x0934D344} & 445 & \texttt{0x049A69A2} & 446 & \texttt{0x024D34D1} & 447 & \texttt{0x49269A68} \\
+    448 & \texttt{0x24934D34} & 449 & \texttt{0x1249A69A} & 450 & \texttt{0x0924D34D} & 451 & \texttt{0x4C9269A6} \\
+    452 & \texttt{0x264934D3} & 453 & \texttt{0x5B249A69} & 454 & \texttt{0x65924D34} & 455 & \texttt{0x32C9269A} \\
+    456 & \texttt{0x1964934D} & 457 & \texttt{0x44B249A6} & 458 & \texttt{0x225924D3} & 459 & \texttt{0x592C9269} \\
+    460 & \texttt{0x64964934} & 461 & \texttt{0x324B249A} & 462 & \texttt{0x1925924D} & 463 & \texttt{0x4492C926} \\
+    464 & \texttt{0x22496493} & 465 & \texttt{0x5924B249} & 466 & \texttt{0x64925924} & 467 & \texttt{0x32492C92} \\
+    468 & \texttt{0x19249649} & 469 & \texttt{0x44924B24} & 470 & \texttt{0x22492592} & 471 & \texttt{0x112492C9} \\
+    472 & \texttt{0x40924964} & 473 & \texttt{0x204924B2} & 474 & \texttt{0x10249259} & 475 & \texttt{0x4012492C} \\
+    476 & \texttt{0x20092496} & 477 & \texttt{0x1004924B} & 478 & \texttt{0x40024925} & 479 & \texttt{0x68012492} \\
+    480 & \texttt{0x34009249} & 481 & \texttt{0x52004924} & 482 & \texttt{0x29002492} & 483 & \texttt{0x14801249} \\
+    484 & \texttt{0x42400924} & 485 & \texttt{0x21200492} & 486 & \texttt{0x10900249} & 487 & \texttt{0x40480124} \\
+    488 & \texttt{0x20240092} & 489 & \texttt{0x10120049} & 490 & \texttt{0x40090024} & 491 & \texttt{0x20048012} \\
+    492 & \texttt{0x10024009} & 493 & \texttt{0x40012004} & 494 & \texttt{0x20009002} & 495 & \texttt{0x10004801} \\
+    496 & \texttt{0x40002400} & 497 & \texttt{0x20001200} & 498 & \texttt{0x10000900} & 499 & \texttt{0x08000480} \\
+    500 & \texttt{0x04000240} & 501 & \texttt{0x02000120} & 502 & \texttt{0x01000090} & 503 & \texttt{0x00800048} \\
+    504 & \texttt{0x00400024} & 505 & \texttt{0x00200012} & 506 & \texttt{0x00100009} & 507 & \texttt{0x48080004} \\
+    508 & \texttt{0x24040002} & 509 & \texttt{0x12020001} & 510 & \texttt{0x41010000} & 511 & \texttt{0x20808000} \\
+    512 & \texttt{0x10404000} & 513 & \texttt{0x08202000} & 514 & \texttt{0x04101000} & 515 & \texttt{0x02080800} \\
+    516 & \texttt{0x01040400} & 517 & \texttt{0x00820200} & 518 & \texttt{0x00410100} & 519 & \texttt{0x00208080} \\
+    520 & \texttt{0x00104040} & 521 & \texttt{0x00082020} & 522 & \texttt{0x00041010} & 523 & \texttt{0x00020808} \\
+    524 & \texttt{0x00010404} & 525 & \texttt{0x00008202} & 526 & \texttt{0x00004101} & 527 & \texttt{0x48002080} \\
+    528 & \texttt{0x24001040} & 529 & \texttt{0x12000820} & 530 & \texttt{0x09000410} & 531 & \texttt{0x04800208} \\
+    532 & \texttt{0x02400104} & 533 & \texttt{0x01200082} & 534 & \texttt{0x00900041} & 535 & \texttt{0x48480020} \\
+    536 & \texttt{0x24240010} & 537 & \texttt{0x12120008} & 538 & \texttt{0x09090004} & 539 & \texttt{0x04848002} \\
+    540 & \texttt{0x02424001} & 541 & \texttt{0x49212000} & 542 & \texttt{0x24909000} & 543 & \texttt{0x12484800} \\
+    544 & \texttt{0x09242400} & 545 & \texttt{0x04921200} & 546 & \texttt{0x02490900} & 547 & \texttt{0x01248480} \\
+    548 & \texttt{0x00924240} & 549 & \texttt{0x00492120} & 550 & \texttt{0x00249090} & 551 & \texttt{0x00124848} \\
+    552 & \texttt{0x00092424} & 553 & \texttt{0x00049212} & 554 & \texttt{0x00024909} & 555 & \texttt{0x48012484} \\
+    556 & \texttt{0x24009242} & 557 & \texttt{0x12004921} & 558 & \texttt{0x41002490} & 559 & \texttt{0x20801248} \\
+    560 & \texttt{0x10400924} & 561 & \texttt{0x08200492} & 562 & \texttt{0x04100249} & 563 & \texttt{0x4A080124} \\
+    564 & \texttt{0x25040092} & 565 & \texttt{0x12820049} & 566 & \texttt{0x41410024} & 567 & \texttt{0x20A08012} \\
+    568 & \texttt{0x10504009} & 569 & \texttt{0x40282004} & 570 & \texttt{0x20141002} & 571 & \texttt{0x100A0801} \\
+    572 & \texttt{0x40050400} & 573 & \texttt{0x20028200} & 574 & \texttt{0x10014100} & 575 & \texttt{0x0800A080} \\
+    576 & \texttt{0x04005040} & 577 & \texttt{0x02002820} & 578 & \texttt{0x01001410} & 579 & \texttt{0x00800A08} \\
+    580 & \texttt{0x00400504} & 581 & \texttt{0x00200282} & 582 & \texttt{0x00100141} & 583 & \texttt{0x480800A0} \\
+    584 & \texttt{0x24040050} & 585 & \texttt{0x12020028} & 586 & \texttt{0x09010014} & 587 & \texttt{0x0480800A} \\
+    588 & \texttt{0x02404005} & 589 & \texttt{0x49202002} & 590 & \texttt{0x24901001} & 591 & \texttt{0x5A480800} \\
+    592 & \texttt{0x2D240400} & 593 & \texttt{0x16920200} & 594 & \texttt{0x0B490100} & 595 & \texttt{0x05A48080} \\
+    596 & \texttt{0x02D24040} & 597 & \texttt{0x01692020} & 598 & \texttt{0x00B49010} & 599 & \texttt{0x005A4808} \\
+    600 & \texttt{0x002D2404} & 601 & \texttt{0x00169202} & 602 & \texttt{0x000B4901} & 603 & \texttt{0x4805A480} \\
+    604 & \texttt{0x2402D240} & 605 & \texttt{0x12016920} & 606 & \texttt{0x0900B490} & 607 & \texttt{0x04805A48} \\
+    608 & \texttt{0x02402D24} & 609 & \texttt{0x01201692} & 610 & \texttt{0x00900B49} & 611 & \texttt{0x484805A4} \\
+    612 & \texttt{0x242402D2} & 613 & \texttt{0x12120169} & 614 & \texttt{0x410900B4} & 615 & \texttt{0x2084805A} \\
+    616 & \texttt{0x1042402D} & 617 & \texttt{0x40212016} & 618 & \texttt{0x2010900B} & 619 & \texttt{0x58084805} \\
+    620 & \texttt{0x64042402} & 621 & \texttt{0x32021201} & 622 & \texttt{0x51010900} & 623 & \texttt{0x28808480} \\
+    624 & \texttt{0x14404240} & 625 & \texttt{0x0A202120} & 626 & \texttt{0x05101090} & 627 & \texttt{0x02880848} \\
+    628 & \texttt{0x01440424} & 629 & \texttt{0x00A20212} & 630 & \texttt{0x00510109} & 631 & \texttt{0x48288084} \\
+    632 & \texttt{0x24144042} & 633 & \texttt{0x120A2021} & 634 & \texttt{0x41051010} & 635 & \texttt{0x20828808} \\
+    636 & \texttt{0x10414404} & 637 & \texttt{0x0820A202} & 638 & \texttt{0x04105101} & 639 & \texttt{0x4A082880} \\
+    640 & \texttt{0x25041440} & 641 & \texttt{0x12820A20} & 642 & \texttt{0x09410510} & 643 & \texttt{0x04A08288} \\
+    644 & \texttt{0x02504144} & 645 & \texttt{0x012820A2} & 646 & \texttt{0x00941051} & 647 & \texttt{0x484A0828} \\
+    648 & \texttt{0x24250414} & 649 & \texttt{0x1212820A} & 650 & \texttt{0x09094105} & 651 & \texttt{0x4C84A082} \\
+    652 & \texttt{0x26425041} & 653 & \texttt{0x5B212820} & 654 & \texttt{0x2D909410} & 655 & \texttt{0x16C84A08} \\
+    656 & \texttt{0x0B642504} & 657 & \texttt{0x05B21282} & 658 & \texttt{0x02D90941} & 659 & \texttt{0x496C84A0} \\
+    660 & \texttt{0x24B64250} & 661 & \texttt{0x125B2128} & 662 & \texttt{0x092D9094} & 663 & \texttt{0x0496C84A} \\
+    664 & \texttt{0x024B6425} & 665 & \texttt{0x4925B212} & 666 & \texttt{0x2492D909} & 667 & \texttt{0x5A496C84} \\
+    668 & \texttt{0x2D24B642} & 669 & \texttt{0x16925B21} & 670 & \texttt{0x43492D90} & 671 & \texttt{0x21A496C8} \\
+    672 & \texttt{0x10D24B64} & 673 & \texttt{0x086925B2} & 674 & \texttt{0x043492D9} & 675 & \texttt{0x4A1A496C} \\
+    676 & \texttt{0x250D24B6} & 677 & \texttt{0x1286925B} & 678 & \texttt{0x4143492D} & 679 & \texttt{0x68A1A496} \\
+    680 & \texttt{0x3450D24B} & 681 & \texttt{0x52286925} & 682 & \texttt{0x61143492} & 683 & \texttt{0x308A1A49} \\
+    684 & \texttt{0x50450D24} & 685 & \texttt{0x28228692} & 686 & \texttt{0x14114349} & 687 & \texttt{0x4208A1A4} \\
+    688 & \texttt{0x210450D2} & 689 & \texttt{0x10822869} & 690 & \texttt{0x40411434} & 691 & \texttt{0x20208A1A} \\
+    692 & \texttt{0x1010450D} & 693 & \texttt{0x40082286} & 694 & \texttt{0x20041143} & 695 & \texttt{0x580208A1} \\
+    696 & \texttt{0x64010450} & 697 & \texttt{0x32008228} & 698 & \texttt{0x19004114} & 699 & \texttt{0x0C80208A} \\
+    700 & \texttt{0x06401045} & 701 & \texttt{0x4B200822} & 702 & \texttt{0x25900411} & 703 & \texttt{0x5AC80208} \\
+    704 & \texttt{0x2D640104} & 705 & \texttt{0x16B20082} & 706 & \texttt{0x0B590041} & 707 & \texttt{0x4DAC8020} \\
+    708 & \texttt{0x26D64010} & 709 & \texttt{0x136B2008} & 710 & \texttt{0x09B59004} & 711 & \texttt{0x04DAC802} \\
+    712 & \texttt{0x026D6401} & 713 & \texttt{0x4936B200} & 714 & \texttt{0x249B5900} & 715 & \texttt{0x124DAC80} \\
+    716 & \texttt{0x0926D640} & 717 & \texttt{0x04936B20} & 718 & \texttt{0x0249B590} & 719 & \texttt{0x0124DAC8} \\
+    720 & \texttt{0x00926D64} & 721 & \texttt{0x004936B2} & 722 & \texttt{0x00249B59} & 723 & \texttt{0x48124DAC} \\
+    724 & \texttt{0x240926D6} & 725 & \texttt{0x1204936B} & 726 & \texttt{0x410249B5} & 727 & \texttt{0x688124DA} \\
+    728 & \texttt{0x3440926D} & 729 & \texttt{0x52204936} & 730 & \texttt{0x2910249B} & 731 & \texttt{0x5C88124D} \\
+    732 & \texttt{0x66440926} & 733 & \texttt{0x33220493} & 734 & \texttt{0x51910249} & 735 & \texttt{0x60C88124} \\
+    736 & \texttt{0x30644092} & 737 & \texttt{0x18322049} & 738 & \texttt{0x44191024} & 739 & \texttt{0x220C8812} \\
+    740 & \texttt{0x11064409} & 741 & \texttt{0x40832204} & 742 & \texttt{0x20419102} & 743 & \texttt{0x1020C881} \\
+    744 & \texttt{0x40106440} & 745 & \texttt{0x20083220} & 746 & \texttt{0x10041910} & 747 & \texttt{0x08020C88} \\
+    748 & \texttt{0x04010644} & 749 & \texttt{0x02008322} & 750 & \texttt{0x01004191} & 751 & \texttt{0x488020C8} \\
+    752 & \texttt{0x24401064} & 753 & \texttt{0x12200832} & 754 & \texttt{0x09100419} & 755 & \texttt{0x4C88020C} \\
+    756 & \texttt{0x26440106} & 757 & \texttt{0x13220083} & 758 & \texttt{0x41910041} & 759 & \texttt{0x68C88020} \\
+    760 & \texttt{0x34644010} & 761 & \texttt{0x1A322008} & 762 & \texttt{0x0D191004} & 763 & \texttt{0x068C8802} \\
+    764 & \texttt{0x03464401} & 765 & \texttt{0x49A32200} & 766 & \texttt{0x24D19100} & 767 & \texttt{0x1268C880} \\
+    768 & \texttt{0x09346440} & 769 & \texttt{0x049A3220} & 770 & \texttt{0x024D1910} & 771 & \texttt{0x01268C88} \\
+    772 & \texttt{0x00934644} & 773 & \texttt{0x0049A322} & 774 & \texttt{0x0024D191} & 775 & \texttt{0x481268C8} \\
+    776 & \texttt{0x24093464} & 777 & \texttt{0x12049A32} & 778 & \texttt{0x09024D19} & 779 & \texttt{0x4C81268C} \\
+    780 & \texttt{0x26409346} & 781 & \texttt{0x132049A3} & 782 & \texttt{0x419024D1} & 783 & \texttt{0x68C81268} \\
+    784 & \texttt{0x34640934} & 785 & \texttt{0x1A32049A} & 786 & \texttt{0x0D19024D} & 787 & \texttt{0x4E8C8126} \\
+    788 & \texttt{0x27464093} & 789 & \texttt{0x5BA32049} & 790 & \texttt{0x65D19024} &  &  \\
+\end{longtable}
+\endgroup
+
 
 \end{document}

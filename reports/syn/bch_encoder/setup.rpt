@@ -1,0 +1,750 @@
+****************************************
+Report : timing
+        -path_type full
+        -delay_type max
+        -max_paths 20
+        -report_by design
+Design : bch_encoder
+Version: Y-2026.03
+Date   : Thu Nov 26 16:34:52 2026
+****************************************
+
+  Startpoint: i_msg[103] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[6] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[103] (in)                                  0.000000      0.111125 f
+  u_bch_mult_p/ctmi_519/X (SAEDHVT14_EO2_0P5)      0.073490      0.184615 r
+  u_bch_mult_p/ctmi_600/X (SAEDHVT14_EO2_0P5)      0.085449      0.270064 f
+  u_bch_mult_p/ctmi_642/X (SAEDHVT14_EO2_0P5)      0.083408      0.353473 r
+  u_bch_mult_p/ctmi_641/X (SAEDHVT14_EO2_0P5)      0.073090      0.426562 f
+  u_bch_mult_p/ctmi_640/X (SAEDHVT14_EN2_1)        0.059872      0.486434 r
+  u_bch_mult_p/ctmi_639/X (SAEDHVT14_EO2_0P5)      0.056343      0.542777 f
+  u_bch_mult_p/ctmi_660/X (SAEDHVT14_EN3_U_0P5)    0.094147      0.636924 f
+  u_bch_mult_p/ctmi_658/X (SAEDHVT14_EN4_U_0P5)    0.096359      0.733283 f
+  u_bch_mult_p/ctmi_657/X (SAEDHVT14_EN4_U_0P5)    0.082092      0.815375 f
+  o_cw_reg[6]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000000      0.815375 f
+  data arrival time                                              0.815375
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[6]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.033203      1.022484
+  data required time                                             1.022495
+  --------------------------------------------------------------------------------
+  data required time                                             1.022495
+  data arrival time                                             -0.815375
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.207120
+
+
+
+  Startpoint: i_msg[103] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[13] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[103] (in)                                  0.000000      0.111125 f
+  u_bch_mult_p/ctmi_519/X (SAEDHVT14_EO2_0P5)      0.073490      0.184615 r
+  u_bch_mult_p/ctmi_600/X (SAEDHVT14_EO2_0P5)      0.085449      0.270064 f
+  u_bch_mult_p/ctmi_642/X (SAEDHVT14_EO2_0P5)      0.083408      0.353473 r
+  u_bch_mult_p/ctmi_641/X (SAEDHVT14_EO2_0P5)      0.073090      0.426562 f
+  u_bch_mult_p/ctmi_640/X (SAEDHVT14_EN2_1)        0.059872      0.486434 r
+  u_bch_mult_p/ctmi_639/X (SAEDHVT14_EO2_0P5)      0.056343      0.542777 f
+  u_bch_mult_p/ctmi_660/X (SAEDHVT14_EN3_U_0P5)    0.094147      0.636924 f
+  u_bch_mult_p/ctmi_717/X (SAEDHVT14_EN3_U_0P5)    0.061550      0.698474 r
+  u_bch_mult_p/ctmi_713/X (SAEDHVT14_EO4_1)        0.085430      0.783904 f
+  o_cw_reg[13]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000019      0.783923 f
+  data arrival time                                              0.783923
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[13]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.032705      1.022982
+  data required time                                             1.022993
+  --------------------------------------------------------------------------------
+  data required time                                             1.022993
+  data arrival time                                             -0.783923
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.239070
+
+
+
+  Startpoint: i_msg[105] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[0] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[105] (in)                                  0.000000      0.111125 f
+  u_bch_mult_p/ctmi_547/X (SAEDHVT14_EO2_0P5)      0.074100      0.185225 r
+  u_bch_mult_p/ctmi_546/X (SAEDHVT14_EO2_0P5)      0.065937      0.251163 f
+  u_bch_mult_p/ctmi_545/X (SAEDHVT14_EO2_0P5)      0.076275      0.327437 r
+  u_bch_mult_p/ctmi_544/X (SAEDHVT14_EO2_0P5)      0.067749      0.395186 f
+  u_bch_mult_p/ctmi_543/X (SAEDHVT14_EO2_0P5)      0.077782      0.472968 r
+  u_bch_mult_p/ctmi_542/X (SAEDHVT14_EO2_0P5)      0.079250      0.552218 f
+  u_bch_mult_p/ctmi_541/X (SAEDHVT14_EN3_U_0P5)    0.090981      0.643199 r
+  u_bch_mult_p/ctmi_540/X (SAEDHVT14_EN3_1)        0.046825      0.690024 f
+  u_bch_mult_p/ctmi_515/X (SAEDHVT14_EN3_1)        0.074501      0.764525 f
+  o_cw_reg[0]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000000      0.764525 f
+  data arrival time                                              0.764525
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[0]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.028541      1.027147
+  data required time                                             1.027158
+  --------------------------------------------------------------------------------
+  data required time                                             1.027158
+  data arrival time                                             -0.764525
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.262632
+
+
+
+  Startpoint: i_msg[105] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[3] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[105] (in)                                  0.000000      0.111125 f
+  u_bch_mult_p/ctmi_547/X (SAEDHVT14_EO2_0P5)      0.074100      0.185225 r
+  u_bch_mult_p/ctmi_546/X (SAEDHVT14_EO2_0P5)      0.065937      0.251163 f
+  u_bch_mult_p/ctmi_545/X (SAEDHVT14_EO2_0P5)      0.076275      0.327437 r
+  u_bch_mult_p/ctmi_544/X (SAEDHVT14_EO2_0P5)      0.067749      0.395186 f
+  u_bch_mult_p/ctmi_543/X (SAEDHVT14_EO2_0P5)      0.077782      0.472968 r
+  u_bch_mult_p/ctmi_542/X (SAEDHVT14_EO2_0P5)      0.079250      0.552218 f
+  u_bch_mult_p/ctmi_619/X (SAEDHVT14_EN4_U_0P5)    0.103664      0.655883 r
+  u_bch_mult_p/ctmi_608/X (SAEDHVT14_EN4_U_0P5)    0.089684      0.745566 f
+  o_cw_reg[3]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000019      0.745585 f
+  data arrival time                                              0.745585
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[3]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.035314      1.020374
+  data required time                                             1.020385
+  --------------------------------------------------------------------------------
+  data required time                                             1.020385
+  data arrival time                                             -0.745585
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.274799
+
+
+
+  Startpoint: i_msg[103] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[12] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[103] (in)                                  0.000000      0.111125 f
+  u_bch_mult_p/ctmi_519/X (SAEDHVT14_EO2_0P5)      0.073490      0.184615 r
+  u_bch_mult_p/ctmi_600/X (SAEDHVT14_EO2_0P5)      0.085449      0.270064 f
+  u_bch_mult_p/ctmi_642/X (SAEDHVT14_EO2_0P5)      0.083408      0.353473 r
+  u_bch_mult_p/ctmi_641/X (SAEDHVT14_EO2_0P5)      0.073090      0.426562 f
+  u_bch_mult_p/ctmi_640/X (SAEDHVT14_EN2_1)        0.059872      0.486434 r
+  u_bch_mult_p/ctmi_712/X (SAEDHVT14_EN4_U_0P5)    0.095634      0.582068 f
+  u_bch_mult_p/ctmi_709/X (SAEDHVT14_EN3_1)        0.085926      0.667994 f
+  u_bch_mult_p/ctmi_706/X (SAEDHVT14_EN3_1)        0.074997      0.742991 f
+  o_cw_reg[12]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      0.742991 f
+  data arrival time                                              0.742991
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[12]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.028735      1.026953
+  data required time                                             1.026963
+  --------------------------------------------------------------------------------
+  data required time                                             1.026963
+  data arrival time                                             -0.742991
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.283972
+
+
+
+  Startpoint: i_msg[55] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[10] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[55] (in)                                   0.000000      0.111125 f
+  u_bch_mult_p/ctmi_603/X (SAEDHVT14_EO2_0P5)      0.074196      0.185321 r
+  u_bch_mult_p/ctmi_613/X (SAEDHVT14_EO2_0P5)      0.069351      0.254672 f
+  u_bch_mult_p/ctmi_612/X (SAEDHVT14_EO2_0P5)      0.071716      0.326388 r
+  u_bch_mult_p/ctmi_611/X (SAEDHVT14_EO2_0P5)      0.074444      0.400832 f
+  u_bch_mult_p/ctmi_609/X (SAEDHVT14_EN3_U_0P5)    0.098705      0.499537 r
+  u_bch_mult_p/ctmi_697/X (SAEDHVT14_EN3_1)        0.050316      0.549853 f
+  u_bch_mult_p/ctmi_694/X (SAEDHVT14_EN3_1)        0.073547      0.623401 r
+  u_bch_mult_p/ctmi_693/X (SAEDHVT14_EN3_1)        0.044556      0.667956 f
+  u_bch_mult_p/ctmi_690/X (SAEDHVT14_EN3_1)        0.074253      0.742209 f
+  o_cw_reg[10]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      0.742209 f
+  data arrival time                                              0.742209
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[10]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.028662      1.027025
+  data required time                                             1.027036
+  --------------------------------------------------------------------------------
+  data required time                                             1.027036
+  data arrival time                                             -0.742209
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.284827
+
+
+
+  Startpoint: i_msg[27] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[7] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 r
+  i_msg[27] (in)                                   0.000000      0.111125 r
+  u_bch_mult_p/ctmi_536/X (SAEDHVT14_EO2_0P5)      0.070229      0.181354 f
+  u_bch_mult_p/ctmi_577/X (SAEDHVT14_EO2_0P5)      0.060978      0.242332 r
+  u_bch_mult_p/ctmi_575/X (SAEDHVT14_EO2_0P5)      0.066605      0.308936 f
+  u_bch_mult_p/ctmi_574/X (SAEDHVT14_EO2_0P5)      0.068493      0.377429 r
+  u_bch_mult_p/ctmi_573/X (SAEDHVT14_EO2_0P5)      0.063248      0.440677 f
+  u_bch_mult_p/ctmi_572/X (SAEDHVT14_EN3_U_0P5)    0.094643      0.535319 f
+  u_bch_mult_p/ctmi_671/X (SAEDHVT14_EN4_U_0P5)    0.089359      0.624679 f
+  u_bch_mult_p/ctmi_668/X (SAEDHVT14_EN4_U_0P5)    0.096703      0.721381 r
+  o_cw_reg[7]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000019      0.721400 r
+  data arrival time                                              0.721400
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[7]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.033292      1.022396
+  data required time                                             1.022406
+  --------------------------------------------------------------------------------
+  data required time                                             1.022406
+  data arrival time                                             -0.721400
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.301006
+
+
+
+  Startpoint: i_msg[105] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[9] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 r
+  i_msg[105] (in)                                  0.000000      0.111125 r
+  u_bch_mult_p/ctmi_547/X (SAEDHVT14_EO2_0P5)      0.073376      0.184501 f
+  u_bch_mult_p/ctmi_546/X (SAEDHVT14_EO2_0P5)      0.062733      0.247233 r
+  u_bch_mult_p/ctmi_545/X (SAEDHVT14_EO2_0P5)      0.075340      0.322574 f
+  u_bch_mult_p/ctmi_544/X (SAEDHVT14_EO2_0P5)      0.065403      0.387977 r
+  u_bch_mult_p/ctmi_543/X (SAEDHVT14_EO2_0P5)      0.076809      0.464786 f
+  u_bch_mult_p/ctmi_687/X (SAEDHVT14_EN4_U_0P5)    0.104294      0.569079 r
+  u_bch_mult_p/ctmi_686/X (SAEDHVT14_EN3_U_0P5)    0.056438      0.625518 f
+  u_bch_mult_p/ctmi_682/X (SAEDHVT14_EN4_U_0P5)    0.094528      0.720046 r
+  o_cw_reg[9]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000019      0.720065 r
+  data arrival time                                              0.720065
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[9]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.031657      1.024031
+  data required time                                             1.024041
+  --------------------------------------------------------------------------------
+  data required time                                             1.024041
+  data arrival time                                             -0.720065
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.303976
+
+
+
+  Startpoint: i_msg[103] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[8] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[103] (in)                                  0.000000      0.111125 f
+  u_bch_mult_p/ctmi_519/X (SAEDHVT14_EO2_0P5)      0.073490      0.184615 r
+  u_bch_mult_p/ctmi_600/X (SAEDHVT14_EO2_0P5)      0.085449      0.270064 f
+  u_bch_mult_p/ctmi_642/X (SAEDHVT14_EO2_0P5)      0.083408      0.353473 r
+  u_bch_mult_p/ctmi_641/X (SAEDHVT14_EO2_0P5)      0.073090      0.426562 f
+  u_bch_mult_p/ctmi_679/X (SAEDHVT14_EN4_U_0P5)    0.101604      0.528167 r
+  u_bch_mult_p/ctmi_676/X (SAEDHVT14_EN3_U_0P5)    0.086784      0.614951 f
+  u_bch_mult_p/ctmi_675/X (SAEDHVT14_EN4_U_0P5)    0.084553      0.699504 f
+  o_cw_reg[8]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000019      0.699523 f
+  data arrival time                                              0.699523
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[8]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.036453      1.019235
+  data required time                                             1.019246
+  --------------------------------------------------------------------------------
+  data required time                                             1.019246
+  data arrival time                                             -0.699523
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.319723
+
+
+
+  Startpoint: i_msg[73] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[2] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[73] (in)                                   0.000000      0.111125 f
+  u_bch_mult_p/ctmi_567/X (SAEDHVT14_EO2_0P5)      0.072765      0.183890 r
+  u_bch_mult_p/ctmi_566/X (SAEDHVT14_EO2_0P5)      0.074806      0.258697 f
+  u_bch_mult_p/ctmi_565/X (SAEDHVT14_EO2_0P5)      0.084076      0.342772 r
+  u_bch_mult_p/ctmi_564/X (SAEDHVT14_EO2_0P5)      0.073662      0.416434 f
+  u_bch_mult_p/ctmi_562/X (SAEDHVT14_EN3_U_0P5)    0.099812      0.516246 f
+  u_bch_mult_p/ctmi_594/X (SAEDHVT14_EN4_U_0P5)    0.089645      0.605891 f
+  u_bch_mult_p/ctmi_593/X (SAEDHVT14_EN4_U_0P5)    0.084877      0.690768 f
+  o_cw_reg[2]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000019      0.690787 f
+  data arrival time                                              0.690787
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[2]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.035443      1.020245
+  data required time                                             1.020256
+  --------------------------------------------------------------------------------
+  data required time                                             1.020256
+  data arrival time                                             -0.690787
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.329468
+
+
+
+  Startpoint: i_msg[103] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[4] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[103] (in)                                  0.000000      0.111125 f
+  u_bch_mult_p/ctmi_519/X (SAEDHVT14_EO2_0P5)      0.073490      0.184615 r
+  u_bch_mult_p/ctmi_600/X (SAEDHVT14_EO2_0P5)      0.085449      0.270064 f
+  u_bch_mult_p/ctmi_642/X (SAEDHVT14_EO2_0P5)      0.083408      0.353473 r
+  u_bch_mult_p/ctmi_641/X (SAEDHVT14_EO2_0P5)      0.073090      0.426562 f
+  u_bch_mult_p/ctmi_640/X (SAEDHVT14_EN2_1)        0.059872      0.486434 r
+  u_bch_mult_p/ctmi_639/X (SAEDHVT14_EO2_0P5)      0.056343      0.542777 f
+  u_bch_mult_p/ctmi_638/X (SAEDHVT14_EN3_1)        0.049572      0.592349 r
+  u_bch_mult_p/ctmi_626/X (SAEDHVT14_EN3_1)        0.076027      0.668376 f
+  o_cw_reg[4]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000019      0.668395 f
+  data arrival time                                              0.668395
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[4]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.030107      1.025581
+  data required time                                             1.025591
+  --------------------------------------------------------------------------------
+  data required time                                             1.025591
+  data arrival time                                             -0.668395
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.357196
+
+
+
+  Startpoint: i_msg[3] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[5] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[3] (in)                                    0.000000      0.111125 f
+  u_bch_mult_p/ctmi_625/X (SAEDHVT14_EO2_0P5)      0.074844      0.185969 r
+  u_bch_mult_p/ctmi_624/X (SAEDHVT14_EO2_0P5)      0.069790      0.255759 f
+  u_bch_mult_p/ctmi_650/X (SAEDHVT14_EO2_0P5)      0.069752      0.325511 r
+  u_bch_mult_p/ctmi_649/X (SAEDHVT14_EO2_0P5)      0.075760      0.401271 f
+  u_bch_mult_p/ctmi_655/X (SAEDHVT14_EN4_U_0P5)    0.097523      0.498794 f
+  u_bch_mult_p/ctmi_652/X (SAEDHVT14_EN3_U_0P5)    0.085373      0.584167 f
+  u_bch_mult_p/ctmi_644/X (SAEDHVT14_EN3_1)        0.077629      0.661796 f
+  o_cw_reg[5]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000000      0.661796 f
+  data arrival time                                              0.661796
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[5]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.028298      1.027390
+  data required time                                             1.027401
+  --------------------------------------------------------------------------------
+  data required time                                             1.027401
+  data arrival time                                             -0.661796
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.365605
+
+
+
+  Startpoint: i_msg[73] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[1] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_msg[73] (in)                                   0.000000      0.111125 f
+  u_bch_mult_p/ctmi_567/X (SAEDHVT14_EO2_0P5)      0.072765      0.183890 r
+  u_bch_mult_p/ctmi_566/X (SAEDHVT14_EO2_0P5)      0.074806      0.258697 f
+  u_bch_mult_p/ctmi_565/X (SAEDHVT14_EO2_0P5)      0.084076      0.342772 r
+  u_bch_mult_p/ctmi_564/X (SAEDHVT14_EO2_0P5)      0.073662      0.416434 f
+  u_bch_mult_p/ctmi_562/X (SAEDHVT14_EN3_U_0P5)    0.099812      0.516246 f
+  u_bch_mult_p/ctmi_561/X (SAEDHVT14_EN3_U_0P5)    0.088024      0.604270 r
+  u_bch_mult_p/ctmi_560/X (SAEDHVT14_EN3_1)        0.047646      0.651916 f
+  o_cw_reg[1]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)      0.000000      0.651916 f
+  data arrival time                                              0.651916
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[1]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.028844      1.026843
+  data required time                                             1.026854
+  --------------------------------------------------------------------------------
+  data required time                                             1.026854
+  data arrival time                                             -0.651916
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.374939
+
+
+
+  Startpoint: i_msg[67] (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[11] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 r
+  i_msg[67] (in)                                   0.000000      0.111125 r
+  u_bch_mult_p/ctmi_563/X (SAEDHVT14_EO2_0P5)      0.074139      0.185264 f
+  u_bch_mult_p/ctmi_630/X (SAEDHVT14_EO2_0P5)      0.077934      0.263198 r
+  u_bch_mult_p/ctmi_629/X (SAEDHVT14_EO2_0P5)      0.087872      0.351069 f
+  u_bch_mult_p/ctmi_628/X (SAEDHVT14_EN3_U_0P5)    0.123863      0.474933 f
+  u_bch_mult_p/ctmi_701/X (SAEDHVT14_EN4_U_0P5)    0.093269      0.568202 r
+  u_bch_mult_p/ctmi_700/X (SAEDHVT14_EN3_1)        0.049191      0.617393 f
+  o_cw_reg[11]/D (SAEDHVT14_FSDPSYNRBQ_V2LP_2)     0.000000      0.617393 f
+  data arrival time                                              0.617393
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[11]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.028249      1.027438
+  data required time                                             1.027449
+  --------------------------------------------------------------------------------
+  data required time                                             1.027449
+  data arrival time                                             -0.617393
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.410057
+
+
+
+  Startpoint: i_rst_n (input port clocked by i_clk_fec)
+  Endpoint: clock_gate_o_cw_reg (rising clock gating-check end-point clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_rst_n (in)                                     0.000000      0.111125 f
+  HFSBUF_1032_129/X (SAEDHVT14_BUF_CDC_2)          0.081844      0.192969 f
+  ctmi_650/X (SAEDHVT14_ND2B_U_0P5)                0.056171      0.249141 r
+  clock_gate_o_cw_reg/EN (SAEDHVT14_CKGTPLT_V5_1)
+                                                   0.000019      0.249160 r
+  data arrival time                                              0.249160
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                     -0.040169      1.071081
+  clock_gate_o_cw_reg/CK (SAEDHVT14_CKGTPLT_V5_1)
+                                                   0.000000      1.071081 r
+  clock uncertainty                               -0.055562      1.015519
+  library setup time                              -0.029620      0.985899
+  data required time                                             0.985909
+  --------------------------------------------------------------------------------
+  data required time                                             0.985909
+  data arrival time                                             -0.249160
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.736750
+
+
+
+  Startpoint: i_rst_n (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[120] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_rst_n (in)                                     0.000000      0.111125 f
+  HFSBUF_525_128/X (SAEDHVT14_BUF_1)               0.088730      0.199855 f
+  o_cw_reg[120]/RD (SAEDHVT14_FSDPSYNRBQ_V2LP_2)   0.000610      0.200465 f
+  data arrival time                                              0.200465
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[120]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)   0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.076925      0.978762
+  data required time                                             0.978773
+  --------------------------------------------------------------------------------
+  data required time                                             0.978773
+  data arrival time                                             -0.200465
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.778308
+
+
+
+  Startpoint: i_rst_n (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[14] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_rst_n (in)                                     0.000000      0.111125 f
+  HFSBUF_525_128/X (SAEDHVT14_BUF_1)               0.088730      0.199855 f
+  o_cw_reg[14]/RD (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000610      0.200465 f
+  data arrival time                                              0.200465
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[14]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.076925      0.978762
+  data required time                                             0.978773
+  --------------------------------------------------------------------------------
+  data required time                                             0.978773
+  data arrival time                                             -0.200465
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.778308
+
+
+
+  Startpoint: i_rst_n (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[29] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_rst_n (in)                                     0.000000      0.111125 f
+  HFSBUF_525_128/X (SAEDHVT14_BUF_1)               0.088730      0.199855 f
+  o_cw_reg[29]/RD (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000610      0.200465 f
+  data arrival time                                              0.200465
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[29]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.076925      0.978762
+  data required time                                             0.978773
+  --------------------------------------------------------------------------------
+  data required time                                             0.978773
+  data arrival time                                             -0.200465
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.778308
+
+
+
+  Startpoint: i_rst_n (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[73] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_rst_n (in)                                     0.000000      0.111125 f
+  HFSBUF_525_128/X (SAEDHVT14_BUF_1)               0.088730      0.199855 f
+  o_cw_reg[73]/RD (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000610      0.200465 f
+  data arrival time                                              0.200465
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[73]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.076925      0.978762
+  data required time                                             0.978773
+  --------------------------------------------------------------------------------
+  data required time                                             0.978773
+  data arrival time                                             -0.200465
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.778308
+
+
+
+  Startpoint: i_rst_n (input port clocked by i_clk_fec)
+  Endpoint: o_cw_reg[92] (rising edge-triggered flip-flop clocked by i_clk_fec)
+  Mode: functional
+  Corner: slow
+  Scenario: func_slow
+  Path Group: **in2reg_default**
+  Path Type: max
+
+  Point                                              Incr          Path  
+  --------------------------------------------------------------------------------
+  clock i_clk_fec (rise edge)                      0.000000      0.000000
+  clock network delay (ideal)                      0.000000      0.000000
+  input external delay                             0.111125      0.111125 f
+  i_rst_n (in)                                     0.000000      0.111125 f
+  HFSBUF_525_128/X (SAEDHVT14_BUF_1)               0.088730      0.199855 f
+  o_cw_reg[92]/RD (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000610      0.200465 f
+  data arrival time                                              0.200465
+
+  clock i_clk_fec (rise edge)                      1.111250      1.111250
+  clock network delay (ideal)                      0.000000      1.111250
+  o_cw_reg[92]/CK (SAEDHVT14_FSDPSYNRBQ_V2LP_2)    0.000000      1.111250 r
+  clock uncertainty                               -0.055562      1.055688
+  library setup time                              -0.076925      0.978762
+  data required time                                             0.978773
+  --------------------------------------------------------------------------------
+  data required time                                             0.978773
+  data arrival time                                             -0.200465
+  --------------------------------------------------------------------------------
+  slack (MET)                                                    0.778308
+
+
+1

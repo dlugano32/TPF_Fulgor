@@ -1,0 +1,23 @@
+****************************************
+Report : area
+Design : prbs31_checker
+Version: Y-2026.03
+Date   : Thu Nov 26 17:12:39 2026
+****************************************
+
+Number of ports:                         1696
+Number of nets:                          7079
+Number of cells:                         4650
+Number of combinational cells:           3812
+Number of sequential cells:               838
+Number of macros/black boxes:               0
+Number of buf/inv:                        177
+Number of references:                     133
+
+Combinational area:                   1995.87
+Buf/Inv area:                           36.23
+Noncombinational area:                 934.35
+Macro/Black Box area:                    0.00
+
+Total cell area:                      2930.22
+1

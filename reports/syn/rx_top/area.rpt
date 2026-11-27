@@ -2,22 +2,22 @@
 Report : area
 Design : rx_top
 Version: Y-2026.03
-Date   : Tue Nov 17 17:10:09 2026
+Date   : Thu Nov 26 18:36:38 2026
 ****************************************
 
-Number of ports:                        11376
-Number of nets:                         60915
-Number of cells:                        51591
-Number of combinational cells:          27677
-Number of sequential cells:             23914
+Number of ports:                        11373
+Number of nets:                         59373
+Number of cells:                        50066
+Number of combinational cells:          26159
+Number of sequential cells:             23907
 Number of macros/black boxes:               0
-Number of buf/inv:                       2229
-Number of references:                     389
+Number of buf/inv:                       2150
+Number of references:                     359
 
-Combinational area:                  11394.55
-Buf/Inv area:                          524.81
-Noncombinational area:               27499.50
+Combinational area:                  10921.11
+Buf/Inv area:                          518.10
+Noncombinational area:               27494.30
 Macro/Black Box area:                    0.00
 
-Total cell area:                     38894.04
+Total cell area:                     38415.41
 1

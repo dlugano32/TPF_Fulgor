@@ -1,0 +1,23 @@
+****************************************
+Report : area
+Design : prbs31
+Version: Y-2026.03
+Date   : Thu Nov 26 16:48:34 2026
+****************************************
+
+Number of ports:                         1651
+Number of nets:                          2816
+Number of cells:                         1960
+Number of combinational cells:           1137
+Number of sequential cells:               823
+Number of macros/black boxes:               0
+Number of buf/inv:                        160
+Number of references:                      69
+
+Combinational area:                    464.51
+Buf/Inv area:                           31.35
+Noncombinational area:                1054.41
+Macro/Black Box area:                    0.00
+
+Total cell area:                      1518.92
+1

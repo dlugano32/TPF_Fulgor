@@ -126,24 +126,22 @@ foreach {corner pvt rc} [list slow $SLOW_PVT Cmax fast $FAST_PVT Cmin] {
 #set_app_options -name compile.flow.high_effort_timing -value 1
 compile_fusion
 
+current_scenario func_slow
 report_units > $REPORT_DIR/units.rpt
 report_scenarios > $REPORT_DIR/scenarios.rpt
 report_area > $REPORT_DIR/area.rpt
 report_clock_gating > $REPORT_DIR/clock_gating.rpt
 report_threshold_voltage_groups > $REPORT_DIR/vt_groups.rpt
+report_pvt > $REPORT_DIR/pvt.rpt
+check_timing > $REPORT_DIR/check_timing.rpt
+report_timing -delay_type max -max_paths 20 -significant_digits 6 > $REPORT_DIR/setup.rpt
+report_timing -delay_type min -max_paths 20 -significant_digits 6 > $REPORT_DIR/hold.rpt
+report_qor -significant_digits 6 > $REPORT_DIR/qor.rpt
 
+# Potencia y exportaciones se generan en el escenario de cada corner.
 foreach corner {slow fast} {
     current_scenario func_$corner
-    report_pvt > $REPORT_DIR/pvt_${corner}.rpt
-    check_timing > $REPORT_DIR/check_timing_${corner}.rpt
-    report_timing -delay_type max -max_paths 20 -significant_digits 6 > $REPORT_DIR/setup_${corner}.rpt
-    report_timing -delay_type min -max_paths 20 -significant_digits 6 > $REPORT_DIR/hold_${corner}.rpt
-    foreach clock {i_clk_fec i_clk_dsp} {
-        report_timing -group $clock -delay_type max -max_paths 10 -significant_digits 6 > $REPORT_DIR/setup_${corner}_${clock}.rpt
-        report_timing -group $clock -delay_type min -max_paths 10 -significant_digits 6 > $REPORT_DIR/hold_${corner}_${clock}.rpt
-    }
     report_power > $REPORT_DIR/power_${corner}.rpt
-    report_qor -significant_digits 6 > $REPORT_DIR/qor_${corner}.rpt
     write_sdf $OUT_DIR/${TOP}_${corner}.sdf
     write_sdc -output $OUT_DIR/${TOP}_${corner}.sdc
 }

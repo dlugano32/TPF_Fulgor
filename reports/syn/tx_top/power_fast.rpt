@@ -3,7 +3,7 @@ Report : power
         -significant_digits 2
 Design : tx_top
 Version: Y-2026.03
-Date   : Tue Nov 17 12:11:30 2026
+Date   : Thu Nov 26 17:34:04 2026
 ****************************************
 Information: Propagated activity on scenario func_fast identical to that on func_slow (POW-006)
 Information: Timer-derived activity data is cached on scenario func_fast (POW-052)
